@@ -2,11 +2,11 @@
 <html lang="bg">
 
 <head>
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'GIFTCHETA.COM')</title>
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
 </head>
 
 <body class="bg-gray-100">
@@ -14,7 +14,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <!-- render logo -->
             <a href="{{ route('home') }}">
-                <img src="/images/giftcheta.png" alt="GIFTCHETA.COM" class="h-[80px] w-auto">
+                <img src="/images/giftcheta.png" alt="GIFTCHETA.COM" class="h-[80px] w-auto block object-contain" width="200" height="80">
             </a>
 
             <!-- render search -->
@@ -28,7 +28,7 @@
             <!-- render links -->
             <ul class="flex space-x-6 text-lg">
                 <li>
-                    <a href="#" class="icon-with-link">
+                    <a href="{{ Auth::check() ? route('users.profile') : route('users.login') }}" class="icon-with-link">
                         <x-heroicon-o-user class="icon" />
                         <span>Акаунт</span>
                     </a>

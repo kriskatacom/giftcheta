@@ -9,3 +9,15 @@
 .icon-with-link {
     @apply flex items-center space-x-2 hover:text-primary;
 }
+
+.page-link {
+    @apply outline-none border-2 border-transparent rounded hover:text-primary focus:border-primary;
+}
+
+.form-control {
+    @apply outline-none w-full border-2 rounded px-3 py-2 focus:border-primary;
+}
+
+.page-button {
+    @apply outline-none text-white px-4 py-2 rounded hover:bg-opacity-90 focus:bg-opacity-80 disabled:pointer-events-none disabled:opacity-50 border-4 border-transparent focus:border-primary;
+}
