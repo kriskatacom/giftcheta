@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ResetPasswordMail;
+use DB;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
+use Mail;
+use Str;
 
 class UserController extends Controller
 {
@@ -22,7 +27,7 @@ class UserController extends Controller
     {
         return view("users.forgot-password", ["title" => "Забравена парола"]);
     }
-    
+
     public function profile()
     {
         return view("users.profile", ["title" => "Моят профил"]);
@@ -84,12 +89,24 @@ class UserController extends Controller
             'email.email' => 'Въведеният имейл е невалиден.',
         ]);
 
-        $status = Password::sendResetLink($request->only('email'));
+        $user = User::where('email', $request->email)->first();
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('success', 'Изпратихме ви линк за смяна на паролата на посочения имейл адрес.');
+        if (!$user) {
+            return back()->with('error', 'Не успяхме да намерим потребител с този имейл адрес.');
         }
 
-        return back()->with('error', 'Не успяхме да намерим потребител с този имейл адрес.');
+        $token = Str::random(64);
+
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        Mail::to($user->email)->send(new ResetPasswordMail($token, $user->email));
+
+        return back()->with('success', 'Изпратихме ви линк за смяна на паролата на посочения имейл адрес.');
     }
 }
