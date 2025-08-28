@@ -21,7 +21,7 @@ class CheckRole
         $user = Auth::user();
 
         if (!$user || !in_array($user->role, $roles)) {
-            abort(403, 'Нямате достъп до тази страница.');
+            return redirect()->route("home");
         }
 
         return $next($request);

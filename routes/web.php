@@ -32,5 +32,12 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create']
 Route::post("/users/forgot-password", [UserController::class, "sendResetLinkEmail"])->name("password.email");
 Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
 
+
 // admin
-Route::get('/admin', [AdminController::class, 'index'])->middleware('role:admin');
+Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('role:admin')->name("admin.dashboard");
+Route::get('/settings', [AdminController::class, 'settings'])->middleware('role:admin')->name("admin.settings");
+Route::get('/admin/users', [UserController::class, 'all'])->middleware('role:admin')->name("admin.users");
+Route::get('/admin/categories', [CategoryController::class, 'all'])->middleware('role:admin')->name("admin.categories");
+Route::get('/admin/orders', [OrderController::class, 'all'])->middleware('role:admin')->name("admin.orders");
+Route::get('/admin/stats', [AdminController::class, 'stats'])->middleware('role:admin')->name("admin.stats");
+Route::get('/admin/products', [ProductController::class, 'all'])->middleware('role:admin')->name("admin.products");

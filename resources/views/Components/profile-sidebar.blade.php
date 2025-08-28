@@ -5,21 +5,9 @@
 <aside class="bg-white border rounded-lg shadow md:col-span-1">
     <nav>
         <ul>
-            <li>
-                <x-profile-sidebar-link route="users.profile" icon="heroicon-o-user">
-                    Профил
-                </x-profile-sidebar-link>
-            </li>
-            <li>
-                <x-profile-sidebar-link route="users.orders" icon="heroicon-o-archive-box">
-                    Поръчки
-                </x-profile-sidebar-link>
-            </li>
-            <li>
-                <x-profile-sidebar-link route="users.settings" icon="heroicon-o-cog-6-tooth">
-                    Настройки
-                </x-profile-sidebar-link>
-            </li>
+            <x-sidebar-link route="users.profile" icon="heroicon-o-user">Профил</x-sidebar-link>
+            <x-sidebar-link route="users.orders" icon="heroicon-o-archive-box">Поръчки</x-sidebar-link>
+            <x-sidebar-link route="users.settings" icon="heroicon-o-cog-6-tooth">Настройки</x-sidebar-link>
         </ul>
 
         <form method="POST" action="{{ route('users.logout') }}">
