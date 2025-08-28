@@ -1,6 +1,8 @@
 @extends("layouts.app")
 
 @php
+    $user = auth()->user();
+    
     $gender = auth()->user()->gender;
     $profileImage = match($gender) {
         'female' => '/images/female-profile-demo.png',
@@ -36,7 +38,7 @@
                     </div>
 
                     <div class="space-y-5">
-                        <x-general-info-change />
+                        <x-general-info-change :user="$user" route="users.general-info.change" />
                         <x-profile-password-change />
                     </div>
                 </div>

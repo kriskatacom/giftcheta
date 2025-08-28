@@ -50,6 +50,19 @@ class UserController extends Controller
         return view("admin.users.index", compact("users"));
     }
 
+    public function show($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return redirect()
+                ->route("dashboard.users.index")
+                ->with("error", "Потребителят не беше намерен.");
+        }
+
+        return view("admin.users.show", compact("user"));
+    }
+
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
@@ -162,7 +175,7 @@ class UserController extends Controller
         return back()->with('success', 'Паролата беше сменена успешно.');
     }
 
-    public function changeGeneralInfo(Request $request)
+    public function changeGeneralInfo(Request $request, $id)
     {
         $request->validate([
             "fullname" => "required|string|max:255",
@@ -170,20 +183,25 @@ class UserController extends Controller
             "phone" => "nullable|string|max:20",
             "birthday" => "nullable|date",
         ], [
-            'fullname.required' => 'Моля, въведете вашето име и фамилия.',
+            'fullname.required' => 'Моля, въведете име и фамилия.',
             'fullname.max' => 'Името не може да е повече от 255 символа.',
             'gender.in' => 'Избраният пол е невалиден.',
             'phone.max' => 'Телефонният номер не може да е повече от 20 символа.',
             'birthday.date' => 'Въведената дата е невалидна.',
         ]);
 
-        $user = Auth::user();
+        $user = User::findOrFail($id);
 
-        $user->fullname = $request->input('fullname');
-        $user->gender = $request->input('gender');
-        $user->phone = $request->input('phone');
-        $user->birthday = $request->input('birthday');
-        $user->save();
+        if (auth()->id() !== $user->id && !auth()->user()->isAdmin()) {
+            abort(403, 'Нямате права да редактирате този потребител.');
+        }
+
+        $user->update([
+            'fullname' => $request->input('fullname'),
+            'gender' => $request->input('gender'),
+            'phone' => $request->input('phone'),
+            'birthday' => $request->input('birthday'),
+        ]);
 
         return back()->with('success', 'Информацията беше успешно обновена.');
     }

@@ -41,6 +41,8 @@ Route::get('/admin/users', [UserController::class, 'all'])->middleware('role:adm
 Route::get('/admin/users/{id}/show', [UserController::class, 'show'])->middleware('role:admin')->name("admin.users.show");
 Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->middleware('role:admin')->name("admin.users.edit");
 
+Route::post("/admin/users/{id}/general-info-change", [UserController::class, "changeGeneralInfo"])->name("admin.users.general-info.change");
+
 Route::delete('/admin/users/{id}/destroy', [UserController::class, 'destroy'])->middleware('role:admin')->name("admin.users.destroy");
 
 Route::get('/admin/categories', [CategoryController::class, 'all'])->middleware('role:admin')->name("admin.categories");
