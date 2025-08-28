@@ -14,6 +14,8 @@ Route::get("/users/login", [UserController::class, "login"])->name("users.login"
 Route::get("/users/register", [UserController::class, "register"])->name("users.register");
 Route::get("/users/forgot-password", [UserController::class, "forgotPassword"])->name("users.password.request");
 Route::get("/users/profile", [UserController::class, "profile"])->name("users.profile");
+Route::get("/users/orders", [UserController::class, "orders"])->name("users.orders");
+Route::get("/users/settings", [UserController::class, "settings"])->name("users.settings");
 
 Route::post("/users/authenticate", [UserController::class, "authenticate"])->name("users.authenticate");
 Route::post("/users/create", [UserController::class, "create"])->name("users.create");

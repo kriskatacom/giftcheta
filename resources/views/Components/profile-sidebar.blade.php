@@ -1,25 +1,24 @@
+@php
+    $isActive = request()->routeIs('users.profile');
+@endphp
+
 <aside class="bg-white border rounded-lg shadow md:col-span-1">
     <nav>
         <ul>
             <li>
-                <a href="" class="profile-link-with-icon">
-                    <x-heroicon-o-user class="icon" />
-                    <span class="with-icon">Профил</span>
-                </a>
+                <x-profile-sidebar-link route="users.profile" icon="heroicon-o-user">
+                    Профил
+                </x-profile-sidebar-link>
             </li>
-
             <li>
-                <a href="" class="profile-link-with-icon">
-                    <x-heroicon-o-archive-box class="icon" />
-                    <span>Поръчки</span>
-                </a>
+                <x-profile-sidebar-link route="users.orders" icon="heroicon-o-archive-box">
+                    Поръчки
+                </x-profile-sidebar-link>
             </li>
-
             <li>
-                <a href="" class="profile-link-with-icon">
-                    <x-heroicon-o-cog-6-tooth class="icon" />
-                    <span>Настройки</span>
-                </a>
+                <x-profile-sidebar-link route="users.settings" icon="heroicon-o-cog-6-tooth">
+                    Настройки
+                </x-profile-sidebar-link>
             </li>
         </ul>
 

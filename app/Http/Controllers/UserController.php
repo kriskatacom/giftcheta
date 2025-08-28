@@ -34,6 +34,16 @@ class UserController extends Controller
         return view("users.profile", ["title" => "Моят профил"]);
     }
 
+    public function orders()
+    {
+        return view("users.orders", ["title" => "Поръчки"]);
+    }
+
+    public function settings()
+    {
+        return view("users.settings", ["title" => "Настройки"]);
+    }
+
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
@@ -151,16 +161,22 @@ class UserController extends Controller
         $request->validate([
             "fullname" => "required|string|max:255",
             "gender" => "nullable|in:male,female,other",
+            "phone" => "nullable|string|max:20",
+            "birthday" => "nullable|date",
         ], [
             'fullname.required' => 'Моля, въведете вашето име и фамилия.',
             'fullname.max' => 'Името не може да е повече от 255 символа.',
             'gender.in' => 'Избраният пол е невалиден.',
+            'phone.max' => 'Телефонният номер не може да е повече от 20 символа.',
+            'birthday.date' => 'Въведената дата е невалидна.',
         ]);
 
         $user = Auth::user();
 
         $user->fullname = $request->input('fullname');
         $user->gender = $request->input('gender');
+        $user->phone = $request->input('phone');
+        $user->birthday = $request->input('birthday');
         $user->save();
 
         return back()->with('success', 'Информацията беше успешно обновена.');

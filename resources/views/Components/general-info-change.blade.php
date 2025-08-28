@@ -20,5 +20,21 @@
         </select>
     </div>
 
+    <div>
+        <label class="block mb-1">Телефонен номер</label>
+        <input type="text" name="phone" value="{{ auth()->user()->phone }}" class="form-control">
+        @error('phone')
+            <div class="text-red-500 mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div>
+        <label class="block mb-1">Дата на раждане</label>
+        <input type="date" name="birthday" value="{{ auth()->user()->birthday }}" class="form-control">
+        @error('birthday')
+            <div class="text-red-500 mt-1">{{ $message }}</div>
+        @enderror
+    </div>
+
     <button type="submit" class="page-button bg-primary" data-disable-on-click>Запазване на информацията</button>
 </form>
