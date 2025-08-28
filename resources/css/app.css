@@ -14,6 +14,10 @@
     @apply outline-none border-2 border-transparent rounded hover:text-primary focus:border-primary;
 }
 
+.profile-link-with-icon {
+    @apply flex items-center space-x-2 text-lg font-medium text-gray-700 hover:text-white hover:bg-primary py-4 px-5 border-b border-gray-200;
+}
+
 .form-control {
     @apply outline-none w-full border-2 rounded px-3 py-2 focus:border-primary;
 }

@@ -17,6 +17,10 @@ Route::get("/users/profile", [UserController::class, "profile"])->name("users.pr
 
 Route::post("/users/authenticate", [UserController::class, "authenticate"])->name("users.authenticate");
 Route::post("/users/create", [UserController::class, "create"])->name("users.create");
+Route::post("/users/password-change", [UserController::class, "changePassword"])->name("users.password.change");
+Route::post("/users/general-info-change", [UserController::class, "changeGeneralInfo"])->name("users.general-info.change");
+
+Route::delete("/users/logout", [UserController::class, "logout"])->name("users.logout");
 
 // forgot password
 Route::get("/users/forgot-password", [UserController::class, "forgotPassword"])->name("password.request");

@@ -42,8 +42,18 @@
             </div>
 
             <div class="space-y-1">
-                <label for="Потвърдете паролата">Парола</label>
+                <label for="Потвърдете паролата">Потвърдете паролата</label>
                 <input type="password" name="password_confirmation" placeholder="Потвърдете паролата" class="form-control">
+            </div>
+
+            <div class="mb-4">
+                <label for="gender" class="block mb-2">Пол (по желание)</label>
+                <select id="gender" name="gender" class="form-control">
+                    <option value="">-- Избери --</option>
+                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Мъж</option>
+                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Жена</option>
+                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Друго</option>
+                </select>
             </div>
 
             <div>

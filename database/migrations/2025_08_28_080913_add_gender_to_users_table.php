@@ -5,17 +5,17 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void
+    public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('name', 'fullname');
+            $table->enum('gender', ['male', 'female', 'other'])->nullable()->after('fullname');
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('fullname', 'name');
+            $table->dropColumn('gender');
         });
     }
 };

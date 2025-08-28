@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ResetPasswordMail;
+use Auth;
 use DB;
 use Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Models\User;
 use Mail;
 use Str;
@@ -59,7 +60,7 @@ class UserController extends Controller
         $request->validate([
             "fullname" => "required|string|max:255",
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'confirmed', PasswordRule::min(8)]
         ], [
             'fullname.required' => 'Моля, въведете вашето име и фамилия.',
             'fullname.max' => 'Името не може да е повече от 255 символа.',
@@ -67,12 +68,13 @@ class UserController extends Controller
             'email.email' => 'Въведеният имейл е невалиден.',
             'email.unique' => 'Този имейл вече е регистриран.',
             'password.required' => 'Моля, въведете парола.',
-            'password.min' => 'Паролата трябва да е поне 6 символа.',
+            'password.min' => 'Паролата трябва да е поне 8 символа.',
             'password.confirmed' => 'Паролите не съвпадат.',
         ]);
 
         User::create([
             "fullname" => $request->fullname,
+            "gender" => $request->gender,
             "email" => $request->email,
             "password" => password_hash($request->password, PASSWORD_DEFAULT),
         ]);
@@ -108,5 +110,59 @@ class UserController extends Controller
         Mail::to($user->email)->send(new ResetPasswordMail($token, $user->email));
 
         return back()->with('success', 'Изпратихме ви линк за смяна на паролата на посочения имейл адрес.');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('users.login')->with('success', 'Успешно излязохте от профила си.');
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => ['required', 'confirmed', PasswordRule::min(8)],
+        ], [
+            'current_password.required' => 'Моля, въведете текущата си парола.',
+            'password.required' => 'Моля, въведете новата парола.',
+            'password.confirmed' => 'Паролите не съвпадат.',
+            'password.min' => 'Паролата трябва да е поне 8 символа.',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Текущата парола е неправилна.']);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return back()->with('success', 'Паролата беше сменена успешно.');
+    }
+
+    public function changeGeneralInfo(Request $request)
+    {
+        $request->validate([
+            "fullname" => "required|string|max:255",
+            "gender" => "nullable|in:male,female,other",
+        ], [
+            'fullname.required' => 'Моля, въведете вашето име и фамилия.',
+            'fullname.max' => 'Името не може да е повече от 255 символа.',
+            'gender.in' => 'Избраният пол е невалиден.',
+        ]);
+
+        $user = Auth::user();
+
+        $user->fullname = $request->input('fullname');
+        $user->gender = $request->input('gender');
+        $user->save();
+
+        return back()->with('success', 'Информацията беше успешно обновена.');
     }
 }
