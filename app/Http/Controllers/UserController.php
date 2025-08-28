@@ -44,6 +44,12 @@ class UserController extends Controller
         return view("users.settings", ["title" => "Настройки"]);
     }
 
+    public function all()
+    {
+        $users = User::orderBy("created_at", "desc")->paginate(10);
+        return view("admin.users.index", compact("users"));
+    }
+
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([

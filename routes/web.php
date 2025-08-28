@@ -36,8 +36,16 @@ Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name(
 // admin
 Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('role:admin')->name("admin.dashboard");
 Route::get('/settings', [AdminController::class, 'settings'])->middleware('role:admin')->name("admin.settings");
+
 Route::get('/admin/users', [UserController::class, 'all'])->middleware('role:admin')->name("admin.users");
+Route::get('/admin/users/{id}/show', [UserController::class, 'show'])->middleware('role:admin')->name("admin.users.show");
+Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->middleware('role:admin')->name("admin.users.edit");
+
+Route::delete('/admin/users/{id}/destroy', [UserController::class, 'destroy'])->middleware('role:admin')->name("admin.users.destroy");
+
 Route::get('/admin/categories', [CategoryController::class, 'all'])->middleware('role:admin')->name("admin.categories");
 Route::get('/admin/orders', [OrderController::class, 'all'])->middleware('role:admin')->name("admin.orders");
 Route::get('/admin/stats', [AdminController::class, 'stats'])->middleware('role:admin')->name("admin.stats");
 Route::get('/admin/products', [ProductController::class, 'all'])->middleware('role:admin')->name("admin.products");
+
+Route::delete("/admin/users/destroy-all", [UserController::class, "destroyAll"])->name("admin.users.destroy-all");
