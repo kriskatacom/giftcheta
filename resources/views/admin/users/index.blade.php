@@ -8,7 +8,7 @@
             <div class="mt-4 pb-4 px-5 border-b border-gray-300 flex justify-between items-center gap-5">
                 <h1 class="text-2xl">Потребители</h1>
                 <form action="{{ route('admin.users.destroy-all') }}" method="POST"
-                    onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази категория?');">
+                    onsubmit="return confirm('Сигурни ли сте, че искате да изтриете всички записи?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="page-button bg-primary">Изриване на всички</button>
@@ -34,6 +34,7 @@
                             <th class="font-medium border border-gray-300 px-4 py-2">ID</th>
                             <th class="font-medium border border-gray-300 px-4 py-2">Име</th>
                             <th class="font-medium border border-gray-300 px-4 py-2">Имейл</th>
+                            <th class="font-medium border border-gray-300 px-4 py-2">Пол</th>
                             <th class="font-medium border border-gray-300 px-4 py-2">Създаден на</th>
                             <th class="font-medium text-right border border-gray-300 px-4 py-2">Опции</th>
                         </tr>
@@ -43,8 +44,9 @@
                             @foreach($users as $user)
                                 <tr class="bg-white hover:bg-gray-50">
                                     <td class="border border-gray-300 px-4 py-2">{{ $user->id }}</td>
-                                    <td class="border border-gray-300 px-4 py-2">{{ $user->name }}</td>
+                                    <td class="border border-gray-300 px-4 py-2">{{ $user->fullname }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $user->email }}</td>
+                                    <td class="border border-gray-300 px-4 py-2">{{ gender_label($user->gender) }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $user->created_at->translatedFormat('d F Y, H:i') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-right">
                                         @if (Auth::id() === $user->id)

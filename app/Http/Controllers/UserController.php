@@ -205,4 +205,15 @@ class UserController extends Controller
 
         return back()->with('success', 'Информацията беше успешно обновена.');
     }
+
+    public function destroyAll()
+    {
+        $currentUserId = Auth::id();
+
+        User::where('id', '!=', $currentUserId)
+            ->where('role', '!=', 'admin')
+            ->delete();
+
+        return back()->with('success', 'Всички потребители, освен вас и админите, бяха изтрити.');
+    }
 }
