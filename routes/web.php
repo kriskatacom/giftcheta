@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserController;
@@ -30,3 +31,6 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create']
 
 Route::post("/users/forgot-password", [UserController::class, "sendResetLinkEmail"])->name("password.email");
 Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
+
+// admin
+Route::get('/admin', [AdminController::class, 'index'])->middleware('role:admin');
