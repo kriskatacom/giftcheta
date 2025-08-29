@@ -33,8 +33,9 @@ class CategoryController extends Controller
         }
 
         $categories = Category::where('id', '!=', $id)->get();
+        $categoriesForDropdown = $this->buildCategoryOptions($categories);
 
-        return view("admin.categories.edit", compact("category", "categories"));
+        return view("admin.categories.edit", compact("category", "categories", "categoriesForDropdown"));
     }
 
     public function store(Request $request)
@@ -71,10 +72,12 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255|unique:categories,name,' . $category->id,
             'parent_id' => 'nullable|exists:categories,id',
+            'description' => 'nullable'
         ]);
 
         $category->name = $validated['name'];
         $category->parent_id = $validated['parent_id'] ?? null;
+        $category->description = $validated['description'] ?? null;
 
         if ($category->wasChanged('name')) {
             $slug = Str::slug($validated['name']);

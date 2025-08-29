@@ -2,13 +2,16 @@
     <div class="bg-white p-3 rounded shadow flex items-center justify-between space-x-2"
          style="margin-left: {{ $level * 2 }}rem;">
         <div class="flex items-center space-x-2">
-            <span class="font-medium">{{ $category->name }}</span>
+            <span>{{ $category->name }}</span>
             @if($category->children->count() > 0)
-                <span class="text-gray-500 text-sm">({{ $category->children->count() }})</span>
+                <span class="text-gray-500">({{ $category->children->count() }})</span>
             @endif
         </div>
 
         <div class="flex space-x-5">
+            <a href="{{ route('admin.categories.create', ['parent_id' => $category->id]) }}"
+               class="text-green-600 hover:underline" title="Създаване на подкатегория">Създаване</a>
+
             <a href="{{ route('admin.categories.edit', $category->id) }}"
                class="text-blue-600 hover:underline">Редакция</a>
 
@@ -21,9 +24,6 @@
                     Изтриване
                 </button>
             </form>
-
-            <a href="{{ route('admin.categories.create', ['parent_id' => $category->id]) }}"
-               class="text-green-600 hover:underline" title="Създаване на подкатегория">Създаване</a>
         </div>
     </div>
 
