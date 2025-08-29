@@ -79,7 +79,13 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::delete('/products/{id}/destroy', [ProductController::class, 'destroy'])->name('admin.products.destroy');
 
     // Categories
-    Route::get('/categories', [CategoryController::class, 'all'])->name('admin.categories');
+    Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories');
+    Route::get('/categories/create', [CategoryController::class, 'create'])->name('admin.categories.create');
+    Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('admin.categories.edit');
+    Route::post('/categories/create', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::put('/categories/{id}/update', [CategoryController::class, 'update'])->name('admin.categories.update');
+    Route::delete('/categories/{id}/destroy', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+    Route::delete('/categories/destroy-all', [CategoryController::class, 'destroyAll'])->name('admin.categories.destroy-all');
 
     // Orders
     Route::get('/orders', [OrderController::class, 'all'])->name('admin.orders');
