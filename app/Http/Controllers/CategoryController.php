@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\Category;
+use App\Helpers\CategoryHelper;
 
 class CategoryController extends Controller
 {
@@ -18,7 +19,7 @@ class CategoryController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $categoriesForDropdown = $this->buildCategoryOptions($categories);
+        $categoriesForDropdown = CategoryHelper::buildCategoryOptions($categories);
         return view("admin.categories.create", compact("categoriesForDropdown"));
     }
 
@@ -33,7 +34,7 @@ class CategoryController extends Controller
         }
 
         $categories = Category::where('id', '!=', $id)->get();
-        $categoriesForDropdown = $this->buildCategoryOptions($categories);
+        $categoriesForDropdown = CategoryHelper::buildCategoryOptions($categories);
 
         return view("admin.categories.edit", compact("category", "categories", "categoriesForDropdown"));
     }
@@ -122,19 +123,5 @@ class CategoryController extends Controller
         return redirect()
             ->route('admin.categories')
             ->with('success', 'Всички категории са изтрити успешно!');
-    }
-
-    private function buildCategoryOptions($categories, $parentId = null, $prefix = '')
-    {
-        $result = [];
-
-        foreach ($categories->where('parent_id', $parentId) as $category) {
-            $result[] = ['id' => $category->id, 'name' => $prefix . $category->name];
-
-            $children = $this->buildCategoryOptions($categories, $category->id, $prefix . '- ');
-            $result = array_merge($result, $children);
-        }
-
-        return $result;
     }
 }

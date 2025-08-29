@@ -49,7 +49,7 @@
                         <div class="space-y-1">
                             <label for="description">Описание на категорията</label>
                             <textarea name="description" id="description" rows="10" placeholder="Въведете описание категорията" class="form-control">{{ $category->description }}</textarea>
-                            @error('name')
+                            @error('description')
                                 <div class="text-red-500">{{ $message }}</div>
                             @enderror
                         </div>

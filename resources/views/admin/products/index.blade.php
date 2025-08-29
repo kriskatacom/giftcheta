@@ -21,17 +21,7 @@
             </div>
 
             <div class="p-5 text-lg">
-                @if(session('success'))
-                    <div class="mb-5 rounded-lg bg-green-100 border border-green-400 text-green-700 px-4 py-3">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="mb-5 rounded-lg bg-red-100 border border-red-400 text-red-700 px-4 py-3">
-                        {{ session('error') }}
-                    </div>
-                @endif
+                <x-alert-messages />
 
                 <table class="w-full border-collapse border border-gray-300 text-left">
                     <thead class="bg-white">
@@ -52,11 +42,11 @@
                                         <img class="h-14 max-h-14 object-cover" src="/images/product-demo.png" alt="{{ $product->name }}">
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $product->name }}</td>
-                                    <td class="border border-gray-300 px-4 py-2">{{ $product->in_stock }}</td>
+                                    <td class="border border-gray-300 px-4 py-2">{{ $product->stock_quantity }}</td>
                                     <td class="border border-gray-300 px-4 py-2">
                                         {{ $product->created_at->translatedFormat('d F Y, H:i') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-right">
-                                        <x-action-dropdown :model="$product" route-prefix="admin.products" :actions="['show', 'edit', 'delete']" />
+                                        <x-action-dropdown :model="$product" route-prefix="admin.products" :actions="['edit', 'delete']" />
                                     </td>
                                 </tr>
                             @endforeach

@@ -50,9 +50,9 @@
                                     <td class="border border-gray-300 px-4 py-2">{{ $user->created_at->translatedFormat('d F Y, H:i') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-right">
                                         @if (Auth::id() === $user->id)
-                                            <x-action-dropdown :model="$user" route-prefix="admin.users" :actions="['show', 'edit']" />
+                                            <x-action-dropdown :model="$user" route-prefix="admin.users" :actions="['show']" />
                                         @else
-                                            <x-action-dropdown :model="$user" route-prefix="admin.users" :actions="['show', 'edit', 'delete']" />
+                                            <x-action-dropdown :model="$user" route-prefix="admin.users" :actions="['show', 'delete']" />
                                         @endif
                                     </td>
                                 </tr>

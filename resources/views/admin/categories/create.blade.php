@@ -7,6 +7,7 @@
         <div class="w-full text-lg">
             <div class="mt-4 pb-4 px-5 border-b border-gray-300 flex justify-between items-center gap-5">
                 <h1 class="text-2xl">Създаване на категория</h1>
+                <p>Полетата със звездичка са задължителни.</p>
             </div>
 
             <div class="p-5 text-lg">
@@ -16,7 +17,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg py-7 px-8 space-y-5">
 
                         <div class="space-y-1">
-                            <label for="name">Заглавие на категорията</label>
+                            <label for="name">Заглавие на категорията (*)</label>
                             <input type="text" name="name" value="{{ old('name') }}"
                                 placeholder="Въведете заглавието категорията" class="form-control">
                             @error('name')
