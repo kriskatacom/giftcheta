@@ -76,7 +76,9 @@ class UserController extends Controller
 
         if (auth()->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            $route = auth()->user()->isAdmin() ? 'admin' : '/';
+            
+            return redirect()->intended($route);
         }
 
         return back()->withErrors([

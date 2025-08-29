@@ -25,11 +25,15 @@
             <div class="p-5 text-lg">
                 <x-alert-messages />
 
-                <ul class="space-y-2">
-                    @foreach($categories->where('parent_id', null) as $category)
-                        @include('admin.categories.partials.category-item', ['category' => $category, 'level' => 0])
-                    @endforeach
-                </ul>
+                @if ($categories->count() > 0)
+                    <ul class="space-y-2">
+                        @foreach($categories->where('parent_id', null) as $category)
+                            @include('admin.categories.partials.category-item', ['category' => $category, 'level' => 0])
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="text-center text-gray-600 px-4 py-2">Няма намерени категории.</div>
+                @endif
             </div>
         </div>
     </div>

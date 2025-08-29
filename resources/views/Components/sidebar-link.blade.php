@@ -4,7 +4,7 @@
 ])
 
 @php
-    $isActive = request()->routeIs($route);
+    $isActive = request()->routeIs($route . '*');
 @endphp
 
 <li>

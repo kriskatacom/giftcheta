@@ -65,8 +65,8 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
-            'price' => 'required|string|min:1',
-            'sale_price' => 'nullable|string',
+            'price' => 'required|numeric|min:0.01',
+            'sale_price' => 'nullable|numeric|lte:price',
             'short_description' => 'nullable|string',
             'description' => 'nullable|string',
             'stock_quantity' => 'nullable|integer|min:0',
@@ -76,7 +76,28 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ], [
             'name.required' => 'Заглавието на продукта е задължително.',
+            'name.min' => 'Заглавието трябва да е поне :min символа.',
+            'name.max' => 'Заглавието не може да бъде по-дълго от :max символа.',
+
             'price.required' => 'Трябва да въведете цена на продукта.',
+            'price.numeric' => 'Цената трябва да бъде число.',
+            'price.min' => 'Цената трябва да бъде по-голяма от 0.',
+
+            'sale_price.numeric' => 'Промоционалната цена трябва да бъде число.',
+            'sale_price.lte' => 'Промоционалната цена не може да е по-висока от основната.',
+
+            'stock_quantity.integer' => 'Наличността трябва да е цяло число.',
+            'stock_quantity.min' => 'Наличността не може да бъде отрицателна.',
+
+            'manage_stock.required' => 'Моля, посочете дали да се управлява наличността.',
+            'manage_stock.boolean' => 'Невалидна стойност за управление на наличностите.',
+
+            'in_stock.required' => 'Моля, посочете дали продуктът е в наличност.',
+            'in_stock.boolean' => 'Невалидна стойност за наличност.',
+
+            'sku.max' => 'SKU не може да надвишава :max символа.',
+
+            'category_id.exists' => 'Избраната категория не съществува.',
         ]);
 
         $product->update([
@@ -105,8 +126,8 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
-            'price' => 'required|string|min:1',
-            'sale_price' => 'nullable|string',
+            'price' => 'required|numeric|min:0.01',
+            'sale_price' => 'nullable|numeric|lte:price',
             'short_description' => 'nullable|string',
             'description' => 'nullable|string',
             'stock_quantity' => 'nullable|integer|min:0',
@@ -116,7 +137,28 @@ class ProductController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ], [
             'name.required' => 'Заглавието на продукта е задължително.',
+            'name.min' => 'Заглавието трябва да е поне :min символа.',
+            'name.max' => 'Заглавието не може да бъде по-дълго от :max символа.',
+
             'price.required' => 'Трябва да въведете цена на продукта.',
+            'price.numeric' => 'Цената трябва да бъде число.',
+            'price.min' => 'Цената трябва да бъде по-голяма от 0.',
+
+            'sale_price.numeric' => 'Промоционалната цена трябва да бъде число.',
+            'sale_price.lte' => 'Промоционалната цена не може да е по-висока от основната.',
+
+            'stock_quantity.integer' => 'Наличността трябва да е цяло число.',
+            'stock_quantity.min' => 'Наличността не може да бъде отрицателна.',
+
+            'manage_stock.required' => 'Моля, посочете дали да се управлява наличността.',
+            'manage_stock.boolean' => 'Невалидна стойност за управление на наличностите.',
+
+            'in_stock.required' => 'Моля, посочете дали продуктът е в наличност.',
+            'in_stock.boolean' => 'Невалидна стойност за наличност.',
+
+            'sku.max' => 'SKU не може да надвишава :max символа.',
+
+            'category_id.exists' => 'Избраната категория не съществува.',
         ]);
 
         $product = Product::create([

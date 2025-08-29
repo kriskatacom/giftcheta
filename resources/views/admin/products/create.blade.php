@@ -5,7 +5,7 @@
     <x-admin-sidebar />
 
     <div class="w-full text-lg">
-        <div class="mt-4 pb-4 px-5 border-b border-gray-300 flex justify-between items-center gap-5">
+        <div class="mt-4 pb-4 px-5 border-b border-gray-300">
             <h1 class="text-2xl">Създаване на продукт</h1>
             <p>Полетата със звездичка (*) са задължителни.</p>
         </div>

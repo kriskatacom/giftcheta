@@ -32,7 +32,7 @@ Route::prefix('users')->group(function () {
     Route::delete('/logout', [UserController::class, 'logout'])->name('users.logout');
 
     // Забравена парола
-    Route::get('/forgot-password', [UserController::class, 'forgotPassword'])->name('users.password.request');
+    Route::get('/forgot-password', [UserController::class, 'forgotPassword'])->name('password.request');
     Route::post('/forgot-password', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 
     // Профил & настройки

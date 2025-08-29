@@ -44,6 +44,13 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255|unique:categories,name',
             'parent_id' => 'nullable|exists:categories,id',
+            'description' => 'nullable'
+        ], [
+            'name.required' => 'Полето за име е задължително.',
+            'name.min' => 'Името трябва да е поне :min символа.',
+            'name.max' => 'Името не може да надвишава :max символа.',
+            'name.unique' => 'Вече съществува категория с това име.',
+            'parent_id.exists' => 'Избраната родителска категория не съществува.',
         ]);
 
         $slug = Str::slug($validated['name']);
@@ -54,13 +61,16 @@ class CategoryController extends Controller
             $slug = $originalSlug . '-' . $counter++;
         }
 
-        Category::create([
+        $category = Category::create([
             'name' => $validated['name'],
             'slug' => $slug,
             'parent_id' => $validated['parent_id'] ?? null,
+            'description' => $validated['description'] ?? null,
         ]);
 
-        return redirect()->route('admin.categories')->with('success', 'Категорията е създадена успешно!');
+        return redirect()
+            ->route('admin.categories.create')
+            ->with('success', 'Категорията е актуализиран успешно!');
     }
 
     public function update(Request $request, $id)
@@ -74,6 +84,12 @@ class CategoryController extends Controller
             'name' => 'required|string|min:3|max:255|unique:categories,name,' . $category->id,
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable'
+        ], [
+            'name.required' => 'Полето за име е задължително.',
+            'name.min' => 'Името трябва да е поне :min символа.',
+            'name.max' => 'Името не може да надвишава :max символа.',
+            'name.unique' => 'Вече съществува категория с това име.',
+            'parent_id.exists' => 'Избраната родителска категория не съществува.',
         ]);
 
         $category->name = $validated['name'];
@@ -94,7 +110,9 @@ class CategoryController extends Controller
 
         $category->save();
 
-        return redirect()->route('admin.categories')->with('success', 'Категорията е обновена успешно!');
+        return redirect()
+            ->route('admin.categories.edit', $category->id)
+            ->with('success', 'Категорията е актуализиран успешно!');
     }
 
     public function destroy($id)

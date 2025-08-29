@@ -5,7 +5,7 @@
         <x-admin-sidebar />
 
         <div class="w-full text-lg">
-            <div class="mt-4 pb-4 px-5 border-b border-gray-300 flex justify-between items-center gap-5">
+            <div class="mt-4 pb-4 px-5 border-b border-gray-300">
                 <h1 class="text-2xl">Създаване на категория</h1>
                 <p>Полетата със звездичка са задължителни.</p>
             </div>
@@ -38,6 +38,14 @@
                                 @endforeach
                             </select>
                             @error('parent_id')
+                                <div class="text-red-500">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="description">Описание на категорията</label>
+                            <textarea name="description" id="description" rows="10" placeholder="Въведете описание категорията" class="form-control">{{ old('description') }}</textarea>
+                            @error('description')
                                 <div class="text-red-500">{{ $message }}</div>
                             @enderror
                         </div>

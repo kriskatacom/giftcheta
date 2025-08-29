@@ -50,21 +50,21 @@
                 <li>
                     <a href="{{ route('admin.users') }}"
                         class="bg-white text-center block py-8 border border-gray-200 rounded hover:text-white hover:bg-primary">
-                        <div class="text-4xl">{{ $usersCount ?? 0 }}</div>
+                        <div class="text-4xl">{{ $users ?? 0 }}</div>
                         <div class="text-2xl">Потребители</div>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('admin.products') }}"
                         class="bg-white text-center block py-8 border border-gray-200 rounded hover:text-white hover:bg-primary">
-                        <div class="text-4xl">{{ $productsCount ?? 0 }}</div>
+                        <div class="text-4xl">{{ $products ?? 0 }}</div>
                         <div class="text-2xl">Продукти</div>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('admin.categories') }}"
                         class="bg-white text-center block py-8 border border-gray-200 rounded hover:text-white hover:bg-primary">
-                        <div class="text-4xl">{{ $categoriesCount ?? 0 }}</div>
+                        <div class="text-4xl">{{ $categories ?? 0 }}</div>
                         <div class="text-2xl">Категории</div>
                     </a>
                 </li>

@@ -11,12 +11,14 @@
                     <a href="{{ route('admin.products.create') }}">
                         <button class="page-button bg-primary">Създаване</button>
                     </a>
-                    <form action="{{ route('admin.products.destroy-all') }}" method="POST"
-                        onsubmit="return confirm('Сигурни ли сте, че искате да изтриете всички записи?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="page-button bg-primary">Изриване на всички</button>
-                    </form>
+                    @if ($products->count() > 0)
+                        <form action="{{ route('admin.products.destroy-all') }}" method="POST"
+                            onsubmit="return confirm('Сигурни ли сте, че искате да изтриете всички записи?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="page-button bg-primary">Изриване на всички</button>
+                        </form>
+                    @endif
                 </div>
             </div>
 
@@ -27,9 +29,10 @@
                     <thead class="bg-white">
                         <tr>
                             <th class="font-medium border border-gray-300 px-4 py-2">Снимка</th>
-                            <th class="font-medium border border-gray-300 px-4 py-2">Име</th>
+                            <th class="font-medium border border-gray-300 px-4 py-2">Заглавие</th>
+                            <th class="font-medium border border-gray-300 px-4 py-2">Цена</th>
                             <th class="font-medium border border-gray-300 px-4 py-2">Кол.</th>
-                            <th class="font-medium border border-gray-300 px-4 py-2">Създаден на</th>
+                            <th class="font-medium border border-gray-300 px-4 py-2">Промоция</th>
                             <th class="font-medium text-right border border-gray-300 px-4 py-2">Опции</th>
                         </tr>
                     </thead>
@@ -42,9 +45,15 @@
                                         <img class="h-14 max-h-14 object-cover" src="/images/product-demo.png" alt="{{ $product->name }}">
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $product->name }}</td>
-                                    <td class="border border-gray-300 px-4 py-2">{{ $product->stock_quantity }}</td>
                                     <td class="border border-gray-300 px-4 py-2">
-                                        {{ $product->created_at->translatedFormat('d F Y, H:i') }}</td>
+                                        {!! format_price($product->price) !!}
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2">
+                                        {{ $product->stock_quantity . ' ' . ($product->stock_quantity > 1 ? 'броя' : 'брой') }}
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2">
+                                        {!! $product->sale_price ? format_price($product->sale_price) : 'Няма' !!}
+                                    </td>
                                     <td class="border border-gray-300 px-4 py-2 text-right">
                                         <x-action-dropdown :model="$product" route-prefix="admin.products" :actions="['edit', 'delete']" />
                                     </td>
