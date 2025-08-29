@@ -1,53 +1,86 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 
-// index routes
-Route::get("/", [IndexController::class, "home"])->name("home");
-Route::get("/search", [IndexController::class, "search"])->name("search");
+/*
+|--------------------------------------------------------------------------
+| Public routes (Index)
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [IndexController::class, 'home'])->name('home'); // Начална страница
+Route::get('/search', [IndexController::class, 'search'])->name('search'); // Търсене
 
-// users routes
-Route::get("/users/login", [UserController::class, "login"])->name("users.login");
-Route::get("/users/register", [UserController::class, "register"])->name("users.register");
-Route::get("/users/forgot-password", [UserController::class, "forgotPassword"])->name("users.password.request");
-Route::get("/users/profile", [UserController::class, "profile"])->name("users.profile");
-Route::get("/users/orders", [UserController::class, "orders"])->name("users.orders");
-Route::get("/users/settings", [UserController::class, "settings"])->name("users.settings");
 
-Route::post("/users/authenticate", [UserController::class, "authenticate"])->name("users.authenticate");
-Route::post("/users/create", [UserController::class, "create"])->name("users.create");
-Route::post("/users/password-change", [UserController::class, "changePassword"])->name("users.password.change");
-Route::post("/users/{id}/general-info-change", [UserController::class, "changeGeneralInfo"])->name("users.general-info.change");
+/*
+|--------------------------------------------------------------------------
+| User routes (Authentication & Profile)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('users')->group(function () {
+    // Аутентикация
+    Route::get('/login', [UserController::class, 'login'])->name('users.login');
+    Route::get('/register', [UserController::class, 'register'])->name('users.register');
+    Route::post('/authenticate', [UserController::class, 'authenticate'])->name('users.authenticate');
+    Route::post('/create', [UserController::class, 'create'])->name('users.create');
+    Route::delete('/logout', [UserController::class, 'logout'])->name('users.logout');
 
-Route::delete("/users/logout", [UserController::class, "logout"])->name("users.logout");
+    // Забравена парола
+    Route::get('/forgot-password', [UserController::class, 'forgotPassword'])->name('users.password.request');
+    Route::post('/forgot-password', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 
-// forgot password
-Route::get("/users/forgot-password", [UserController::class, "forgotPassword"])->name("password.request");
+    // Профил & настройки
+    Route::get('/profile', [UserController::class, 'profile'])->name('users.profile');
+    Route::get('/orders', [UserController::class, 'orders'])->name('users.orders');
+    Route::get('/settings', [UserController::class, 'settings'])->name('users.settings');
+
+    // Промени по данни
+    Route::post('/password-change', [UserController::class, 'changePassword'])->name('users.password.change');
+    Route::post('/{id}/general-info-change', [UserController::class, 'changeGeneralInfo'])->name('users.general-info.change');
+});
+
+// Reset password
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
-
-Route::post("/users/forgot-password", [UserController::class, "sendResetLinkEmail"])->name("password.email");
 Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
 
 
-// admin
-Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('role:admin')->name("admin.dashboard");
-Route::get('/settings', [AdminController::class, 'settings'])->middleware('role:admin')->name("admin.settings");
+/*
+|--------------------------------------------------------------------------
+| Admin routes (only for role:admin)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->middleware('role:admin')->group(function () {
+    // Dashboard & settings
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::get('/stats', [AdminController::class, 'stats'])->name('admin.stats');
 
-Route::get('/admin/users', [UserController::class, 'all'])->middleware('role:admin')->name("admin.users");
-Route::get('/admin/users/{id}/show', [UserController::class, 'show'])->middleware('role:admin')->name("admin.users.show");
-Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->middleware('role:admin')->name("admin.users.edit");
+    // Users
+    Route::get('/users', [UserController::class, 'all'])->name('admin.users');
+    Route::get('/users/{id}/show', [UserController::class, 'show'])->name('admin.users.show');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::post('/users/{id}/general-info-change', [UserController::class, 'changeGeneralInfo'])->name('admin.users.general-info.change');
+    Route::delete('/users/{id}/destroy', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::delete('/users/destroy-all', [UserController::class, 'destroyAll'])->name('admin.users.destroy-all');
 
-Route::post("/admin/users/{id}/general-info-change", [UserController::class, "changeGeneralInfo"])->name("admin.users.general-info.change");
+    // Products
+    Route::get('/products', [ProductController::class, 'index'])->name('admin.products');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+    Route::post('/products/create', [ProductController::class, 'store'])->name('admin.product.store');
+    Route::get('/products/{id}/show', [ProductController::class, 'show'])->name('admin.products.show');
+    Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
+    Route::delete('/products/destroy-all', [ProductController::class, 'destroyAll'])->name('admin.products.destroy-all');
+    Route::delete('/products/{id}/destroy', [ProductController::class, 'destroy'])->name('admin.products.destroy');
 
-Route::delete('/admin/users/{id}/destroy', [UserController::class, 'destroy'])->middleware('role:admin')->name("admin.users.destroy");
+    // Categories
+    Route::get('/categories', [CategoryController::class, 'all'])->name('admin.categories');
 
-Route::get('/admin/categories', [CategoryController::class, 'all'])->middleware('role:admin')->name("admin.categories");
-Route::get('/admin/orders', [OrderController::class, 'all'])->middleware('role:admin')->name("admin.orders");
-Route::get('/admin/stats', [AdminController::class, 'stats'])->middleware('role:admin')->name("admin.stats");
-Route::get('/admin/products', [ProductController::class, 'all'])->middleware('role:admin')->name("admin.products");
-
-Route::delete("/admin/users/destroy-all", [UserController::class, "destroyAll"])->name("admin.users.destroy-all");
+    // Orders
+    Route::get('/orders', [OrderController::class, 'all'])->name('admin.orders');
+});
