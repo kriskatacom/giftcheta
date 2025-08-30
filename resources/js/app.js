@@ -23,3 +23,21 @@ document.addEventListener('click', function (event) {
         }
     });
 });
+
+window.previewImage = function(event) {
+    const input = event.target;
+    const previewContainer = document.getElementById('image-preview-container');
+    const preview = document.getElementById('image-preview');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
+        previewContainer.style.display = 'none';
+    }
+}

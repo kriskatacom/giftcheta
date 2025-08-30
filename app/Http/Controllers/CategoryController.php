@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Category;
@@ -68,6 +69,14 @@ class CategoryController extends Controller
             'description' => $validated['description'] ?? null,
         ]);
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/categories'), $imageName);
+
+            $category->image_url = '/images/categories/' . $imageName;
+        }
+
         return redirect()
             ->route('admin.categories.create')
             ->with('success', 'Категорията е актуализиран успешно!');
@@ -108,6 +117,19 @@ class CategoryController extends Controller
             $category->slug = $slug;
         }
 
+        if ($request->hasFile('image')) {
+            $oldImagePath = public_path($category->image_url);
+            if (file_exists($oldImagePath)) {
+                @unlink($oldImagePath);
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/categories'), $imageName);
+
+            $category->image_url = '/images/categories/' . $imageName;
+        }
+
         $category->save();
 
         return redirect()
@@ -135,11 +157,10 @@ class CategoryController extends Controller
     public function destroyAll()
     {
         DB::table('category_product')->delete();
-
-        Category::query()->delete();
+        Category::all()->each->delete();
 
         return redirect()
             ->route('admin.categories')
-            ->with('success', 'Всички категории са изтрити успешно!');
+            ->with('success', 'Всички категории и снимки са изтрити успешно!');
     }
 }
