@@ -6,6 +6,7 @@ use App\Helpers\CategoryHelper;
 use App\Models\Category;
 use App\Models\Product;
 use DB;
+use File;
 use Illuminate\Http\Request;
 use Str;
 
@@ -117,6 +118,28 @@ class ProductController extends Controller
             $product->categories()->sync($validated['category_id']);
         }
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/products'), $imageName);
+
+            $oldFeatured = $product->images()->where('is_featured', true)->first();
+
+            if ($oldFeatured) {
+                $oldImagePath = public_path($oldFeatured->url);
+                if (File::exists($oldImagePath)) {
+                    File::delete($oldImagePath);
+                }
+
+                $oldFeatured->delete();
+            }
+
+            $product->images()->create([
+                'url' => '/images/products/' . $imageName,
+                'is_featured' => true,
+            ]);
+        }
+
         return redirect()
             ->route('admin.products.edit', $product->id)
             ->with('success', 'Продуктът е актуализиран успешно!');
@@ -176,6 +199,19 @@ class ProductController extends Controller
 
         if ($validated['category_id']) {
             $product->categories()->sync($validated['category_id']);
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images/products'), $imageName);
+
+            $product->images()->update(['is_featured' => false]);
+
+            $product->images()->create([
+                'url' => '/images/products/' . $imageName,
+                'is_featured' => true,
+            ]);
         }
 
         return redirect()

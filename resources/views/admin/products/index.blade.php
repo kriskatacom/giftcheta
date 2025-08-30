@@ -41,8 +41,7 @@
                             @foreach($products as $product)
                                 <tr class="bg-white hover:bg-gray-50">
                                     <td class="border border-gray-300 px-4 py-2">
-                                        <!-- <img class="max-w-[80px] max-h-[80px]" src="{{ asset('images/products/' . $product->image) }}" alt="{{ $product->name }}"> -->
-                                        <img class="h-14 max-h-14 object-cover" src="/images/product-demo.png" alt="{{ $product->name }}">
+                                        <img class="h-14 max-h-14 object-cover" src="{{ $product->featured_image_url }}" alt="{{ $product->name }}">
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $product->name }}</td>
                                     <td class="border border-gray-300 px-4 py-2">
@@ -61,7 +60,7 @@
                             @endforeach
                         @else
                             <tr class="bg-white hover:bg-gray-50">
-                                <td colspan="5" class="text-center text-gray-600 px-4 py-2">Няма намерени потребители.</td>
+                                <td colspan="6" class="text-center text-gray-600 px-4 py-2">Няма намерени потребители.</td>
                             </tr>
                         @endif
                     </tbody>
