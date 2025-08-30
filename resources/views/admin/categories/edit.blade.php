@@ -54,14 +54,6 @@
                             @enderror
                         </div>
 
-                        @if($category->image_url)
-                            <div class="mb-4">
-                                <label class="block mb-2">Текуща снимка</label>
-                                <img src="{{ $category->image_url }}" alt="{{ $category->name }}"
-                                    class="w-32 h-32 object-cover rounded border">
-                            </div>
-                        @endif
-
                         <div class="mb-4">
                             <label for="image" class="block mb-2">Качване снимка</label>
                             <input type="file" id="image" name="image" accept="image/*" class="form-control" onchange="previewImage(event)">
@@ -74,6 +66,14 @@
                             <label class="block mb-2">Преглед на снимката</label>
                             <img id="image-preview" class="w-32 h-32 object-cover rounded border">
                         </div>
+
+                        @if($category->image_url)
+                            <div class="mb-4">
+                                <label class="block mb-2">Текуща снимка</label>
+                                <img src="{{ $category->image_url }}" alt="{{ $category->name }}"
+                                    class="w-32 h-32 object-cover rounded border">
+                            </div>
+                        @endif
 
                         <div class="space-x-1 flex items-center gap-5">
                             <button type="submit" value="save" class="page-button bg-primary" data-disable-on-click>Запазване</button>

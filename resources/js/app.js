@@ -41,3 +41,28 @@ window.previewImage = function(event) {
         previewContainer.style.display = 'none';
     }
 }
+
+window.previewImages = function(event) {
+    const input = event.target;
+    const previewContainer = document.getElementById('images-preview-container');
+    const previewWrapper = document.getElementById('images-preview-wrapper');
+
+    previewWrapper.innerHTML = '';
+
+    if (input.files && input.files.length > 0) {
+        previewContainer.style.display = 'block';
+
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'object-cover rounded border border-gray-200 w-32 h-32';
+                previewWrapper.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    } else {
+        previewContainer.style.display = 'none';
+    }
+}

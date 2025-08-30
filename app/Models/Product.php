@@ -50,6 +50,11 @@ class Product extends Model
         return $this->featuredImage()->url ?? '/images/product-demo.png';
     }
 
+    public function galleryImages()
+    {
+        return $this->images()->where('is_featured', false)->get();
+    }
+
     protected static function boot()
     {
         parent::boot();

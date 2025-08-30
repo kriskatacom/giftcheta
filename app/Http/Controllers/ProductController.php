@@ -114,30 +114,47 @@ class ProductController extends Controller
             'sku' => $validated['sku'] ?? null,
         ]);
 
-        if ($validated['category_id']) {
-            $product->categories()->sync($validated['category_id']);
-        }
+        $product->categories()->sync($validated['category_id']);
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images/products'), $imageName);
-
             $oldFeatured = $product->images()->where('is_featured', true)->first();
-
             if ($oldFeatured) {
-                $oldImagePath = public_path($oldFeatured->url);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
+                $oldPath = public_path($oldFeatured->url);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
                 }
-
                 $oldFeatured->delete();
             }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::uuid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/products'), $imageName);
 
             $product->images()->create([
                 'url' => '/images/products/' . $imageName,
                 'is_featured' => true,
             ]);
+        }
+
+        if ($request->hasFile('gallery_images')) {
+            $oldGallery = $product->images()->where('is_featured', false)->get();
+            foreach ($oldGallery as $oldImage) {
+                $oldPath = public_path($oldImage->url);
+                if (File::exists($oldPath)) {
+                    File::delete($oldPath);
+                }
+                $oldImage->delete();
+            }
+            
+            foreach ($request->file('gallery_images') as $galleryImage) {
+                $imageName = time() . '_' . Str::uuid() . '.' . $galleryImage->getClientOriginalExtension();
+                $galleryImage->move(public_path('images/products'), $imageName);
+
+                $product->images()->create([
+                    'url' => '/images/products/' . $imageName,
+                    'is_featured' => false,
+                ]);
+            }
         }
 
         return redirect()
@@ -214,6 +231,18 @@ class ProductController extends Controller
             ]);
         }
 
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $galleryImage) {
+                $imageName = time() . '_' . Str::uuid() . '.' . $galleryImage->getClientOriginalExtension();
+                $galleryImage->move(public_path('images/products'), $imageName);
+
+                $product->images()->create([
+                    'url' => '/images/products/' . $imageName,
+                    'is_featured' => false,
+                ]);
+            }
+        }
+
         return redirect()
             ->route('admin.products')
             ->with('success', 'Продуктът е създаден успешно!');
@@ -239,8 +268,7 @@ class ProductController extends Controller
     public function destroyAll()
     {
         DB::table('category_product')->delete();
-
-        Product::query()->delete();
+        Product::all()->each->delete();
 
         return back()->with('success', 'Всички продукти бяха изтрити успешно!');
     }

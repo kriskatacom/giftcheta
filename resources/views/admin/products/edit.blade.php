@@ -37,14 +37,11 @@
                                 <select name="category_id" class="form-control">
                                     <option value="">-- Няма категория --</option>
                                     @foreach($categoriesForDropdown as $option)
-                                        <option value="{{ $option['id'] }}" {{ old('category_id', isset($product) ? $product->category_id : null) == $option['id'] ? 'selected' : '' }}>
+                                        <option value="{{ $option['id'] }}" {{ isset($product) && $product->categories->contains($option['id']) ? 'selected' : '' }}>
                                             {{ $option['name'] }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('category_id')
-                                    <div class="text-red-500">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
 
@@ -69,6 +66,26 @@
                             <label class="block mb-2">Преглед на снимката</label>
                             <img id="image-preview" class="w-32 h-32 object-cover rounded border">
                         </div>
+
+                        <div class="mb-4">
+                            <label for="gallery_images" class="block mb-2">Качване на допълнителни снимки</label>
+                            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                                class="form-control" onchange="previewImages(event)">
+                        </div>
+
+                        <div class="mb-4" id="images-preview-container" style="display: none;">
+                            <label class="block mb-2">Преглед на снимките</label>
+                            <div id="images-preview-wrapper" class="flex gap-2 flex-wrap"></div>
+                        </div>
+
+                        @if($product->galleryImages()->count())
+                            <div class="flex gap-2 flex-wrap">
+                                @foreach($product->galleryImages() as $image)
+                                    <img src="{{ $image->url }}" alt="{{ $product->name }}"
+                                        class="w-32 h-32 object-cover rounded border">
+                                @endforeach
+                            </div>
+                        @endif
 
                         <div class="grid xl:grid-cols-2 gap-5">
                             <div class="space-y-1">

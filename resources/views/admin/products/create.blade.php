@@ -51,14 +51,22 @@
                             <label for="image" class="block mb-2">Качване на предна снимка</label>
                             <input type="file" id="image" name="image" accept="image/*" class="form-control"
                                 onchange="previewImage(event)">
-                            @error('image')
-                                <div class="text-red-500">{{ $message }}</div>
-                            @enderror
                         </div>
 
                         <div class="mb-4" id="image-preview-container" style="display: none;">
                             <label class="block mb-2">Преглед на снимката</label>
                             <img id="image-preview" class="w-32 h-32 object-cover rounded border">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="gallery_images" class="block mb-2">Качване на допълнителни снимки</label>
+                            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                                class="form-control" onchange="previewImages(event)">
+                        </div>
+
+                        <div class="mb-4" id="images-preview-container" style="display: none;">
+                            <label class="block mb-2">Преглед на снимките</label>
+                            <div id="images-preview-wrapper" class="flex gap-2 flex-wrap"></div>
                         </div>
 
                         <div class="grid xl:grid-cols-2 gap-5">
