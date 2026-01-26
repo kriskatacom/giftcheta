@@ -17,19 +17,19 @@ export function SidebarItem({ item, active }: Props) {
     return (
         <li>
             <Link
-                href={`/admin/${item.href}`}
+                href={`${item.href}`}
                 className={cn(
-                    "flex items-center gap-3 rounded-md py-3 px-4 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    active && "bg-accent text-accent-foreground",
+                    "flex items-center gap-3 rounded-md py-3 px-4 hover:text-white hover:bg-primary duration-300",
+                    active && "text-white bg-primary",
                 )}
             >
                 <span className="w-8 flex justify-center shrink-0">
-                    {Icon && <Icon className="h-5 w-5 duration-300" />}
+                    {Icon && <Icon className="h-5 w-5" />}
                 </span>
 
                 <span
                     className={cn(
-                        "text-lg font-medium transition-all duration-300 whitespace-nowrap",
+                        "text-lg font-medium transition-all whitespace-nowrap duration-300",
                         collapsed
                             ? "opacity-0 -translate-x-4 pointer-events-none w-0"
                             : "opacity-100 translate-x-0",

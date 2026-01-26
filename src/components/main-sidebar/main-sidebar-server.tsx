@@ -9,7 +9,7 @@ export default async function MainSidebarServer() {
 
   return (
     <SidebarProvider initialCollapsed={collapsed}>
-      <SidebarClient pathname="/admin" />
+      <SidebarClient />
     </SidebarProvider>
   );
 }

@@ -7,25 +7,21 @@ import { SidebarMap } from "./sidebar-map";
 import { useSidebar } from "./sidebar-context";
 import { mainSidebarItems } from "@/lib/constants";
 
-type Props = {
-    pathname: string;
-};
-
-export function SidebarClient({ pathname }: Props) {
+export function SidebarClient() {
     const items = mainSidebarItems;
     const { collapsed } = useSidebar();
 
     return (
         <aside
             className={cn(
-                "min-h-screen border-r bg-background transition-all duration-300",
+                "min-h-screen border-r bg-background transition-all",
                 collapsed ? "w-20" : "w-72",
             )}
         >
             <div className="flex items-center justify-between p-4 border-b">
                 <span
                     className={cn(
-                        "text-2xl font-semibold transition-all duration-300 whitespace-nowrap overflow-hidden",
+                        "text-2xl font-semibold transition-all whitespace-nowrap overflow-hidden",
                         collapsed ? "opacity-0 w-0" : "opacity-100",
                     )}
                 >
@@ -36,7 +32,7 @@ export function SidebarClient({ pathname }: Props) {
             </div>
 
             <ScrollArea className="flex-1 overflow-auto p-2">
-                <SidebarMap items={items} pathname={pathname} />
+                <SidebarMap items={items} />
             </ScrollArea>
         </aside>
     );

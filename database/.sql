@@ -11,6 +11,7 @@ CREATE TABLE products (
     `is_active` BOOLEAN DEFAULT TRUE,
     `category_id` INT,
     `tags` JSON,
+    `image` NULL VARCHAR(500),
     `images` JSON,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

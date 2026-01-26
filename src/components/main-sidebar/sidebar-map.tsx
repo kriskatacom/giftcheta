@@ -2,13 +2,15 @@
 
 import { NavbarItem } from "@/lib/types";
 import { SidebarItem } from "./sidebar-item";
+import { usePathname } from "next/navigation";
 
 type SidebarMapProps = {
     items: NavbarItem[];
-    pathname: string;
 };
 
-export function SidebarMap({ items, pathname }: SidebarMapProps) {
+export function SidebarMap({ items }: SidebarMapProps) {
+    const pathname = usePathname();
+
     return (
         <ul className="flex flex-col gap-1">
             {items.map((item, index) => (

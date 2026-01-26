@@ -9,19 +9,20 @@ export type NavbarItem = {
 };
 
 export interface Product {
-    id: number;
+    id?: number;
     name: string;
     slug: string;
     description?: string;
-    shortDescription?: string;
+    short_description?: string;
     price: number;
-    oldPrice?: number;
+    old_price?: number;
     currency?: "EUR" | "USD" | "BGN";
-    stockQuantity?: number;
-    isActive?: boolean;
-    categoryId?: number;
+    stock_quantity?: number;
+    is_active?: boolean;
+    category_id?: number;
     tags?: string[];
     images?: string[];
-    createdAt?: string;
-    updatedAt?: string;
+    image?: string;
+    created_at?: string;
+    updated_at?: string;
 }

@@ -39,36 +39,36 @@ export const mainSidebarItems: NavbarItem[] = [
     {
         label: "Табло",
         icon: MdOutlineDashboard,
-        href: "/dashboard",
+        href: "/admin/dashboard",
     },
     {
         label: "Потребители",
         icon: FiUsers,
-        href: "/users",
+        href: "/admin/users",
     },
     {
         label: "Продукти",
         icon: AiOutlineProduct,
-        href: "/products",
+        href: "/admin/products",
     },
     {
         label: "Поръчки",
         icon: BsCartCheck,
-        href: "/orders",
+        href: "/admin/orders",
     },
     {
         label: "Категории",
         icon: TbCategory,
-        href: "/categories",
+        href: "/admin/categories",
     },
     {
         label: "Тагове",
         icon: BsTags,
-        href: "/tags",
+        href: "/admin/tags",
     },
     {
         label: "Настройки",
         icon: IoSettingsOutline,
-        href: "/settings",
+        href: "/admin/settings",
     },
 ];
