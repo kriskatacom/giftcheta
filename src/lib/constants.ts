@@ -27,3 +27,48 @@ export const NAVBAR_ICON_SIZES = {
 
 export const LOGO: string = "/images/giftcheta-logo.png";
 export const WEBSITE_NAME: string = "GIFTCHETA.COM";
+
+import { FiUsers } from "react-icons/fi";
+import { IoSettingsOutline } from "react-icons/io5";
+import { AiOutlineProduct } from "react-icons/ai";
+import { MdOutlineDashboard } from "react-icons/md";
+import { BsCartCheck, BsTags } from "react-icons/bs";
+import { TbCategory } from "react-icons/tb";
+
+export const mainSidebarItems: NavbarItem[] = [
+    {
+        label: "Табло",
+        icon: MdOutlineDashboard,
+        href: "/dashboard",
+    },
+    {
+        label: "Потребители",
+        icon: FiUsers,
+        href: "/users",
+    },
+    {
+        label: "Продукти",
+        icon: AiOutlineProduct,
+        href: "/products",
+    },
+    {
+        label: "Поръчки",
+        icon: BsCartCheck,
+        href: "/orders",
+    },
+    {
+        label: "Категории",
+        icon: TbCategory,
+        href: "/categories",
+    },
+    {
+        label: "Тагове",
+        icon: BsTags,
+        href: "/tags",
+    },
+    {
+        label: "Настройки",
+        icon: IoSettingsOutline,
+        href: "/settings",
+    },
+];

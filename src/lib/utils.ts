@@ -13,6 +13,11 @@ type FormatPriceOptions = {
     maximumFractionDigits?: number;
 };
 
+export const websiteName = (prefix: string = "") => {
+    const websiteName = "Аз Мигрантът";
+    return prefix ? `${prefix} - ${websiteName}` : websiteName;
+};
+
 export function formatPrice(
     price: number | string,
     options: FormatPriceOptions = {},

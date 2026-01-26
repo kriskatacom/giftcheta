@@ -1,0 +1,25 @@
+import { Toaster } from "sonner";
+import { ThemeProvider } from "@/app/providers/theme-provider";
+import { ClientOnly } from "@/components/client-only";
+
+export default function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <div className="bg-background">
+                {children}
+            </div>
+            <ClientOnly>
+                <Toaster />
+            </ClientOnly>
+        </ThemeProvider>
+    );
+}
