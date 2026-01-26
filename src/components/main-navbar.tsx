@@ -1,7 +1,3 @@
-"use client";
-
-import Image from "next/image";
-import { useState } from "react";
 import Link from "next/link";
 import {
     HiMenu,
@@ -26,9 +22,9 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { NavbarItem } from "@/lib/types";
+import AppImage from "@/components/AppImage";
 
 export default function MainNavbar() {
-    const [imageLoading, setImageLoading] = useState(true);
     const cartItemsCount = 3;
 
     return (
@@ -36,21 +32,11 @@ export default function MainNavbar() {
             <div className="container mx-auto flex items-center gap-5 px-5">
                 {/* Logo */}
                 <Link href="/" className="relative block w-60 h-20">
-                    {imageLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                            <span className="h-6 w-6 animate-spin rounded-full border-2 border-t-blue-500" />
-                        </div>
-                    )}
-                    <Image
+                    <AppImage
                         src={LOGO}
                         alt={WEBSITE_NAME}
                         fill
-                        className={`object-contain transition-opacity duration-500 ${
-                            imageLoading ? "opacity-0" : "opacity-100"
-                        }`}
-                        onLoad={() => setImageLoading(false)}
-                        onError={() => setImageLoading(false)}
-                        unoptimized
+                        className="w-10 h-10"
                     />
                 </Link>
 
