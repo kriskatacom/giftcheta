@@ -6,6 +6,7 @@ import { deleteUploadedFile } from "@/app/api/lib";
 import { ProductPriceInput } from "@/app/admin/products/[id]/pricing/schema";
 import { ProductDescriptionInput } from "@/app/admin/products/[id]/description/schema";
 import { ProductTagsInput } from "@/app/admin/products/[id]/tags/schema";
+import { ProductInventoryInput } from "@/app/admin/products/[id]/inventory/schema";
 
 /* =========================
    CREATE
@@ -141,6 +142,26 @@ export async function updateProductTags(data: ProductTagsInput) {
         WHERE id = ?
         `,
         [tagsJson, data.id],
+    );
+
+    return {
+        id: data.id,
+        updated: true,
+    };
+}
+
+export async function updateProductInventory(data: ProductInventoryInput) {
+    if (!data.id) {
+        throw new Error("Missing product id");
+    }
+
+    const [result] = await getDb().execute(
+        `
+        UPDATE products
+        SET status = ?, stock_quantity = ?
+        WHERE id = ?
+        `,
+        [data.status, data.stock_quantity, data.id],
     );
 
     return {

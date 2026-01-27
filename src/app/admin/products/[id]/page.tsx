@@ -15,6 +15,7 @@ import AdditionalImages from "@/components/additional-images";
 import TagsForm from "@/app/admin/products/[id]/tags";
 import ImageForm from "@/app/admin/products/[id]/image";
 import ImagesForm from "./images";
+import InventoryForm from "./inventory";
 
 type Props = {
     params: Promise<{
@@ -100,7 +101,10 @@ export default async function UpdateProduct({ params }: Params) {
                         {product && <PricingForm product={product} />}
                     </div>
                     {product && <DescriptionForm product={product} />}
-                    {product && <TagsForm product={product} />}
+                    <div className="grid xl:grid-cols-2 gap-5">
+                        {product?.id && <InventoryForm product={product} />}
+                        {product && <TagsForm product={product} />}
+                    </div>
                     {product?.id && <ImageForm product={product} />}
                     {product?.id && (
                         <ImagesForm

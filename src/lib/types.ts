@@ -17,7 +17,7 @@ export interface Product {
     price: number;
     sale_price: number | null;
     stock_quantity?: number;
-    is_active?: boolean;
+    status: "active" | "inactive" | "draft";
     category_id?: number;
     tags?: string[];
     images?: string;
