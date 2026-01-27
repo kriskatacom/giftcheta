@@ -5,6 +5,7 @@ import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form/s
 import { deleteUploadedFile } from "@/app/api/lib";
 import { ProductPriceInput } from "@/app/admin/products/[id]/pricing/schema";
 import { ProductDescriptionInput } from "@/app/admin/products/[id]/description/schema";
+import { ProductTagsInput } from "@/app/admin/products/[id]/tags/schema";
 
 /* =========================
    CREATE
@@ -120,6 +121,30 @@ export async function updateProductDescription(
 
     return {
         id: input.id,
+        updated: true,
+    };
+}
+
+export async function updateProductTags(data: ProductTagsInput) {
+    if (!data.id) {
+        throw new Error("Missing product id");
+    }
+
+    const tagsJson = JSON.stringify(
+        Array.from(new Set(data.tags.map((t) => t.trim().toLowerCase()))),
+    );
+
+    const [result] = await getDb().execute(
+        `
+        UPDATE products
+        SET tags = ?
+        WHERE id = ?
+        `,
+        [tagsJson, data.id],
+    );
+
+    return {
+        id: data.id,
         updated: true,
     };
 }

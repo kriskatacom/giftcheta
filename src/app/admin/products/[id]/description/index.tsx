@@ -110,7 +110,7 @@ export default function DescriptionForm({ product }: Params) {
             collapsible
             value={openValue}
             onValueChange={(value) => setOpenValue(value)}
-            className="w-fit"
+            className="w-full"
         >
             <AccordionItem value="description" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">

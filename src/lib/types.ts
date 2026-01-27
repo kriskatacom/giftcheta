@@ -19,7 +19,7 @@ export interface Product {
     stock_quantity?: number;
     is_active?: boolean;
     category_id?: number;
-    tags?: string;
+    tags?: string[];
     images?: string;
     image?: string;
     created_at?: string;

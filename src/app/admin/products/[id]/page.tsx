@@ -12,6 +12,7 @@ import { Alert } from "@/components/alert";
 import PricingForm from "@/app/admin/products/[id]/pricing";
 import DescriptionForm from "@/app/admin/products/[id]/description";
 import AdditionalImages from "@/components/additional-images";
+import TagsForm from "./tags";
 
 type Props = {
     params: Promise<{
@@ -97,6 +98,7 @@ export default async function UpdateProduct({ params }: Params) {
                         <PricingForm product={product} />
                     </div>
                     <DescriptionForm product={product} />
+                    <TagsForm product={product} />
                 </div>
 
                 {product?.id && (

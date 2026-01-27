@@ -18,7 +18,7 @@ export default function AdminLayout({
                 {children}
             </div>
             <ClientOnly>
-                <Toaster />
+                <Toaster position="bottom-left" theme="system" />
             </ClientOnly>
         </ThemeProvider>
     );
