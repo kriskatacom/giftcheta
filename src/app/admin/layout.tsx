@@ -14,7 +14,7 @@ export default function AdminLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <div className="bg-background">
+            <div className="min-h-screen bg-background">
                 {children}
             </div>
             <ClientOnly>

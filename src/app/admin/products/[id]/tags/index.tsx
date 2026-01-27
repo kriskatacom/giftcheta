@@ -125,7 +125,7 @@ export default function TagsForm({ product }: Params) {
                     </div>
                 </AccordionTrigger>
 
-                <AccordionContent>
+                <AccordionContent className="rounded-md border-b">
                     <form onSubmit={handleSubmit} className="p-5 space-y-6">
                         <div className="flex gap-2">
                             <Input

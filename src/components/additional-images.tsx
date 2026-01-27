@@ -165,18 +165,20 @@ export default function ModernImageUpload({
                         />
 
                         {/* Delete overlay */}
-                        <button
-                            type="button"
+                        <Button
+                            variant={"secondary"}
+                            size={"lg"}
                             onClick={() => removeImage(imgUrl, idx)}
                             disabled={loading}
-                            className="absolute top-2 right-2 p-2 bg-red-600 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-5 right-5"
+                            title="Премахване на снимката"
                         >
                             {loading ? (
-                                <Loader2 className="animate-spin w-4 h-4" />
+                                <Loader2 className="animate-spin" />
                             ) : (
                                 <FaTimes />
                             )}
-                        </button>
+                        </Button>
                     </div>
                 ))}
 

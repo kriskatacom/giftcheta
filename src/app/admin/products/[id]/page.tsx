@@ -12,7 +12,9 @@ import { Alert } from "@/components/alert";
 import PricingForm from "@/app/admin/products/[id]/pricing";
 import DescriptionForm from "@/app/admin/products/[id]/description";
 import AdditionalImages from "@/components/additional-images";
-import TagsForm from "./tags";
+import TagsForm from "@/app/admin/products/[id]/tags";
+import ImageForm from "@/app/admin/products/[id]/image";
+import ImagesForm from "./images";
 
 type Props = {
     params: Promise<{
@@ -99,35 +101,14 @@ export default async function UpdateProduct({ params }: Params) {
                     </div>
                     <DescriptionForm product={product} />
                     <TagsForm product={product} />
+                    {product?.id && <ImageForm product={product} />}
+                    {product?.id && product.images && (
+                        <ImagesForm
+                            images={additionalImages}
+                            productId={product.id}
+                        />
+                    )}
                 </div>
-
-                {product?.id && (
-                    <>
-                        <h2 className="px-5 text-xl font-semibold">
-                            Изображение
-                        </h2>
-                        <ImageUpload
-                            imageUrl={product.image as string}
-                            url={
-                                product?.id
-                                    ? `/api/products/${product.id}/upload`
-                                    : ""
-                            }
-                        />
-                    </>
-                )}
-
-                {product?.id && product.images && (
-                    <>
-                        <h2 className="px-5 text-xl font-semibold">
-                            Допълнителни изображения
-                        </h2>
-                        <AdditionalImages
-                            imageUrls={additionalImages ?? []}
-                            url={`/api/products/${product.id}/multiple-upload`}
-                        />
-                    </>
-                )}
             </main>
         </div>
     );
