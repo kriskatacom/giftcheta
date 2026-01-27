@@ -34,12 +34,12 @@ export async function POST(req: Request, { params }: Params) {
 
         const currentImages = product?.images
             ? JSON.parse(product.images)
-            : null;
+            : [];
 
         const uploadedUrls: string[] = [];
         for (const file of files) {
             const url = await saveUploadedFile(file);
-            uploadedUrls.push(url);
+            if (url) uploadedUrls.push(url);
         }
 
         const updatedImages = [...currentImages, ...uploadedUrls];

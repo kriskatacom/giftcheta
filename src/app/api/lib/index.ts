@@ -1,8 +1,19 @@
 import path from "path";
 import fsPromises from "fs/promises";
+import { ALLOWED_EXTENSIONS, ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
-export async function saveUploadedFile(file: File, byDate: boolean = true) {
-    if (!file) throw new Error("Няма файл");
+export async function saveUploadedFile(file: File, byDate = true) {
+    if (!file) return;
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        return;
+    }
+
+    const ext = path.extname(file.name).toLowerCase();
+
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        return;
+    }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -11,40 +22,35 @@ export async function saveUploadedFile(file: File, byDate: boolean = true) {
 
     if (byDate) {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, "0");
-        const day = String(now.getDate()).padStart(2, "0");
-
-        uploadDir = path.join(uploadDir, year.toString(), month, day);
+        uploadDir = path.join(
+            uploadDir,
+            now.getFullYear().toString(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0"),
+        );
     }
 
-    // Създаваме директорията, ако не съществува
     await fsPromises.mkdir(uploadDir, { recursive: true });
 
-    const ext = path.extname(file.name);
-    const baseName = path.parse(file.name).name;
+    const baseName = path.parse(file.name).name.replace(/[^a-z0-9-_]/gi, "_");
 
     let fileName = `${baseName}${ext}`;
     let filePath = path.join(uploadDir, fileName);
 
-    // 👇 проверка за съществуващ файл и добавяне на -1, -2 и т.н.
     let counter = 1;
     while (true) {
         try {
-            await fsPromises.access(filePath); // проверява дали файлът съществува
-            // Ако съществува, генерираме ново име
+            await fsPromises.access(filePath);
             fileName = `${baseName}-${counter}${ext}`;
             filePath = path.join(uploadDir, fileName);
             counter++;
         } catch {
-            // Ако файлът не съществува, можем да го използваме
             break;
         }
     }
 
     await fsPromises.writeFile(filePath, buffer);
 
-    // Връщаме URL относително към /public
     const relativePath = path
         .relative(path.join(process.cwd(), "public"), filePath)
         .replace(/\\/g, "/");

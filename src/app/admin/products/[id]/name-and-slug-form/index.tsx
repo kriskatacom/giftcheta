@@ -9,13 +9,17 @@ import { TextField as CustomTextField } from "@/components/form/text-field";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
 import { slugify } from "@/lib/utils";
-import { ProductBaseInput, productNameSlugSchema } from "./schema";
+import {
+    ProductBaseInput,
+    productNameSlugSchema,
+} from "@/app/admin/products/[id]/name-and-slug-form/schema";
 import {
     Accordion,
     AccordionItem,
     AccordionTrigger,
     AccordionContent,
 } from "@/components/ui/accordion";
+import { useRouter } from "next/navigation";
 
 type Params = {
     product: Product | null;
@@ -24,6 +28,7 @@ type Params = {
 type FormErrors = Partial<Record<keyof ProductBaseInput, string>>;
 
 export default function NameAndSlugForm({ product }: Params) {
+    const router = useRouter();
     const [formData, setFormData] = useState<ProductBaseInput>({
         id: product?.id ?? null,
         name: product?.name ?? "",
@@ -82,8 +87,10 @@ export default function NameAndSlugForm({ product }: Params) {
             );
 
             if (res.data.success) {
+                if (res.status === 201) {
+                    router.push(`/admin/products/${res.data.productId}`);
+                }
                 toast.success("Промените са запазени!");
-                setFormData(res.data.data);
             } else {
                 toast.error(res.data.error || "Възникна грешка");
             }
@@ -98,9 +105,6 @@ export default function NameAndSlugForm({ product }: Params) {
             setIsSubmitting(false);
         }
     };
-
-    console.log(openValue);
-    
 
     return (
         <Accordion

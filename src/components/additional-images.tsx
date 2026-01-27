@@ -5,9 +5,10 @@ import axios from "axios";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
-import { FaTimes } from "react-icons/fa";
+import { FaSave, FaTimes } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { CircleProgress } from "./circle-progress";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
 type Props = {
     imageUrls?: string[];
@@ -114,18 +115,25 @@ export default function ModernImageUpload({
                 onDrop={handleDrop}
                 onClick={() => inputRef.current?.click()}
                 className={cn(
-                    "flex items-center justify-center h-40 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
-                    isDragging ? "border-primary bg-accent" : "border-2",
+                    "flex flex-col items-center justify-center h-40 gap-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors select-none",
+                    isDragging
+                        ? "border-primary bg-accent"
+                        : "border-muted hover:border-primary/50",
                 )}
             >
-                <span className="text-muted-foreground text-lg text-center">
+                <span className="text-muted-foreground text-lg text-center px-4">
                     {files.length
                         ? files.map((f) => f.name).join(", ")
                         : "Изберете или пуснете изображения тук"}
                 </span>
+
+                <span className="text-sm text-muted-foreground">
+                    JPG, PNG, WEBP, GIF
+                </span>
+
                 <input
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_TYPES.join(",")}
                     multiple
                     className="hidden"
                     ref={inputRef}
@@ -182,6 +190,12 @@ export default function ModernImageUpload({
                     </div>
                 ))}
 
+                {images.length === 0 && files.length === 0 && (
+                    <div className="text-muted-foreground">
+                        Няма добавени изображения в галерията
+                    </div>
+                )}
+
                 {/* Circular progress */}
                 {progresses.map((p, idx) => (
                     <div
@@ -199,18 +213,21 @@ export default function ModernImageUpload({
             </div>
 
             {/* Upload button */}
-            {files.length > 0 && (
-                <Button
-                    onClick={upload}
-                    disabled={loading}
-                    size="lg"
-                    className="w-full"
-                >
-                    {loading
-                        ? "Качване..."
-                        : `Качване на ${files.length} снимки`}
-                </Button>
-            )}
+            <Button
+                onClick={upload}
+                disabled={loading || files.length === 0}
+                variant={"secondary"}
+                size="lg"
+            >
+                {loading ? (
+                    <Loader2 className="repeat-infinite animate-spin" />
+                ) : (
+                    <FaSave />
+                )}
+                <span>
+                    {loading ? "Качване..." : "Качване на изображенията"}
+                </span>
+            </Button>
         </div>
     );
 }

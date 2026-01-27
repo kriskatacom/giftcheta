@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
 type Props = {
     imageUrl?: string;
@@ -19,7 +20,7 @@ export default function ImageUpload(props: Props) {
     const [progress, setProgress] = useState(0);
     const [file, setFile] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(
-        props.imageUrl || null
+        props.imageUrl || null,
     );
     const [loading, setLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
@@ -52,7 +53,7 @@ export default function ImageUpload(props: Props) {
                 onUploadProgress: (progressEvent) => {
                     if (!progressEvent.total) return;
                     const percent = Math.round(
-                        (progressEvent.loaded * 100) / progressEvent.total
+                        (progressEvent.loaded * 100) / progressEvent.total,
                     );
                     setProgress(percent);
                 },
@@ -141,16 +142,21 @@ export default function ImageUpload(props: Props) {
 
             {/* File Select + Upload */}
             {isShow && (
-                <>
-                    <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg h-80 cursor-pointer hover:border-blue-500 transition-colors">
+                <div className="space-y-4">
+                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-lg h-80 cursor-pointer transition-colors hover:border-primary hover:bg-accent/30">
                         <span className="text-muted-foreground text-lg px-5 text-center">
                             {file
                                 ? file.name
-                                : "Изберете изображение или го пуснете в тази секция."}
+                                : "Изберете изображение или го пуснете в тази секция"}
                         </span>
+
+                        <span className="text-sm text-muted-foreground">
+                            JPG, PNG, WEBP, GIF
+                        </span>
+
                         <input
                             type="file"
-                            accept="image/*"
+                            accept={ALLOWED_IMAGE_TYPES.join(",")}
                             className="hidden"
                             onChange={handleFileChange}
                         />
@@ -158,18 +164,20 @@ export default function ImageUpload(props: Props) {
 
                     <Button
                         onClick={upload}
-                        variant={"secondary"}
-                        size={"lg"}
+                        variant="secondary"
+                        size="lg"
                         disabled={!file || loading}
+                        className="w-full"
                     >
-                        {loading ? <Loader2 className="repeat-infinite animate-spin" /> : <FaSave />}
-                        <span>
-                            {loading
-                                ? "Качване..."
-                                : "Качване на изображението"}
-                        </span>
+                        {loading ? (
+                            <Loader2 className="mr-2 animate-spin" />
+                        ) : (
+                            <FaSave className="mr-2" />
+                        )}
+
+                        {loading ? "Качване..." : "Качване на изображението"}
                     </Button>
-                </>
+                </div>
             )}
         </div>
     );

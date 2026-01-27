@@ -97,14 +97,14 @@ export default async function UpdateProduct({ params }: Params) {
                 <div className="grid gap-5 p-5">
                     <div className="grid xl:grid-cols-2 gap-5">
                         <NameAndSlugForm product={product} />
-                        <PricingForm product={product} />
+                        {product && <PricingForm product={product} />}
                     </div>
-                    <DescriptionForm product={product} />
-                    <TagsForm product={product} />
+                    {product && <DescriptionForm product={product} />}
+                    {product && <TagsForm product={product} />}
                     {product?.id && <ImageForm product={product} />}
-                    {product?.id && product.images && (
+                    {product?.id && (
                         <ImagesForm
-                            images={additionalImages}
+                            images={additionalImages ?? []}
                             productId={product.id}
                         />
                     )}
