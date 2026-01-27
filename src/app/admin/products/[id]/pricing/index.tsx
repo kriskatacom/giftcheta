@@ -1,17 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiLoader, FiSave } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { TextField } from "@/components/form/text-field";
+import { TextField as CustomTextField } from "@/components/form/text-field";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
 import {
     ProductPriceInput,
     productPriceSchema,
 } from "@/app/admin/products/[id]/pricing/schema";
+import {
+    Accordion,
+    AccordionItem,
+    AccordionTrigger,
+    AccordionContent,
+} from "@/components/ui/accordion";
 
 type Params = {
     product: Product | null;
@@ -25,6 +31,21 @@ export default function PricingForm({ product }: Params) {
         price: product?.price ?? 0,
         sale_price: product?.sale_price ?? null,
     });
+
+    const [openValue, setOpenValue] = useState<string | undefined>();
+
+    useEffect(() => {
+        const saved = localStorage.getItem("accordion-pricing-open");
+        if (saved) {
+            setOpenValue(saved);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (openValue !== undefined) {
+            localStorage.setItem("accordion-pricing-open", openValue);
+        }
+    }, [openValue]);
 
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,54 +99,68 @@ export default function PricingForm({ product }: Params) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="h-fit border rounded-md">
-            <h3 className="p-5 text-xl font-semibold leading-none mb-0">
-                Ценообразуване
-            </h3>
+        <Accordion
+            type="single"
+            collapsible
+            value={openValue}
+            onValueChange={(value) => setOpenValue(value)}
+        >
+            <AccordionItem value="pricing" className="border rounded-md">
+                <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
+                    Ценообразуване
+                </AccordionTrigger>
+                <AccordionContent className="p-0">
+                    <form onSubmit={handleSubmit}>
+                        <div className="p-5 space-y-10 border-b rounded-md">
+                            <CustomTextField
+                                id="price"
+                                label="Основна цена"
+                                required
+                                value={formData.price as any}
+                                placeholder="Въведете основната цена на продукта"
+                                disabled={isSubmitting}
+                                error={errors.price}
+                                onChange={(value) =>
+                                    handleChange("price", value)
+                                }
+                            />
 
-            <hr />
+                            <CustomTextField
+                                id="sale_price"
+                                label="Цена на промоция"
+                                value={formData.sale_price ?? ""}
+                                placeholder="Въведете цена на промоция"
+                                disabled={isSubmitting}
+                                error={errors.sale_price}
+                                onChange={(value) =>
+                                    handleChange("sale_price", value)
+                                }
+                            />
 
-            <div className="p-5 space-y-10">
-                <TextField
-                    id="price"
-                    label="Основна цена"
-                    required
-                    value={formData.price as any}
-                    placeholder="Въведете основната цена на продукта"
-                    disabled={isSubmitting}
-                    error={errors.price}
-                    onChange={(value) => handleChange("price", value)}
-                />
-
-                <TextField
-                    id="sale_price"
-                    label="Цена на промоция"
-                    value={formData.sale_price ?? ""}
-                    placeholder="Въведете цена на промоция"
-                    disabled={isSubmitting}
-                    error={errors.sale_price}
-                    onChange={(value) => handleChange("sale_price", value)}
-                />
-
-                <Button
-                    type="submit"
-                    variant="outline"
-                    size="lg"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <FiLoader
-                            size={NAVBAR_ICON_SIZES.md}
-                            className="animate-spin"
-                        />
-                    ) : (
-                        <FiSave size={NAVBAR_ICON_SIZES.md} />
-                    )}
-                    <span className="ml-2">
-                        {isSubmitting ? "Записване..." : "Запазване"}
-                    </span>
-                </Button>
-            </div>
-        </form>
+                            <Button
+                                type="submit"
+                                variant="outline"
+                                size="lg"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <FiLoader
+                                        size={NAVBAR_ICON_SIZES.md}
+                                        className="animate-spin"
+                                    />
+                                ) : (
+                                    <FiSave size={NAVBAR_ICON_SIZES.md} />
+                                )}
+                                <span className="ml-2">
+                                    {isSubmitting
+                                        ? "Записване..."
+                                        : "Запазване"}
+                                </span>
+                            </Button>
+                        </div>
+                    </form>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 }

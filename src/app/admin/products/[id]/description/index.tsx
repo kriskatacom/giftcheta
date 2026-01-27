@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiLoader, FiSave } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { TextField } from "@/components/form/text-field";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
-import { slugify } from "@/lib/utils";
 import {
     productDescriptionSchema,
     ProductDescriptionInput,
 } from "@/app/admin/products/[id]/description/schema";
 import RichTextEditor from "@/components/rich-text-editor";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type Params = {
     product: Product | null;
@@ -27,6 +31,21 @@ export default function DescriptionForm({ product }: Params) {
         short_description: product?.short_description ?? "",
         description: product?.description ?? "",
     });
+
+    const [openValue, setOpenValue] = useState<string | undefined>();
+
+    useEffect(() => {
+        const saved = localStorage.getItem("accordion-description-open");
+        if (saved) {
+            setOpenValue(saved);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (openValue !== undefined) {
+            localStorage.setItem("accordion-description-open", openValue);
+        }
+    }, [openValue]);
 
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,55 +105,68 @@ export default function DescriptionForm({ product }: Params) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="border rounded-md">
-            <h3 className="p-5 text-xl font-semibold leading-none mb-0">
-                Описание
-            </h3>
+        <Accordion
+            type="single"
+            collapsible
+            value={openValue}
+            onValueChange={(value) => setOpenValue(value)}
+            className="w-fit"
+        >
+            <AccordionItem value="description" className="border rounded-md">
+                <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
+                    Описание
+                </AccordionTrigger>
+                <AccordionContent className="p-0">
+                    <form onSubmit={handleSubmit}>
+                        <div className="p-5 space-y-10 border-b rounded-md">
+                            <div className="rounded-md">
+                                <h2 className="mb-2">Кратко описание</h2>
+                                <div className="text-editor max-w-5xl max-h-200 overflow-auto">
+                                    <RichTextEditor
+                                        content={shortDescription}
+                                        onChange={(value) =>
+                                            setShortDescription(value)
+                                        }
+                                    />
+                                </div>
+                            </div>
 
-            <hr />
+                            <div className="rounded-md">
+                                <h2 className="mb-2">Описание</h2>
+                                <div className="text-editor max-w-5xl max-h-200 overflow-auto">
+                                    <RichTextEditor
+                                        content={description}
+                                        onChange={(value) =>
+                                            setDescription(value)
+                                        }
+                                    />
+                                </div>
+                            </div>
 
-            <div className="p-5 space-y-10">
-                <div className="rounded-md">
-                    <h2 className="mb-2">
-                        Кратко описание
-                    </h2>
-                    <div className="text-editor max-w-5xl max-h-200 overflow-auto">
-                        <RichTextEditor
-                            content={shortDescription}
-                            onChange={(value) => setShortDescription(value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="rounded-md">
-                    <h2 className="mb-2">Описание</h2>
-                    <div className="text-editor max-w-5xl max-h-200 overflow-auto">
-                        <RichTextEditor
-                            content={description}
-                            onChange={(value) => setDescription(value)}
-                        />
-                    </div>
-                </div>
-
-                <Button
-                    type="submit"
-                    variant="outline"
-                    size="lg"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <FiLoader
-                            size={NAVBAR_ICON_SIZES.md}
-                            className="animate-spin"
-                        />
-                    ) : (
-                        <FiSave size={NAVBAR_ICON_SIZES.md} />
-                    )}
-                    <span className="ml-2">
-                        {isSubmitting ? "Записване..." : "Запазване"}
-                    </span>
-                </Button>
-            </div>
-        </form>
+                            <Button
+                                type="submit"
+                                variant="outline"
+                                size="lg"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <FiLoader
+                                        size={NAVBAR_ICON_SIZES.md}
+                                        className="animate-spin"
+                                    />
+                                ) : (
+                                    <FiSave size={NAVBAR_ICON_SIZES.md} />
+                                )}
+                                <span className="ml-2">
+                                    {isSubmitting
+                                        ? "Записване..."
+                                        : "Запазване"}
+                                </span>
+                            </Button>
+                        </div>
+                    </form>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 }

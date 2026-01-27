@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiLoader, FiSave } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { TextField } from "@/components/form/text-field";
+import { TextField as CustomTextField } from "@/components/form/text-field";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
 import { slugify } from "@/lib/utils";
 import { ProductBaseInput, productNameSlugSchema } from "./schema";
+import {
+    Accordion,
+    AccordionItem,
+    AccordionTrigger,
+    AccordionContent,
+} from "@/components/ui/accordion";
 
 type Params = {
     product: Product | null;
@@ -23,6 +29,21 @@ export default function NameAndSlugForm({ product }: Params) {
         name: product?.name ?? "",
         slug: product?.slug ?? "",
     });
+
+    const [openValue, setOpenValue] = useState<string | undefined>();
+
+    useEffect(() => {
+        const saved = localStorage.getItem("accordion-open");
+        if (saved) {
+            setOpenValue(saved);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (openValue !== undefined) {
+            localStorage.setItem("accordion-open", openValue);
+        }
+    }, [openValue]);
 
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,76 +99,91 @@ export default function NameAndSlugForm({ product }: Params) {
         }
     };
 
+    console.log(openValue);
+    
+
     return (
-        <form onSubmit={handleSubmit} className="border rounded-md">
-            <h3 className="p-5 text-xl font-semibold leading-none mb-0">
-                Основна информация
-            </h3>
+        <Accordion
+            type="single"
+            collapsible
+            value={openValue}
+            onValueChange={(value) => setOpenValue(value)}
+        >
+            <AccordionItem value="general" className="border rounded-md">
+                <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
+                    Основна информация
+                </AccordionTrigger>
+                <AccordionContent className="p-0">
+                    <form onSubmit={handleSubmit}>
+                        <div className="p-5 space-y-10 border-b rounded-md">
+                            <CustomTextField
+                                id="name"
+                                label="Име на продукта"
+                                required
+                                value={formData.name}
+                                placeholder="Въведете името на продукта"
+                                disabled={isSubmitting}
+                                error={errors.name}
+                                onChange={(value) =>
+                                    handleChange("name", value)
+                                }
+                            />
 
-            <hr />
+                            <div className="space-y-2">
+                                <CustomTextField
+                                    id="slug"
+                                    label="URL адрес"
+                                    value={formData.slug}
+                                    placeholder="Въведете URL адрес на продукта"
+                                    disabled={isSubmitting}
+                                    error={errors.slug}
+                                    onChange={(value) =>
+                                        handleChange("slug", value)
+                                    }
+                                />
 
-            <div className="p-5 space-y-10">
-                <TextField
-                    id="name"
-                    label="Име на продукта"
-                    required
-                    value={formData.name}
-                    placeholder="Въведете името на продукта"
-                    disabled={isSubmitting}
-                    error={errors.name}
-                    onChange={(value) => handleChange("name", value)}
-                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            slug: slugify(prev.name),
+                                        }))
+                                    }
+                                    disabled={isSubmitting || !formData.name}
+                                    title="Генериране на URL адрес"
+                                >
+                                    Генериране на URL адрес
+                                </Button>
+                            </div>
 
-                <div className="space-y-2">
-                    <TextField
-                        id="slug"
-                        label="URL адрес"
-                        value={formData.slug}
-                        placeholder="Въведете URL адрес на продукта"
-                        disabled={isSubmitting}
-                        error={errors.slug}
-                        onChange={(value) => handleChange("slug", value)}
-                    />
-
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                slug: slugify(prev.name),
-                            }))
-                        }
-                        disabled={isSubmitting || !formData.name}
-                        title="Генериране на URL адрес"
-                    >
-                        Генериране на URL адрес
-                    </Button>
-                </div>
-
-                <Button
-                    type="submit"
-                    variant="outline"
-                    size="lg"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <FiLoader
-                            size={NAVBAR_ICON_SIZES.md}
-                            className="animate-spin"
-                        />
-                    ) : (
-                        <FiSave size={NAVBAR_ICON_SIZES.md} />
-                    )}
-                    <span className="ml-2">
-                        {isSubmitting
-                            ? "Записване..."
-                            : product?.id
-                              ? "Записване"
-                              : "Създаване"}
-                    </span>
-                </Button>
-            </div>
-        </form>
+                            <Button
+                                type="submit"
+                                variant="outline"
+                                size="lg"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <FiLoader
+                                        size={NAVBAR_ICON_SIZES.md}
+                                        className="animate-spin"
+                                    />
+                                ) : (
+                                    <FiSave size={NAVBAR_ICON_SIZES.md} />
+                                )}
+                                <span className="ml-2">
+                                    {isSubmitting
+                                        ? "Записване..."
+                                        : product?.id
+                                          ? "Записване"
+                                          : "Създаване"}
+                                </span>
+                            </Button>
+                        </div>
+                    </form>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 }
