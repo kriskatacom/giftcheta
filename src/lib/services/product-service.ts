@@ -1,55 +1,75 @@
 import { Product } from "@/lib/types";
 import { getDb } from "@/lib/db";
+import { slugify } from "@/lib/utils";
+import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form";
 
 /* =========================
    CREATE
 ========================= */
-export async function createProduct(product: Product): Promise<Product> {
-    const {
-        name,
-        slug,
-        description,
-        short_description,
-        price,
-        currency,
-        old_price,
-        stock_quantity,
-        is_active,
-        category_id,
-        tags,
-        image,
-        images,
-    } = product;
 
-    const sql = `
-        INSERT INTO products
-        (name, slug, description, short_description, price, currency, old_price,
-         stock_quantity, is_active, category_id, tags, image, images)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+type Result = {
+    id: number;
+    created: boolean;
+};
 
-    try {
-        const [result] = await getDb().execute(sql, [
-            name,
-            slug,
-            description ?? null,
-            short_description ?? null,
-            price,
-            currency ?? "EUR",
-            old_price ?? null,
-            stock_quantity ?? 0,
-            is_active ?? true,
-            category_id ?? null,
-            tags ? JSON.stringify(tags) : null,
-            image ?? null,
-            images ? JSON.stringify(images) : null,
-        ]);
+export async function createOrUpdateProductNameSlug(
+    input: ProductBaseInput,
+): Promise<Result> {
+    const db = getDb();
 
-        return { id: (result as any).insertId, ...product };
-    } catch (err) {
-        console.error("Error creating product:", err);
-        throw err;
+    const finalSlug =
+        input.slug && input.slug.trim() !== ""
+            ? slugify(input.slug)
+            : slugify(input.name);
+
+    const [existing] = await db.execute<any[]>(
+        `
+        SELECT id
+        FROM products
+        WHERE slug = ?
+        ${input.id ? "AND id != ?" : ""}
+        LIMIT 1
+        `,
+        input.id ? [finalSlug, input.id] : [finalSlug],
+    );
+
+    if (existing.length > 0) {
+        throw {
+            code: "slug",
+            message: "Този URL адрес вече съществува",
+        };
     }
+
+    // ✏️ UPDATE
+    if (input.id) {
+        await db.execute(
+            `
+            UPDATE products
+            SET name = ?, slug = ?
+            WHERE id = ?
+        `,
+            [input.name, finalSlug, input.id],
+        );
+
+        return {
+            id: input.id,
+            created: false,
+        };
+    }
+
+    // ➕ CREATE
+    const [result] = await db.execute(
+        `
+        INSERT INTO products (name, slug)
+        VALUES (?, ?)
+    `,
+        [input.name, finalSlug],
+    );
+
+    return {
+        id: (result as any).insertId,
+        created: true,
+    };
 }
 
 /* =========================

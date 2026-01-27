@@ -6,7 +6,7 @@ import { websiteName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import ClientPage from "@/app/admin/products/client-page";
-import { getProducts } from "@/lib/services/country-service";
+import { getProducts } from "@/lib/services/product-service";
 
 export const metadata: Metadata = {
     title: websiteName("Продукти"),
