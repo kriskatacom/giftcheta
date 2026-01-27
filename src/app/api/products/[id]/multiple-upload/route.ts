@@ -9,12 +9,11 @@ type Params = {
     params: Promise<{ id: string }>;
 };
 
-// POST: добавя много снимки в additionalImages
 export async function POST(req: Request, { params }: Params) {
     const { id } = await params;
 
     const formData = await req.formData();
-    const files = formData.getAll("images") as File[]; // множествени файлове
+    const files = formData.getAll("images") as File[];
 
     if (!files.length) {
         return NextResponse.json(
@@ -33,11 +32,9 @@ export async function POST(req: Request, { params }: Params) {
             );
         }
 
-        const currentImages: string[] = Array.isArray(product.images)
-            ? (product.images as string[]).filter(
-                  (img): img is string => typeof img === "string",
-              )
-            : [];
+        const currentImages = product?.images
+            ? JSON.parse(product.images)
+            : null;
 
         const uploadedUrls: string[] = [];
         for (const file of files) {

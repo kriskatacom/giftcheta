@@ -11,6 +11,7 @@ import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import { Alert } from "@/components/alert";
 import PricingForm from "@/app/admin/products/[id]/pricing";
 import DescriptionForm from "@/app/admin/products/[id]/description";
+import AdditionalImages from "@/components/additional-images";
 
 type Props = {
     params: Promise<{
@@ -57,6 +58,10 @@ export default async function UpdateProduct({ params }: Params) {
             name: `${id !== "new" ? "Редактиране" : "Добавяне"}`,
         },
     ];
+
+    const additionalImages = product?.images
+        ? JSON.parse(product.images)
+        : null;
 
     return (
         <div className="flex">
@@ -106,6 +111,18 @@ export default async function UpdateProduct({ params }: Params) {
                                     ? `/api/products/${product.id}/upload`
                                     : ""
                             }
+                        />
+                    </>
+                )}
+
+                {product?.id && product.images && (
+                    <>
+                        <h2 className="px-5 text-xl font-semibold">
+                            Допълнителни изображения
+                        </h2>
+                        <AdditionalImages
+                            imageUrls={additionalImages ?? []}
+                            url={`/api/products/${product.id}/multiple-upload`}
                         />
                     </>
                 )}
