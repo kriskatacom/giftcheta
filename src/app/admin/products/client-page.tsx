@@ -17,10 +17,11 @@ export default function ClientPage({ data }: ClientPageProps) {
 
     async function onBulkDelete(selectedIds: (string | number)[]) {
         try {
-            const res = await axios.post("/api/countries/bulk-delete", { ids: selectedIds });
+            const res = await axios.post("/api/products/bulk-delete", { ids: selectedIds });
 
             if (res.status === 200) {
-                toast.success(`Бяха премахнати ${res.data.deletedCount} държави.`);
+                const message = parseInt(res.data.deletedCount) === 1 ? "Беше премахнат 1 продукт." : `Бяха премахнати ${res.data.deletedCount} продукта.`;
+                toast.success(message);
                 router.refresh();
             }
         } catch (error) {

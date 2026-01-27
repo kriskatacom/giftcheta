@@ -21,14 +21,13 @@ import {
     type VisibilityState,
 } from "@tanstack/react-table";
 
-import type { Row, Table as ReactTable } from "@tanstack/react-table";
+import type { Row } from "@tanstack/react-table";
 
 // ==============================
 // Icons
 // ==============================
 import { ChevronDown, Loader2 } from "lucide-react";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 // ==============================
 // UI Components (shadcn/ui)
@@ -332,11 +331,6 @@ export function DataTable<TData extends Identifiable>({
                                 </SelectContent>
                             </Select>
                         </div>
-
-                        {/* Дясна страна – pagination */}
-                        <div className="flex items-center space-x-1">
-                            {/* тук си остава твоят pagination код */}
-                        </div>
                     </div>
 
                     <div className="flex items-center space-x-1">
@@ -350,18 +344,6 @@ export function DataTable<TData extends Identifiable>({
                             disabled={!table.getCanPreviousPage()}
                         >
                             <FaAnglesLeft />
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={() => {
-                                table.previousPage();
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                            }}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <FaAngleLeft />
                         </Button>
 
                         {/* Видими страници около текущата */}
@@ -383,18 +365,6 @@ export function DataTable<TData extends Identifiable>({
                                 {page + 1}
                             </Button>
                         ))}
-
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={() => {
-                                table.nextPage();
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                            }}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <FaAngleRight />
-                        </Button>
 
                         <Button
                             variant="outline"

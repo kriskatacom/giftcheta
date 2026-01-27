@@ -154,7 +154,7 @@ export const columns: ColumnDef<Product>[] = [
 
                     if (res.data.success) {
                         router.refresh();
-                        toast.success("Тази държава беше успешно премахната!");
+                        toast.success("Този продукт беше премахнат.");
                     } else {
                         if (res.status === 403 && res.data.code === "slug") {
                             toast.error(res.data.error);

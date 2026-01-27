@@ -1,7 +1,8 @@
 import { Product } from "@/lib/types";
 import { getDb } from "@/lib/db";
 import { slugify } from "@/lib/utils";
-import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form";
+import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form/schema";
+import { deleteUploadedFile } from "@/app/api/lib";
 
 /* =========================
    CREATE
@@ -194,4 +195,53 @@ export async function deleteProductsBulk(ids: number[]): Promise<number> {
         console.error("Error bulk deleting products:", err);
         throw err;
     }
+}
+
+export async function getProductsByIds(ids: number[]) {
+    if (!ids || ids.length === 0) return [];
+
+    const placeholders = ids.map(() => "?").join(",");
+
+    const query = `
+        SELECT id, image, images
+        FROM products
+        WHERE id IN (${placeholders})
+    `;
+
+    const [rows] = await getDb().execute(query, ids);
+
+    const products = (rows as any[]).map((row) => ({
+        id: row.id,
+        image: row.image,
+        images: row.images ? JSON.parse(row.images) : [],
+    }));
+
+    return products;
+}
+
+export async function deleteProductsWithImages(ids: number[]): Promise<number> {
+    if (!ids || ids.length === 0) return 0;
+
+    const products = await getProductsByIds(ids);
+
+    const imageUrls: string[] = [];
+    for (const product of products) {
+        if (product.image) imageUrls.push(product.image);
+        if (product.images && Array.isArray(product.images))
+            imageUrls.push(...product.images);
+    }
+
+    await Promise.all(
+        imageUrls.map(async (url) => {
+            try {
+                await deleteUploadedFile(url);
+            } catch (err) {
+                console.warn(`Неуспешно изтриване на файл ${url}`, err);
+            }
+        }),
+    );
+
+    const deletedCount = await deleteProductsBulk(ids);
+
+    return deletedCount;
 }

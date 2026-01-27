@@ -64,7 +64,10 @@ export default function NameAndSlugForm({ product }: Params) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post("/api/products/name-and-slug", formData);
+            const res = await axios.post(
+                "/api/products/name-and-slug",
+                formData,
+            );
 
             if (res.data.success) {
                 toast.success("Промените са запазени!");
