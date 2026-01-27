@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { slugify } from "@/lib/utils";
 import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form/schema";
 import { deleteUploadedFile } from "@/app/api/lib";
+import { ProductPriceInput } from "@/app/admin/products/[id]/pricing/schema";
 
 /* =========================
    CREATE
@@ -10,7 +11,8 @@ import { deleteUploadedFile } from "@/app/api/lib";
 
 type Result = {
     id: number;
-    created: boolean;
+    created?: boolean;
+    updated?: boolean;
 };
 
 export async function createOrUpdateProductNameSlug(
@@ -70,6 +72,30 @@ export async function createOrUpdateProductNameSlug(
     return {
         id: (result as any).insertId,
         created: true,
+    };
+}
+
+export async function updateProductPrice(
+    input: ProductPriceInput,
+): Promise<Result> {
+    if (!input.id) {
+        throw new Error("Не е предоставен ID на продукта за update");
+    }
+
+    const db = getDb();
+
+    await db.execute(
+        `
+    UPDATE products
+    SET price = ?, sale_price = ?
+    WHERE id = ?
+  `,
+        [input.price.toFixed(2), input.sale_price, input.id],
+    );
+
+    return {
+        id: input.id,
+        updated: true,
     };
 }
 

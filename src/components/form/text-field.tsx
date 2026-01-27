@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 type TextFieldProps = {
     id: string;
     label: string;
-    value: string;
+    type?: "text" | "number";
+    value: string | number;
     placeholder?: string;
     required?: boolean;
     disabled?: boolean;
@@ -17,6 +18,7 @@ type TextFieldProps = {
 export function TextField({
     id,
     label,
+    type = "text",
     value,
     placeholder,
     required = false,
@@ -32,6 +34,7 @@ export function TextField({
             </Label>
 
             <Input
+                type={type}
                 id={id}
                 value={value}
                 placeholder={placeholder}

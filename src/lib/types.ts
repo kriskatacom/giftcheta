@@ -15,8 +15,7 @@ export interface Product {
     description?: string;
     short_description?: string;
     price: number;
-    old_price?: number;
-    currency?: "EUR" | "USD" | "BGN";
+    sale_price: number | null;
     stock_quantity?: number;
     is_active?: boolean;
     category_id?: number;

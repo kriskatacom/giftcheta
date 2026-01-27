@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-    createOrUpdateProductNameSlug,
-    getProductByColumn,
-} from "@/lib/services/product-service";
-import { productNameSlugSchema } from "@/app/admin/products/[id]/name-and-slug-form/schema";
+import { getProductByColumn, updateProductPrice } from "@/lib/services/product-service";
+import { productPriceSchema } from "@/app/admin/products/[id]/pricing/schema";
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const parsedResult = productNameSlugSchema.safeParse(body);
+        const parsedResult = productPriceSchema.safeParse(body);
 
         if (!parsedResult.success) {
             const errors: Record<string, string> = {};
@@ -27,35 +24,20 @@ export async function POST(req: NextRequest) {
 
         const parsed = parsedResult.data;
 
-        const result = await createOrUpdateProductNameSlug(parsed);
+        const result = await updateProductPrice(parsed);
 
-        const updatedProduct = await getProductByColumn(
-            "id",
-            parsed.id as number,
-        );
+        const updatedProduct = await getProductByColumn("id", parsed.id as number);
 
         return NextResponse.json(
             {
                 success: true,
                 productId: result.id,
                 data: updatedProduct,
-                created: result.created,
+                updated: result.updated,
             },
-            { status: result.created ? 201 : 200 },
+            { status: 200 },
         );
     } catch (err: any) {
-        if (err?.code === "slug") {
-            return NextResponse.json(
-                {
-                    success: false,
-                    errors: {
-                        slug: err.message,
-                    },
-                },
-                { status: 400 },
-            );
-        }
-
         console.error("API error:", err);
 
         return NextResponse.json(

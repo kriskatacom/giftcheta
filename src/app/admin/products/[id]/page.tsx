@@ -9,6 +9,7 @@ import { getProductByColumn } from "@/lib/services/product-service";
 import NameAndSlugForm from "@/app/admin/products/[id]/name-and-slug-form";
 import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import { Alert } from "@/components/alert";
+import PricingForm from "./pricing";
 
 type Props = {
     params: Promise<{
@@ -84,7 +85,10 @@ export default async function UpdateProduct({ params }: Params) {
                     </Alert>
                 )}
 
-                <NameAndSlugForm product={product} />
+                <div className="grid xl:grid-cols-2 gap-5 p-5">
+                    <NameAndSlugForm product={product} />
+                    <PricingForm product={product} />
+                </div>
 
                 {product?.id && (
                     <>

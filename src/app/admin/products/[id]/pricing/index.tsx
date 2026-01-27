@@ -8,36 +8,38 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/form/text-field";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
-import { slugify } from "@/lib/utils";
-import { ProductBaseInput, productNameSlugSchema } from "./schema";
+import {
+    ProductPriceInput,
+    productPriceSchema,
+} from "@/app/admin/products/[id]/pricing/schema";
 
 type Params = {
     product: Product | null;
 };
 
-type FormErrors = Partial<Record<keyof ProductBaseInput, string>>;
+type FormErrors = Partial<Record<keyof ProductPriceInput, string>>;
 
-export default function NameAndSlugForm({ product }: Params) {
-    const [formData, setFormData] = useState<ProductBaseInput>({
+export default function PricingForm({ product }: Params) {
+    const [formData, setFormData] = useState<ProductPriceInput>({
         id: product?.id ?? null,
-        name: product?.name ?? "",
-        slug: product?.slug ?? "",
+        price: product?.price ?? 0,
+        sale_price: product?.sale_price ?? null,
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (field: keyof ProductBaseInput, value: string) => {
+    const handleChange = (field: keyof ProductPriceInput, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
     const validate = (): boolean => {
-        const parsed = productNameSlugSchema.safeParse(formData);
+        const parsed = productPriceSchema.safeParse(formData);
 
         if (!parsed.success) {
             const fieldErrors: FormErrors = {};
             parsed.error.issues.forEach((issue) => {
-                const key = issue.path[0] as keyof ProductBaseInput;
+                const key = issue.path[0] as keyof ProductPriceInput;
                 fieldErrors[key] = issue.message;
             });
             setErrors(fieldErrors);
@@ -55,10 +57,7 @@ export default function NameAndSlugForm({ product }: Params) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post(
-                "/api/products/name-and-slug",
-                formData,
-            );
+            const res = await axios.post("/api/products/pricing", formData);
 
             if (res.data.success) {
                 toast.success("Промените са запазени!");
@@ -79,51 +78,34 @@ export default function NameAndSlugForm({ product }: Params) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="border rounded-md">
+        <form onSubmit={handleSubmit} className="h-fit border rounded-md">
             <h3 className="p-5 text-xl font-semibold leading-none mb-0">
-                Основна информация
+                Ценообразуване
             </h3>
 
             <hr />
 
             <div className="p-5 space-y-10">
                 <TextField
-                    id="name"
-                    label="Име на продукта"
+                    id="price"
+                    label="Основна цена"
                     required
-                    value={formData.name}
-                    placeholder="Въведете името на продукта"
+                    value={formData.price as any}
+                    placeholder="Въведете основната цена на продукта"
                     disabled={isSubmitting}
-                    error={errors.name}
-                    onChange={(value) => handleChange("name", value)}
+                    error={errors.price}
+                    onChange={(value) => handleChange("price", value)}
                 />
 
-                <div className="space-y-2">
-                    <TextField
-                        id="slug"
-                        label="URL адрес"
-                        value={formData.slug}
-                        placeholder="Въведете URL адрес на продукта"
-                        disabled={isSubmitting}
-                        error={errors.slug}
-                        onChange={(value) => handleChange("slug", value)}
-                    />
-
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                slug: slugify(prev.name),
-                            }))
-                        }
-                        disabled={isSubmitting || !formData.name}
-                        title="Генериране на URL адрес"
-                    >
-                        Генериране на URL адрес
-                    </Button>
-                </div>
+                <TextField
+                    id="sale_price"
+                    label="Цена на промоция"
+                    value={formData.sale_price ?? ""}
+                    placeholder="Въведете цена на промоция"
+                    disabled={isSubmitting}
+                    error={errors.sale_price}
+                    onChange={(value) => handleChange("sale_price", value)}
+                />
 
                 <Button
                     type="submit"
@@ -140,11 +122,7 @@ export default function NameAndSlugForm({ product }: Params) {
                         <FiSave size={NAVBAR_ICON_SIZES.md} />
                     )}
                     <span className="ml-2">
-                        {isSubmitting
-                            ? "Записване..."
-                            : product?.id
-                              ? "Записване"
-                              : "Създаване"}
+                        {isSubmitting ? "Записване..." : "Запазване"}
                     </span>
                 </Button>
             </div>
