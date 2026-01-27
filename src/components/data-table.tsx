@@ -24,9 +24,31 @@ import {
 import type { Row } from "@tanstack/react-table";
 
 // ==============================
+// DnD Kit
+// ==============================
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+
+// ==============================
 // Icons
 // ==============================
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, GripVertical, Loader2 } from "lucide-react";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 
 // ==============================
@@ -70,16 +92,128 @@ declare module "@tanstack/react-table" {
 
 type DataTableProps<TData extends Identifiable> = {
     columns: ColumnDef<TData, any>[] | ColumnDef<any>[];
-    data: any;
+    data: TData[];
     onBulkDelete?: (ids: Array<string | number>) => Promise<void>;
+    onReorder?: (reorderedData: TData[]) => void;
 };
+
+// Drag handle column definition
+export function createDragHandleColumn<TData extends Identifiable>(): ColumnDef<TData> {
+    return {
+        id: "drag-handle",
+        header: () => null,
+        cell: ({ row }) => <DragHandle rowId={row.original.id} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+    };
+}
+
+// Drag handle component
+function DragHandle({ rowId }: { rowId: string | number }) {
+    const { attributes, listeners } = useSortable({ id: rowId });
+
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 cursor-grab active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+        >
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </Button>
+    );
+}
+
+// Sortable row component
+function SortableRow<TData extends Identifiable>({
+    row,
+    children,
+}: {
+    row: Row<TData>;
+    children: React.ReactNode;
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: row.original.id });
+
+    const style: React.CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        position: "relative",
+        zIndex: isDragging ? 1 : 0,
+    };
+
+    return (
+        <TableRow
+            ref={setNodeRef}
+            style={style}
+            data-state={row.getIsSelected() && "selected"}
+            className={isDragging ? "bg-muted" : ""}
+        >
+            {children}
+        </TableRow>
+    );
+}
 
 export function DataTable<TData extends Identifiable>({
     columns,
     data,
     onBulkDelete,
+    onReorder,
 }: DataTableProps<TData>) {
     const router = useRouter();
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => setMounted(true), []);
+
+    const [internalData, setInternalData] = React.useState<TData[]>(data);
+
+    // Sync internal data with prop changes
+    React.useEffect(() => {
+        setInternalData(data);
+    }, [data]);
+
+    // DnD sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    // Handle drag end
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const oldIndex = internalData.findIndex(
+                (item) => item.id === active.id,
+            );
+            const newIndex = internalData.findIndex(
+                (item) => item.id === over.id,
+            );
+
+            const newData = arrayMove(internalData, oldIndex, newIndex);
+            setInternalData(newData);
+            onReorder?.(newData);
+        }
+    };
+
+    const rowIds = React.useMemo(
+        () => internalData.map((item) => item.id),
+        [internalData],
+    );
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -121,8 +255,9 @@ export function DataTable<TData extends Identifiable>({
     );
 
     const table = useReactTable({
-        data,
+        data: internalData,
         columns,
+        getRowId: (row) => String(row.id),
         state: {
             sorting,
             columnFilters,
@@ -181,6 +316,10 @@ export function DataTable<TData extends Identifiable>({
         }
     };
 
+    if (!mounted) {
+        return null;
+    }
+
     return (
         <div className="w-full p-5">
             <div className="flex items-center mb-5 gap-2">
@@ -221,7 +360,7 @@ export function DataTable<TData extends Identifiable>({
                         <Button
                             variant="outline"
                             size="lg"
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 bg-transparent"
                         >
                             Колони <ChevronDown />
                         </Button>
@@ -245,59 +384,78 @@ export function DataTable<TData extends Identifiable>({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="overflow-hidden rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                      header.column.columnDef
-                                                          .header,
-                                                      header.getContext(),
-                                                  )}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={
-                                        row.getIsSelected() && "selected"
-                                    }
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
-                                    ))}
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToVerticalAxis]}
+            >
+                <div className="overflow-hidden rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead
+                                                key={header.id}
+                                                style={{
+                                                    width:
+                                                        header.id ===
+                                                        "drag-handle"
+                                                            ? 50
+                                                            : undefined,
+                                                }}
+                                            >
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext(),
+                                                      )}
+                                            </TableHead>
+                                        );
+                                    })}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
-                                    Все още няма намерени резултати.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                            ))}
+                        </TableHeader>
+                        <SortableContext
+                            items={rowIds}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <SortableRow key={row.id} row={row}>
+                                            {row
+                                                .getVisibleCells()
+                                                .map((cell) => (
+                                                    <TableCell key={cell.id}>
+                                                        {flexRender(
+                                                            cell.column
+                                                                .columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </TableCell>
+                                                ))}
+                                        </SortableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={columns.length}
+                                            className="h-24 text-center"
+                                        >
+                                            Все още няма намерени резултати.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </SortableContext>
+                    </Table>
+                </div>
+            </DndContext>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="text-muted-foreground flex-1 text-sm">
                     Избрани са {table.getFilteredSelectedRowModel().rows.length}{" "}

@@ -19,8 +19,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Product } from "@/lib/types";
+import { createDragHandleColumn } from "@/components/data-table";
 
 export const columns: ColumnDef<Product>[] = [
+    createDragHandleColumn<Product>(),
     {
         id: "select",
         header: ({ table }) => (

@@ -81,16 +81,24 @@ type GetProductsOptions = {
     value?: string | number;
 };
 
+const allowedColumns = ["id", "slug", "name", "category_id"] as const;
+
 export async function getProducts(
     options?: GetProductsOptions,
 ): Promise<Product[]> {
     let sql = `SELECT * FROM products`;
     const params: (string | number)[] = [];
 
-    if (options?.column && options.value !== undefined) {
+    if (
+        options?.column &&
+        options.value !== undefined &&
+        allowedColumns.includes(options.column)
+    ) {
         sql += ` WHERE ${options.column} = ?`;
         params.push(options.value);
     }
+
+    sql += ` ORDER BY sort_order ASC`;
 
     const [rows] = await getDb().query<any[]>(sql, params);
 

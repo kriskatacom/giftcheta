@@ -29,10 +29,37 @@ export default function ClientPage({ data }: ClientPageProps) {
         }
     }
 
+    const handleReorder = async (reorderedData: Product[]) => {
+        try {
+            const response = await fetch("/api/reorder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    tableName: "products",
+                    items: reorderedData.map((item, index) => ({
+                        id: item.id,
+                        order: index + 1,
+                    })),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Пренареждането на записите беше провалено.");
+            }
+
+            console.log("Редът е запазен успешно");
+        } catch (error) {
+            console.error("Грешка при запазване на реда:", error);
+        }
+    };
+
     return (
         <DataTable
             columns={columns}
             data={data}
+            onReorder={handleReorder}
             onBulkDelete={(selectedIds) => onBulkDelete(selectedIds)}
         />
     );

@@ -9,7 +9,7 @@ export type NavbarItem = {
 };
 
 export interface Product {
-    id?: number;
+    id: number;
     name: string;
     slug: string;
     description?: string;
