@@ -4,6 +4,7 @@ import { slugify } from "@/lib/utils";
 import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form/schema";
 import { deleteUploadedFile } from "@/app/api/lib";
 import { ProductPriceInput } from "@/app/admin/products/[id]/pricing/schema";
+import { ProductDescriptionInput } from "@/app/admin/products/[id]/description/schema";
 
 /* =========================
    CREATE
@@ -91,6 +92,30 @@ export async function updateProductPrice(
     WHERE id = ?
   `,
         [input.price.toFixed(2), input.sale_price, input.id],
+    );
+
+    return {
+        id: input.id,
+        updated: true,
+    };
+}
+
+export async function updateProductDescription(
+    input: ProductDescriptionInput,
+): Promise<Result> {
+    if (!input.id) {
+        throw new Error("Не е предоставен ID на продукта за update");
+    }
+
+    const db = getDb();
+
+    await db.execute(
+        `
+    UPDATE products
+    SET short_description = ?, description = ?
+    WHERE id = ?
+  `,
+        [input.short_description, input.description, input.id],
     );
 
     return {
