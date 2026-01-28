@@ -13,6 +13,7 @@ import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 type Props = {
     imageUrls?: string[];
     url: string;
+    isWithBaseName?: boolean;
     onUploadSuccess?: (urls: string[]) => void;
     onDeleteSuccess?: (urls: string[]) => void;
 };
@@ -20,6 +21,7 @@ type Props = {
 export default function ModernImageUpload({
     imageUrls = [],
     url,
+    isWithBaseName,
     onUploadSuccess,
     onDeleteSuccess,
 }: Props) {
@@ -66,6 +68,10 @@ export default function ModernImageUpload({
         const formData = new FormData();
         files.forEach((file) => formData.append("images", file));
 
+        if (isWithBaseName) {
+            formData.append("with_base_name", "yes");
+        }
+
         try {
             const res = await axios.post(url, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -108,39 +114,6 @@ export default function ModernImageUpload({
 
     return (
         <div className="space-y-5 p-5">
-            {/* Drag & Drop zone */}
-            <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => inputRef.current?.click()}
-                className={cn(
-                    "flex flex-col items-center justify-center h-40 gap-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors select-none",
-                    isDragging
-                        ? "border-primary bg-accent"
-                        : "border-muted hover:border-primary/50",
-                )}
-            >
-                <span className="text-muted-foreground text-lg text-center px-4">
-                    {files.length
-                        ? files.map((f) => f.name).join(", ")
-                        : "Изберете или пуснете изображения тук"}
-                </span>
-
-                <span className="text-sm text-muted-foreground">
-                    JPG, PNG, WEBP, GIF
-                </span>
-
-                <input
-                    type="file"
-                    accept={ALLOWED_IMAGE_TYPES.join(",")}
-                    multiple
-                    className="hidden"
-                    ref={inputRef}
-                    onChange={handleFileChange}
-                />
-            </div>
-
             {/* Image gallery */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {images.map((imgUrl, idx) => (
@@ -210,6 +183,39 @@ export default function ModernImageUpload({
                         </span>
                     </div>
                 ))}
+            </div>
+            
+            {/* Drag & Drop zone */}
+            <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => inputRef.current?.click()}
+                className={cn(
+                    "flex flex-col items-center justify-center h-40 gap-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors select-none",
+                    isDragging
+                        ? "border-primary bg-accent"
+                        : "border-muted hover:border-primary/50",
+                )}
+            >
+                <span className="text-muted-foreground text-lg text-center px-4">
+                    {files.length
+                        ? files.map((f) => f.name).join(", ")
+                        : "Изберете или пуснете изображения тук"}
+                </span>
+
+                <span className="text-sm text-muted-foreground">
+                    JPG, PNG, WEBP, GIF
+                </span>
+
+                <input
+                    type="file"
+                    accept={ALLOWED_IMAGE_TYPES.join(",")}
+                    multiple
+                    className="hidden"
+                    ref={inputRef}
+                    onChange={handleFileChange}
+                />
             </div>
 
             {/* Upload button */}

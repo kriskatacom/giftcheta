@@ -50,14 +50,6 @@ export default function DescriptionForm({ product }: Params) {
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [shortDescription, setShortDescription] = useState<string>(
-        (product?.short_description as string) ?? "",
-    );
-
-    const [description, setDescription] = useState<string>(
-        (product?.description as string) ?? "",
-    );
-
     const validate = (): boolean => {
         const parsed = productDescriptionSchema.safeParse(formData);
 
@@ -82,8 +74,6 @@ export default function DescriptionForm({ product }: Params) {
         setIsSubmitting(true);
 
         try {
-            formData.short_description = shortDescription;
-            formData.description = description;
             const res = await axios.post("/api/products/description", formData);
 
             if (res.data.success) {
@@ -123,9 +113,12 @@ export default function DescriptionForm({ product }: Params) {
                                 <h2 className="mb-2">Кратко описание</h2>
                                 <div className="text-editor max-w-5xl max-h-200 overflow-auto">
                                     <RichTextEditor
-                                        content={shortDescription}
+                                        content={formData.short_description as string}
                                         onChange={(value) =>
-                                            setShortDescription(value)
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                short_description: value,
+                                            }))
                                         }
                                     />
                                 </div>
@@ -135,9 +128,12 @@ export default function DescriptionForm({ product }: Params) {
                                 <h2 className="mb-2">Описание</h2>
                                 <div className="text-editor max-w-5xl max-h-200 overflow-auto">
                                     <RichTextEditor
-                                        content={description}
+                                        content={formData.description as string}
                                         onChange={(value) =>
-                                            setDescription(value)
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                description: value,
+                                            }))
                                         }
                                     />
                                 </div>

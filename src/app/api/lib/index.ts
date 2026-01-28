@@ -2,7 +2,7 @@ import path from "path";
 import fsPromises from "fs/promises";
 import { ALLOWED_EXTENSIONS, ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
-export async function saveUploadedFile(file: File, byDate = true) {
+export async function saveUploadedFile(file: File, baseName: string = "", byDate = true) {
     if (!file) return;
 
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -32,7 +32,9 @@ export async function saveUploadedFile(file: File, byDate = true) {
 
     await fsPromises.mkdir(uploadDir, { recursive: true });
 
-    const baseName = path.parse(file.name).name.replace(/[^a-z0-9-_]/gi, "_");
+    if (!baseName) {
+        baseName = path.parse(file.name).name.replace(/[^a-z0-9-_]/gi, "_");
+    }
 
     let fileName = `${baseName}${ext}`;
     let filePath = path.join(uploadDir, fileName);

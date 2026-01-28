@@ -50,6 +50,7 @@ export default function ImageForm({ product }: Params) {
                                 ? `/api/products/${product.id}/upload`
                                 : ""
                         }
+                        isWithBaseName
                     />
                 </AccordionContent>
             </AccordionItem>

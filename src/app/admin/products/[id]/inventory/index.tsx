@@ -126,7 +126,7 @@ export default function InventoryForm({ product }: Props) {
                     Наличност и статус
                 </AccordionTrigger>
 
-                <AccordionContent className="p-0">
+                <AccordionContent className="p-0 border-b rounded-md">
                     <form onSubmit={handleSubmit}>
                         <div className="p-5 space-y-8">
                             <div className="space-y-2">

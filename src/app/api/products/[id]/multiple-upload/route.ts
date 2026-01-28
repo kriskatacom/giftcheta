@@ -3,6 +3,7 @@ import {
     getProductByColumn,
     updateProduct,
 } from "@/lib/services/product-service";
+import { slugify } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
 type Params = {
@@ -14,6 +15,7 @@ export async function POST(req: Request, { params }: Params) {
 
     const formData = await req.formData();
     const files = formData.getAll("images") as File[];
+    const isWithBaseName = formData.get("with_base_name");
 
     if (!files.length) {
         return NextResponse.json(
@@ -27,18 +29,18 @@ export async function POST(req: Request, { params }: Params) {
 
         if (!product) {
             return NextResponse.json(
-                { error: "Този продукт не съществува." },
-                { status: 404 },
+                { error: "Този продукт не съществува" },
+                { status: 400 },
             );
         }
 
-        const currentImages = product?.images
-            ? JSON.parse(product.images)
-            : [];
+        const baseName = (isWithBaseName && slugify(product.name)) || "";
+
+        const currentImages = product?.images ? JSON.parse(product.images) : [];
 
         const uploadedUrls: string[] = [];
         for (const file of files) {
-            const url = await saveUploadedFile(file);
+            const url = await saveUploadedFile(file, baseName);
             if (url) uploadedUrls.push(url);
         }
 

@@ -46,6 +46,7 @@ export default function ImagesForm({ images, productId }: Params) {
                     <AdditionalImages
                         imageUrls={images}
                         url={`/api/products/${productId}/multiple-upload`}
+                        isWithBaseName
                     />
                 </AccordionContent>
             </AccordionItem>

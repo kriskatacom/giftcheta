@@ -11,6 +11,7 @@ import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 type Props = {
     imageUrl?: string;
     url: string;
+    isWithBaseName?: boolean;
     deleteImageUrl?: string;
     onUploadSuccess?: Function;
     onDeleteSuccess?: Function;
@@ -43,6 +44,10 @@ export default function ImageUpload(props: Props) {
 
         const formData = new FormData();
         formData.append("image", file);
+
+        if (props.isWithBaseName) {
+            formData.append("with_base_name", "yes");
+        }
 
         try {
             setLoading(true);

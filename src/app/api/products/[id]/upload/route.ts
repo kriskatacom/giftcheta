@@ -4,6 +4,7 @@ import {
     getProductByColumn,
     updateProduct,
 } from "@/lib/services/product-service";
+import { slugify } from "@/lib/utils";
 
 type Params = {
     params: Promise<{
@@ -16,22 +17,31 @@ export async function POST(req: Request, { params }: Params) {
 
     const formData = await req.formData();
     const file = formData.get("image") as File;
+    const isWithBaseName = formData.get("with_base_name");
 
     if (!file) {
         return NextResponse.json({ error: "Няма файл" }, { status: 400 });
     }
 
     try {
-        const url = await saveUploadedFile(file);
+        const product = await getProductByColumn("id", id);
 
-        const product = await updateProduct(Number(id), {
+        if (!product) {
+            return NextResponse.json({ error: "Този продукт не съществува" }, { status: 400 });
+        }
+
+        const baseName = isWithBaseName && slugify(product.name) || "";
+
+        const url = await saveUploadedFile(file, baseName);
+
+        const updatedProduct = await updateProduct(Number(id), {
             image: url,
         });
 
         return NextResponse.json({
             success: true,
             url,
-            product,
+            product: updatedProduct,
         });
     } catch (err: any) {
         console.error(err);
