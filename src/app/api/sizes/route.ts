@@ -17,7 +17,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const size = await sizeService.createSize({
+        const size = await sizeService.createItem({
             name,
             width: Number(width),
             height: Number(height),
@@ -45,7 +45,7 @@ export async function PUT(req: Request) {
             return NextResponse.json({ message: "Липсва ID" }, { status: 400 });
         }
 
-        const updated = await sizeService.updateSize(id, {
+        const updated = await sizeService.updateItem(id, {
             name,
             width: width !== undefined ? Number(width) : undefined,
             height: height !== undefined ? Number(height) : undefined,
@@ -80,7 +80,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ message: "Липсва ID" }, { status: 400 });
         }
 
-        const deleted = await sizeService.deleteSize(id);
+        const deleted = await sizeService.deleteItem(id);
 
         if (!deleted) {
             return NextResponse.json(
@@ -108,7 +108,7 @@ export async function GET(req: Request) {
         // Ако има id, връщаме един размер
         if (idParam) {
             const id = Number(idParam);
-            const size = await sizeService.getSizeById(id);
+            const size = await sizeService.getItemById(id);
 
             if (!size) {
                 return NextResponse.json(
@@ -121,7 +121,7 @@ export async function GET(req: Request) {
         }
 
         // Връщаме всички размери
-        const sizes = await sizeService.getAllSizes();
+        const sizes = await sizeService.getAllItems();
         return NextResponse.json({ sizes });
     } catch (error: any) {
         console.error(error);

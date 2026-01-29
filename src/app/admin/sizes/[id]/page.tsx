@@ -7,7 +7,7 @@ import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { SizeService } from "@/lib/services/size-service";
 import { getDb } from "@/lib/db";
-import CreateAndUpdateSizeForm from "@/app/admin/sizes/[id]/create-and-update-form";
+import CreateAndupdateItemForm from "@/app/admin/sizes/[id]/create-and-update-form";
 
 type Props = {
     params: Promise<{
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (id !== "new") {
         const size =
             id !== "new" && parseInt(id)
-                ? await sizeService.getSizeById(Number(id))
+                ? await sizeService.getItemById(Number(id))
                 : null;
 
         if (size) {
@@ -50,7 +50,7 @@ export default async function Sizes({ params }: Params) {
     const sizeService = new SizeService(getDb());
     const size =
         id !== "new" && parseInt(id)
-            ? await sizeService.getSizeById(Number(id))
+            ? await sizeService.getItemById(Number(id))
             : null;
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -82,7 +82,7 @@ export default async function Sizes({ params }: Params) {
                 <Breadcrumbs items={breadcrumbs} />
 
                 <div className="p-5">
-                    <CreateAndUpdateSizeForm size={size} />
+                    <CreateAndupdateItemForm size={size} />
                 </div>
             </main>
         </div>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import ClientPage from "@/app/admin/colors/client-page";
 import { ColorService } from "@/lib/services/color-service";
 import { getDb } from "@/lib/db";
+import DeleteAll from "@/app/admin/colors/delete-all";
 
 export const metadata: Metadata = {
     title: websiteName("Цветове"),
@@ -37,6 +38,8 @@ export default async function Colors() {
                                 <span>Добавяне</span>
                             </Button>
                         </Link>
+                        
+                        {colors.length > 0 && <DeleteAll />}
                     </div>
                 </div>
 

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import ClientPage from "@/app/admin/sizes/client-page";
 import { SizeService } from "@/lib/services/size-service";
 import { getDb } from "@/lib/db";
+import DeleteAll from "@/app/admin/sizes/delete-all";
 
 export const metadata: Metadata = {
     title: websiteName("Размери"),
@@ -20,7 +21,7 @@ export default async function Sizes() {
     ];
 
     const sizeService = new SizeService(getDb());
-    const sizes = await sizeService.getAllSizes();
+    const sizes = await sizeService.getAllItems();
 
     return (
         <div className="flex">
@@ -37,6 +38,7 @@ export default async function Sizes() {
                                 <span>Добавяне</span>
                             </Button>
                         </Link>
+                        {sizes.length > 0 && <DeleteAll />}
                     </div>
                 </div>
 

@@ -8,6 +8,7 @@ import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import ClientPage from "@/app/admin/products/client-page";
 import { getProducts } from "@/lib/services/product-service";
 import Export from "@/app/admin/products/export";
+import DeleteAll from "@/app/admin/products/delete-all";
 
 export const metadata: Metadata = {
     title: websiteName("Продукти"),
@@ -38,10 +39,13 @@ export default async function ProductsPage() {
                         </Link>
 
                         <Export />
+
+                        {products.length > 0 && <DeleteAll />}
                     </div>
                 </div>
 
                 <Breadcrumbs items={breadcrumbs} />
+
                 <ClientPage data={products} />
             </main>
         </div>

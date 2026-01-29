@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         }
 
         for (const id of ids) {
-            await sizeService.deleteSize(Number(id));
+            await sizeService.deleteItem(Number(id));
         }
 
         return NextResponse.json({

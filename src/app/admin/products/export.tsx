@@ -9,7 +9,7 @@ export default function Export() {
     };
 
     return (
-        <Button variant={"outline"} size={"lg"} onClick={onExport}>
+        <Button variant={"outline"} className="bg-green-500" size={"lg"} onClick={onExport}>
             <TbTableExport />
             <span>Експорт (XLSX)</span>
         </Button>

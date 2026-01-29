@@ -103,14 +103,13 @@ export class ColorService {
     }
 
     // DELETE ALL
-    async deleteAllColors(
-        pool: Pool,
+    async deleteAllItems(
         useTruncate: boolean = false,
     ): Promise<void> {
         if (useTruncate) {
-            await pool.execute(`TRUNCATE TABLE colors`);
+            await this.pool.execute(`TRUNCATE TABLE colors`);
         } else {
-            await pool.execute<ResultSetHeader>(`DELETE FROM colors`);
+            await this.pool.execute<ResultSetHeader>(`DELETE FROM colors`);
         }
     }
 }

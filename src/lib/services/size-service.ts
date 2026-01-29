@@ -12,7 +12,7 @@ export interface Size {
 }
 
 // DTO за създаване на размер
-export interface CreateSizeDTO {
+export interface createItemDTO {
     name: string;
     width: number;
     height: number;
@@ -21,7 +21,7 @@ export interface CreateSizeDTO {
 }
 
 // DTO за обновяване на размер
-export interface UpdateSizeDTO {
+export interface updateItemDTO {
     name?: string;
     width?: number;
     height?: number;
@@ -33,7 +33,7 @@ export class SizeService {
     constructor(private readonly pool: Pool) {}
 
     // CREATE
-    async createSize(data: CreateSizeDTO): Promise<Size> {
+    async createItem(data: createItemDTO): Promise<Size> {
         const [result] = await this.pool.execute<ResultSetHeader>(
             `INSERT INTO sizes (name, width, height, depth, unit) VALUES (?, ?, ?, ?, ?)`,
             [data.name, data.width, data.height, data.depth, data.unit || "cm"],
@@ -50,7 +50,7 @@ export class SizeService {
     }
 
     // READ ALL
-    async getAllSizes(): Promise<Size[]> {
+    async getAllItems(): Promise<Size[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             `SELECT id, name, width, height, depth, unit FROM sizes ORDER BY sort_order`,
         );
@@ -59,7 +59,7 @@ export class SizeService {
     }
 
     // READ BY ID
-    async getSizeById(id: number): Promise<Size | null> {
+    async getItemById(id: number): Promise<Size | null> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             `SELECT id, name, width, height, depth, unit FROM sizes WHERE id = ?`,
             [id],
@@ -73,7 +73,7 @@ export class SizeService {
     }
 
     // UPDATE
-    async updateSize(id: number, data: UpdateSizeDTO): Promise<boolean> {
+    async updateItem(id: number, data: updateItemDTO): Promise<boolean> {
         const fields: string[] = [];
         const values: any[] = [];
 
@@ -113,7 +113,7 @@ export class SizeService {
     }
 
     // DELETE
-    async deleteSize(id: number): Promise<boolean> {
+    async deleteItem(id: number): Promise<boolean> {
         const [result] = await this.pool.execute<ResultSetHeader>(
             `DELETE FROM sizes WHERE id = ?`,
             [id],
@@ -123,14 +123,11 @@ export class SizeService {
     }
 
     // DELETE ALL
-    async deleteAllSizes(
-        pool: Pool,
-        useTruncate: boolean = false,
-    ): Promise<void> {
+    async deleteAllItems(useTruncate: boolean = false): Promise<void> {
         if (useTruncate) {
-            await pool.execute(`TRUNCATE TABLE sizes`);
+            await this.pool.execute(`TRUNCATE TABLE sizes`);
         } else {
-            await pool.execute<ResultSetHeader>(`DELETE FROM sizes`);
+            await this.pool.execute<ResultSetHeader>(`DELETE FROM sizes`);
         }
     }
 }

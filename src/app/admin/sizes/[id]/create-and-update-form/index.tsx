@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/accordion";
 import { Size } from "@/lib/services/size-service";
 import {
-    createSizeSchema,
+    createItemSchema,
     SizeFormInput,
 } from "@/app/admin/sizes/[id]/create-and-update-form/schema";
 
@@ -34,7 +34,7 @@ type Params = {
     size: Size | null;
 };
 
-export default function CreateAndUpdateSizeForm({ size }: Params) {
+export default function CreateAndupdateItemForm({ size }: Params) {
     const router = useRouter();
 
     const [formData, setFormData] = useState<SizeFormInput>({
@@ -72,7 +72,7 @@ export default function CreateAndUpdateSizeForm({ size }: Params) {
     };
 
     const validate = (data?: SizeFormInput): boolean => {
-        const parsed = createSizeSchema.safeParse(data || formData);
+        const parsed = createItemSchema.safeParse(data || formData);
 
         if (!parsed.success) {
             const fieldErrors: FormErrors = {};
