@@ -1,42 +1,54 @@
 import { NextResponse } from "next/server";
 import { deleteUploadedFile, saveUploadedFile } from "@/app/api/lib";
-import {
-    getProductByColumn,
-    updateProduct,
-} from "@/lib/services/product-service";
 import { slugify } from "@/lib/utils";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
 
-type Params = {
+const productService = new ProductService(getDb());
+
+type Props = {
     params: Promise<{
         id: string;
     }>;
 };
 
-export async function POST(req: Request, { params }: Params) {
-    const { id } = await params;
+export async function POST(req: Request, { params }: Props) {
+    const productId = Number((await params).id);
+    
+    if (isNaN(productId)) {
+        return NextResponse.json(
+            { error: "Невалиден идентификатор на продукт." },
+            { status: 400 }
+        );
+    }
 
     const formData = await req.formData();
-    const file = formData.get("image") as File;
-    const isWithBaseName = formData.get("with_base_name");
+    const file = formData.get("image") as File | null;
+    const isWithBaseName = formData.get("with_base_name") === "true";
 
     if (!file) {
-        return NextResponse.json({ error: "Няма файл" }, { status: 400 });
+        return NextResponse.json({ error: "Няма качен файл." }, { status: 400 });
     }
 
     try {
-        const product = await getProductByColumn("id", id);
+        const product = await productService.getItemByColumn("id", productId);
 
         if (!product) {
-            return NextResponse.json({ error: "Този продукт не съществува" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Този продукт не съществува." },
+                { status: 404 }
+            );
         }
 
-        const baseName = isWithBaseName && slugify(product.name) || "";
+        const baseName = isWithBaseName ? slugify(product.name) : "";
 
         const url = await saveUploadedFile(file, baseName);
 
-        const updatedProduct = await updateProduct(Number(id), {
-            image: url,
-        });
+        if (product.image) {
+            await deleteUploadedFile(product.image);
+        }
+
+        const updatedProduct = await productService.updateItem(productId, { image: url });
 
         return NextResponse.json({
             success: true,
@@ -44,24 +56,31 @@ export async function POST(req: Request, { params }: Params) {
             product: updatedProduct,
         });
     } catch (err: any) {
-        console.error(err);
+        console.error("Error uploading image:", err);
         return NextResponse.json(
             { error: err.message || "Грешка при качване на изображението." },
-            { status: 400 },
+            { status: 500 }
         );
     }
 }
 
-export async function DELETE(req: Request, { params }: Params) {
-    const { id } = await params;
+export async function DELETE(req: Request, { params }: Props) {
+    const productId = Number((await params).id);
+    
+    if (isNaN(productId)) {
+        return NextResponse.json(
+            { error: "Невалиден идентификатор на продукт." },
+            { status: 400 }
+        );
+    }
 
     try {
-        const product = await getProductByColumn("id", id);
+        const product = await productService.getItemByColumn("id", productId);
 
         if (!product) {
             return NextResponse.json(
                 { error: "Този продукт не съществува." },
-                { status: 404 },
+                { status: 404 }
             );
         }
 
@@ -69,16 +88,14 @@ export async function DELETE(req: Request, { params }: Params) {
             await deleteUploadedFile(product.image);
         }
 
-        const productUpdated = await updateProduct(Number(id), {
-            image: ""
-        });
+        const updatedProduct = await productService.updateItem(productId, { image: "" });
 
-        return NextResponse.json({ success: true, product: productUpdated });
+        return NextResponse.json({ success: true, product: updatedProduct });
     } catch (err: any) {
-        console.error(err);
+        console.error("Error deleting image:", err);
         return NextResponse.json(
             { error: err.message || "Грешка при изтриване на изображението." },
-            { status: 500 },
+            { status: 500 }
         );
     }
 }

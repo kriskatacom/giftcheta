@@ -87,16 +87,22 @@ export default function NameAndSlugForm({ product }: Params) {
             );
 
             if (res.data.success) {
-                if (res.status === 201) {
-                    router.push(`/admin/products/${res.data.productId}`);
-                }
                 toast.success("Промените са запазени!");
+                if (res.data.product?.id) {
+                    router.push(`/admin/products/${res.data.product.id}`);
+                }
             } else {
-                toast.error(res.data.error || "Възникна грешка");
+                toast.error(res.data.message || "Възникна грешка");
             }
         } catch (err: any) {
             if (err.response?.status === 400) {
-                setErrors(err.response.data?.errors ?? {});
+                const zodErrors = err.response.data?.errors ?? [];
+                const formattedErrors: Record<string, string> = {};
+                zodErrors.forEach((e: any) => {
+                    if (e.path?.[0]) formattedErrors[e.path[0]] = e.message;
+                });
+                toast.error("Грешка при изпращане");
+                setErrors(formattedErrors);
             } else {
                 console.error(err);
                 toast.error("Грешка при изпращане");

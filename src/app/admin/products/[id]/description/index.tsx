@@ -74,17 +74,23 @@ export default function DescriptionForm({ product }: Params) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post("/api/products/description", formData);
+            const res = await axios.put("/api/products/description", formData);
 
             if (res.data.success) {
+                setFormData(res.data.product);
                 toast.success("Промените са запазени!");
-                setFormData(res.data.data);
             } else {
-                toast.error(res.data.error || "Възникна грешка");
+                toast.error(res.data.message || "Възникна грешка");
             }
         } catch (err: any) {
             if (err.response?.status === 400) {
-                setErrors(err.response.data?.errors ?? {});
+                const zodErrors = err.response.data?.errors ?? [];
+                const formattedErrors: Record<string, string> = {};
+                zodErrors.forEach((e: any) => {
+                    if (e.path?.[0]) formattedErrors[e.path[0]] = e.message;
+                });
+                toast.error("Грешка при изпращане");
+                setErrors(formattedErrors);
             } else {
                 console.error(err);
                 toast.error("Грешка при изпращане");
@@ -113,7 +119,9 @@ export default function DescriptionForm({ product }: Params) {
                                 <h2 className="mb-2">Кратко описание</h2>
                                 <div className="text-editor max-w-5xl max-h-200 overflow-auto">
                                     <RichTextEditor
-                                        content={formData.short_description as string}
+                                        content={
+                                            formData.short_description as string
+                                        }
                                         onChange={(value) =>
                                             setFormData((prev) => ({
                                                 ...prev,

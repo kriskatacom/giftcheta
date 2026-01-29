@@ -1,50 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProductByColumn, updateProductPrice } from "@/lib/services/product-service";
-import { productPriceSchema } from "@/app/admin/products/[id]/pricing/schema";
+import {
+    productPriceSchema,
+    ProductPriceInput,
+} from "@/app/admin/products/[id]/pricing/schema";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
 
-export async function POST(req: NextRequest) {
+const productService = new ProductService(getDb());
+
+export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const parsedResult = productPriceSchema.safeParse(body);
+        const input: ProductPriceInput = productPriceSchema.parse(body);
 
-        if (!parsedResult.success) {
-            const errors: Record<string, string> = {};
-
-            parsedResult.error.issues.forEach((issue) => {
-                const field = issue.path[0] as string;
-                errors[field] = issue.message;
-            });
-
+        if (!input.id) {
             return NextResponse.json(
-                { success: false, errors },
+                { success: false, message: "Не е предоставен ID на продукта" },
                 { status: 400 },
             );
         }
 
-        const parsed = parsedResult.data;
-
-        const result = await updateProductPrice(parsed);
-
-        const updatedProduct = await getProductByColumn("id", parsed.id as number);
+        const updatedProduct = await productService.updateItem(input.id, {
+            price: input.price,
+            sale_price: input.sale_price ?? null,
+        });
 
         return NextResponse.json(
             {
                 success: true,
-                productId: result.id,
-                data: updatedProduct,
-                updated: result.updated,
+                updated: true,
+                product: updatedProduct,
             },
             { status: 200 },
         );
     } catch (err: any) {
-        console.error("API error:", err);
+        if (err.errors) {
+            return NextResponse.json(
+                { success: false, errors: err.errors },
+                { status: 400 },
+            );
+        }
+
+        console.error("Error updating product price:", err);
 
         return NextResponse.json(
-            {
-                success: false,
-                error: "Сървърна грешка.",
-            },
+            { success: false, message: err.message },
             { status: 500 },
         );
     }

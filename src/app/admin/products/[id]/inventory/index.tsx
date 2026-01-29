@@ -95,19 +95,26 @@ export default function InventoryForm({ product }: Props) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post("/api/products/inventory", formData);
+            const res = await axios.put("/api/products/inventory", formData);
 
             if (res.data.success) {
-                toast.success("Инвентарът е обновен!");
-                setFormData(res.data.data);
+                setFormData(res.data.product);
+                toast.success("Промените са запазени!");
             } else {
-                toast.error(res.data.error || "Възникна грешка");
+                toast.error(res.data.message || "Възникна грешка");
             }
         } catch (err: any) {
             if (err.response?.status === 400) {
-                setErrors(err.response.data?.errors ?? {});
+                const zodErrors = err.response.data?.errors ?? [];
+                const formattedErrors: Record<string, string> = {};
+                zodErrors.forEach((e: any) => {
+                    if (e.path?.[0]) formattedErrors[e.path[0]] = e.message;
+                });
+                toast.error("Грешка при изпращане");
+                setErrors(formattedErrors);
             } else {
-                toast.error("Сървърна грешка");
+                console.error(err);
+                toast.error("Грешка при изпращане");
             }
         } finally {
             setIsSubmitting(false);

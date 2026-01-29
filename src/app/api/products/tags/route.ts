@@ -1,56 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-    getProductByColumn,
-    updateProductTags,
-} from "@/lib/services/product-service";
-import { productTagsSchema } from "@/app/admin/products/[id]/tags/schema";
+    productTagsSchema,
+    ProductTagsInput,
+} from "@/app/admin/products/[id]/tags/schema";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
 
-export async function POST(req: NextRequest) {
+const productService = new ProductService(getDb());
+
+export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const parsedResult = productTagsSchema.safeParse(body);
+        const input: ProductTagsInput = productTagsSchema.parse(body);
 
-        if (!parsedResult.success) {
-            const errors: Record<string, string> = {};
-
-            parsedResult.error.issues.forEach((issue) => {
-                const field = issue.path[0] as string;
-                errors[field] = issue.message;
-            });
-
+        if (!input.id) {
             return NextResponse.json(
-                { success: false, errors },
+                { success: false, message: "Не е предоставен ID на продукта" },
                 { status: 400 },
             );
         }
 
-        const parsed = parsedResult.data;
-
-        const result = await updateProductTags(parsed);
-
-        const updatedProduct = await getProductByColumn(
-            "id",
-            parsed.id as number,
-        );
+        const updatedProduct = await productService.updateItem(input.id, {
+            tags: input.tags ?? [],
+        });
 
         return NextResponse.json(
             {
                 success: true,
-                productId: result.id,
-                data: updatedProduct,
-                updated: result.updated,
+                updated: true,
+                product: updatedProduct,
             },
             { status: 200 },
         );
-    } catch (err) {
-        console.error("API error (tags):", err);
+    } catch (err: any) {
+        if (err.errors) {
+            return NextResponse.json(
+                { success: false, errors: err.errors },
+                { status: 400 },
+            );
+        }
+
+        console.error("Error updating product tags:", err);
 
         return NextResponse.json(
-            {
-                success: false,
-                error: "Сървърна грешка.",
-            },
+            { success: false, message: err.message },
             { status: 500 },
         );
     }

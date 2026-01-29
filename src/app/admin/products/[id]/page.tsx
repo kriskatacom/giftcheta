@@ -4,7 +4,6 @@ import { FiPlus } from "react-icons/fi";
 import { websiteName } from "@/lib/utils";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { getProductByColumn } from "@/lib/services/product-service";
 import NameAndSlugForm from "@/app/admin/products/[id]/name-and-slug-form";
 import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import { Alert } from "@/components/alert";
@@ -21,11 +20,16 @@ type Props = {
     }>;
 };
 
+import { getDb } from "@/lib/db";
+import { ProductService } from "@/lib/services/product-service";
+
+const productService = new ProductService(getDb());
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
 
     if (id !== "new") {
-        const product = await getProductByColumn("id", id);
+        const product = await productService.getItemByColumn("id", id);
 
         if (product) {
             return {
@@ -45,12 +49,12 @@ type Params = {
     }>;
 };
 
-export default async function UpdateProduct({ params }: Params) {
+export default async function updateItem({ params }: Params) {
     const { id } = await params;
     let product = null;
 
     if (id !== "new") {
-        product = await getProductByColumn("id", id);
+        product = await productService.getItemByColumn("id", id);
     }
 
     const breadcrumbs: BreadcrumbItem[] = [

@@ -6,13 +6,16 @@ import { websiteName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import ClientPage from "@/app/admin/products/client-page";
-import { getProducts } from "@/lib/services/product-service";
 import Export from "@/app/admin/products/export";
 import DeleteAll from "@/app/admin/products/delete-all";
+import { getDb } from "@/lib/db";
+import { ProductService } from "@/lib/services/product-service";
 
 export const metadata: Metadata = {
     title: websiteName("Продукти"),
 };
+
+const productService = new ProductService(getDb());
 
 export default async function ProductsPage() {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -20,7 +23,7 @@ export default async function ProductsPage() {
         { name: "Продукти", href: "/admin/products" },
     ];
 
-    const products = await getProducts();
+    const products = await productService.getItems();
 
     return (
         <div className="flex">

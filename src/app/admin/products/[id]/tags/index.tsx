@@ -90,20 +90,26 @@ export default function TagsForm({ product }: Params) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.post("/api/products/tags", formData);
+            const res = await axios.put("/api/products/tags", formData);
 
             if (res.data.success) {
-                toast.success("Таговете са запазени!");
-                setFormData(res.data.data);
+                setFormData(res.data.product);
+                toast.success("Промените са запазени!");
             } else {
-                toast.error(res.data.error || "Възникна грешка");
+                toast.error(res.data.message || "Възникна грешка");
             }
         } catch (err: any) {
             if (err.response?.status === 400) {
-                setErrors(err.response.data?.errors ?? {});
+                const zodErrors = err.response.data?.errors ?? [];
+                const formattedErrors: Record<string, string> = {};
+                zodErrors.forEach((e: any) => {
+                    if (e.path?.[0]) formattedErrors[e.path[0]] = e.message;
+                });
+                toast.error("Грешка при изпращане");
+                setErrors(formattedErrors);
             } else {
                 console.error(err);
-                toast.error("Грешка при запис");
+                toast.error("Грешка при изпращане");
             }
         } finally {
             setIsSubmitting(false);
@@ -121,7 +127,9 @@ export default function TagsForm({ product }: Params) {
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
                         <span>Тагове</span>
-                        <Badge variant={"outline"}>{formData.tags.length}</Badge>
+                        <Badge variant={"outline"}>
+                            {formData.tags.length}
+                        </Badge>
                     </div>
                 </AccordionTrigger>
 

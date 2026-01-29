@@ -8,16 +8,18 @@ export type NavbarItem = {
     icon?: IconType;
 };
 
+export type ProductStatus = "active" | "inactive" | "draft";
+
 export interface Product {
     id: number;
     name: string;
-    slug: string;
+    slug?: string;
     description?: string;
     short_description?: string;
-    price: number;
-    sale_price: number | null;
+    price?: number;
+    sale_price?: number | null;
     stock_quantity?: number;
-    status: "active" | "inactive" | "draft";
+    status?: ProductStatus;
     category_id?: number;
     tags?: string[];
     images?: string;

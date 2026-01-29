@@ -1,42 +1,59 @@
-import { deleteUploadedFile, saveUploadedFile } from "@/app/api/lib";
-import {
-    getProductByColumn,
-    updateProduct,
-} from "@/lib/services/product-service";
-import { slugify } from "@/lib/utils";
 import { NextResponse } from "next/server";
+import { deleteUploadedFile, saveUploadedFile } from "@/app/api/lib";
+import { slugify } from "@/lib/utils";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
 
-type Params = {
-    params: Promise<{ id: string }>;
+const productService = new ProductService(getDb());
+
+type Props = {
+    params: Promise<{
+        id: string;
+    }>;
 };
 
-export async function POST(req: Request, { params }: Params) {
-    const { id } = await params;
+export async function POST(req: Request, { params }: Props) {
+    const productId = Number((await params).id);
+
+    if (isNaN(productId)) {
+        return NextResponse.json(
+            { error: "Невалиден идентификатор на продукт." },
+            { status: 400 },
+        );
+    }
 
     const formData = await req.formData();
     const files = formData.getAll("images") as File[];
-    const isWithBaseName = formData.get("with_base_name");
+    const isWithBaseName = formData.get("with_base_name") === "true";
 
     if (!files.length) {
         return NextResponse.json(
-            { error: "Няма файлове за качване" },
+            { error: "Няма файлове за качване." },
             { status: 400 },
         );
     }
 
     try {
-        const product = await getProductByColumn("id", id);
-
+        const product = await productService.getItemByColumn("id", productId);
         if (!product) {
             return NextResponse.json(
-                { error: "Този продукт не съществува" },
-                { status: 400 },
+                { error: "Този продукт не съществува." },
+                { status: 404 },
             );
         }
 
-        const baseName = (isWithBaseName && slugify(product.name)) || "";
+        const baseName = isWithBaseName ? slugify(product.name) : "";
 
-        const currentImages = product?.images ? JSON.parse(product.images) : [];
+        let currentImages: string[] = [];
+        if (Array.isArray(product.images)) {
+            currentImages = product.images;
+        } else if (typeof product.images === "string" && product.images) {
+            try {
+                currentImages = JSON.parse(product.images);
+            } catch {
+                currentImages = [];
+            }
+        }
 
         const uploadedUrls: string[] = [];
         for (const file of files) {
@@ -46,7 +63,7 @@ export async function POST(req: Request, { params }: Params) {
 
         const updatedImages = [...currentImages, ...uploadedUrls];
 
-        const updatedProduct = await updateProduct(Number(id), {
+        const updatedProduct = await productService.updateItem(productId, {
             images: JSON.stringify(updatedImages),
         });
 
@@ -56,21 +73,20 @@ export async function POST(req: Request, { params }: Params) {
             product: updatedProduct,
         });
     } catch (err: any) {
-        console.error(err);
+        console.error("Error uploading images:", err);
         return NextResponse.json(
-            { error: err.message || "Грешка при качване" },
-            { status: 400 },
+            { error: err.message || "Грешка при качване на изображенията." },
+            { status: 500 },
         );
     }
 }
 
-export async function DELETE(req: Request, { params }: Params) {
-    const { id } = await params;
-    const productId = Number(id);
-
+export async function DELETE(req: Request, { params }: Props) {
+    const productId = Number((await params).id);
+    
     if (isNaN(productId)) {
         return NextResponse.json(
-            { error: "Invalid product id" },
+            { error: "Невалиден идентификатор на продукт." },
             { status: 400 },
         );
     }
@@ -80,26 +96,24 @@ export async function DELETE(req: Request, { params }: Params) {
 
     if (!imageUrl) {
         return NextResponse.json(
-            { error: "Липсва imageUrl за изтриване" },
+            { error: "Липсва imageUrl за изтриване." },
             { status: 400 },
         );
     }
 
     try {
-        const product = await getProductByColumn("id", productId);
-
+        const product = await productService.getItemByColumn("id", productId);
         if (!product) {
             return NextResponse.json(
-                { error: "Посолството не съществува" },
+                { error: "Този продукт не съществува." },
                 { status: 404 },
             );
         }
 
         let additionalImages: string[] = [];
-
         if (Array.isArray(product.images)) {
             additionalImages = product.images;
-        } else if (typeof product.images === "string") {
+        } else if (typeof product.images === "string" && product.images) {
             try {
                 additionalImages = JSON.parse(product.images);
             } catch {
@@ -113,15 +127,15 @@ export async function DELETE(req: Request, { params }: Params) {
 
         await deleteUploadedFile(imageUrl);
 
-        const productUpdated = await updateProduct(productId, {
+        const updatedProduct = await productService.updateItem(productId, {
             images: JSON.stringify(updatedImages),
         });
 
-        return NextResponse.json({ success: true, product: productUpdated });
+        return NextResponse.json({ success: true, product: updatedProduct });
     } catch (err: any) {
-        console.error(err);
+        console.error("Error deleting image:", err);
         return NextResponse.json(
-            { error: err.message || "Грешка при изтриване" },
+            { error: err.message || "Грешка при изтриване на изображението." },
             { status: 500 },
         );
     }

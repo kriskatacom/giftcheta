@@ -1,68 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-    createOrUpdateProductNameSlug,
-    getProductByColumn,
-} from "@/lib/services/product-service";
-import { productNameSlugSchema } from "@/app/admin/products/[id]/name-and-slug-form/schema";
+    productNameSlugSchema,
+    ProductBaseInput,
+} from "@/app/admin/products/[id]/name-and-slug-form/schema";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
+
+const productService = new ProductService(getDb());
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const parsedResult = productNameSlugSchema.safeParse(body);
+        const input: ProductBaseInput = productNameSlugSchema.parse(body);
 
-        if (!parsedResult.success) {
-            const errors: Record<string, string> = {};
-
-            parsedResult.error.issues.forEach((issue) => {
-                const field = issue.path[0] as string;
-                errors[field] = issue.message;
-            });
-
-            return NextResponse.json(
-                { success: false, errors },
-                { status: 400 },
-            );
-        }
-
-        const parsed = parsedResult.data;
-
-        const result = await createOrUpdateProductNameSlug(parsed);
-
-        const updatedProduct = await getProductByColumn(
-            "id",
-            parsed.id as number,
-        );
+        const result = await productService.createItem({
+            name: input.name,
+            slug: input.slug,
+        });
 
         return NextResponse.json(
             {
                 success: true,
-                productId: result.id,
-                data: updatedProduct,
                 created: result.created,
+                product: result.product,
             },
-            { status: result.created ? 201 : 200 },
+            { status: 201 },
         );
     } catch (err: any) {
-        if (err?.code === "slug") {
+        if (err.errors) {
             return NextResponse.json(
-                {
-                    success: false,
-                    errors: {
-                        slug: err.message,
-                    },
-                },
+                { success: false, errors: err.errors },
                 { status: 400 },
             );
         }
 
-        console.error("API error:", err);
+        console.log(err);
+
+        return NextResponse.json(
+            { success: false, message: err.message },
+            { status: 500 },
+        );
+    }
+}
+
+export async function PUT(req: NextRequest) {
+    try {
+        const body = await req.json();
+
+        const input: ProductBaseInput = productNameSlugSchema.parse(body);
+
+        if (!input.id) {
+            return NextResponse.json(
+                { success: false, message: "Не е предоставен ID на продукта" },
+                { status: 400 },
+            );
+        }
+
+        const updatedProduct = await productService.updateItem(input.id, {
+            name: input.name,
+            slug: input.slug,
+        });
 
         return NextResponse.json(
             {
-                success: false,
-                error: "Сървърна грешка.",
+                success: true,
+                updated: true,
+                product: updatedProduct,
             },
+            { status: 200 },
+        );
+    } catch (err: any) {
+        if (err.errors) {
+            return NextResponse.json(
+                { success: false, errors: err.errors },
+                { status: 400 },
+            );
+        }
+        
+        console.log(err);
+        
+        return NextResponse.json(
+            { success: false, message: err.message },
             { status: 500 },
         );
     }
