@@ -32,6 +32,7 @@ import { FiUsers } from "react-icons/fi";
 import { IoColorFillSharp, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineProduct } from "react-icons/ai";
 import { MdOutlineDashboard } from "react-icons/md";
+import { SlSizeFullscreen } from "react-icons/sl";
 import { BsCartCheck } from "react-icons/bs";
 import { TbCategory } from "react-icons/tb";
 
@@ -60,6 +61,11 @@ export const mainSidebarItems: NavbarItem[] = [
         label: "Категории",
         icon: TbCategory,
         href: "/admin/categories",
+    },
+    {
+        label: "Размери",
+        icon: SlSizeFullscreen,
+        href: "/admin/sizes",
     },
     {
         label: "Цветове",
