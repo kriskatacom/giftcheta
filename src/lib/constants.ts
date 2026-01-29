@@ -29,10 +29,10 @@ export const LOGO: string = "/images/giftcheta-logo.png";
 export const WEBSITE_NAME: string = "GIFTCHETA.COM";
 
 import { FiUsers } from "react-icons/fi";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoColorFillSharp, IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineProduct } from "react-icons/ai";
 import { MdOutlineDashboard } from "react-icons/md";
-import { BsCartCheck, BsTags } from "react-icons/bs";
+import { BsCartCheck } from "react-icons/bs";
 import { TbCategory } from "react-icons/tb";
 
 export const mainSidebarItems: NavbarItem[] = [
@@ -62,9 +62,9 @@ export const mainSidebarItems: NavbarItem[] = [
         href: "/admin/categories",
     },
     {
-        label: "Тагове",
-        icon: BsTags,
-        href: "/admin/tags",
+        label: "Цветове",
+        icon: IoColorFillSharp,
+        href: "/admin/colors",
     },
     {
         label: "Настройки",

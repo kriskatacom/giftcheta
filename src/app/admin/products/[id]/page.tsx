@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { FiPlus } from "react-icons/fi";
 import { websiteName } from "@/lib/utils";
-import ImageUpload from "@/components/image-upload";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { getProductByColumn } from "@/lib/services/product-service";
@@ -11,11 +10,10 @@ import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import { Alert } from "@/components/alert";
 import PricingForm from "@/app/admin/products/[id]/pricing";
 import DescriptionForm from "@/app/admin/products/[id]/description";
-import AdditionalImages from "@/components/additional-images";
 import TagsForm from "@/app/admin/products/[id]/tags";
 import ImageForm from "@/app/admin/products/[id]/image";
-import ImagesForm from "./images";
-import InventoryForm from "./inventory";
+import ImagesForm from "@/app/admin/products/[id]/images";
+import InventoryForm from "@/app/admin/products/[id]/inventory";
 
 type Props = {
     params: Promise<{
