@@ -20,7 +20,7 @@ export default function ClientPage({ data }: ClientPageProps) {
             const res = await axios.post("/api/sizes/bulk-delete", { ids: selectedIds });
 
             if (res.status === 200) {
-                const message = parseInt(res.data.deletedCount) === 1 ? "Беше премахнат 1 размер." : `Бяха премахнати ${res.data.deletedCount} размери.`;
+                const message = parseInt(res.data.deletedCount) === 1 ? "Беше премахнат 1 размер." : `Бяха премахнати ${res.data.deletedCount} размера.`;
                 toast.success(message);
                 router.refresh();
             }

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { SizeService } from "@/lib/services/size-service";
+import { ColorService } from "@/lib/services/color-service";
 
-const sizeService = new SizeService(getDb());
+const colorService = new ColorService(getDb());
 
 export async function POST(req: Request) {
     try {
@@ -11,13 +11,13 @@ export async function POST(req: Request) {
 
         if (!Array.isArray(ids) || ids.length === 0) {
             return NextResponse.json(
-                { message: "Не са предоставени IDs за изтриване" },
+                { message: "Не са подадени ID-та за изтриване" },
                 { status: 400 },
             );
         }
 
         for (const id of ids) {
-            await sizeService.deleteSize(Number(id));
+            await colorService.deleteColor(Number(id));
         }
 
         return NextResponse.json({
@@ -25,10 +25,10 @@ export async function POST(req: Request) {
             deletedIds: ids,
             deletedCount: ids.length,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error(error);
         return NextResponse.json(
-            { message: "Грешка при изтриване на размерите" },
+            { message: "Грешка при масово изтриване на цветове" },
             { status: 500 },
         );
     }

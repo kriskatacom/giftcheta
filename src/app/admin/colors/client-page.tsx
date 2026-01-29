@@ -20,7 +20,7 @@ export default function ClientPage({ data }: ClientPageProps) {
             const res = await axios.post("/api/colors/bulk-delete", { ids: selectedIds });
 
             if (res.status === 200) {
-                const message = parseInt(res.data.deletedCount) === 1 ? "Беше премахнат 1 цвят." : `Бяха премахнати ${res.data.deletedCount} цветове.`;
+                const message = parseInt(res.data.deletedCount) === 1 ? "Беше премахнат 1 цвят." : `Бяха премахнати ${res.data.deletedCount} цвята.`;
                 toast.success(message);
                 router.refresh();
             }

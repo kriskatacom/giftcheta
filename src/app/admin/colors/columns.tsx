@@ -120,7 +120,7 @@ export const columns: ColumnDef<Color>[] = [
 
             const handleDelete = async () => {
                 try {
-                    const res = await axios.delete(`/api/colors/${product.id}`);
+                    const res = await axios.delete(`/api/colors?id=${product.id}`);
 
                     if (res.data.success) {
                         router.refresh();
