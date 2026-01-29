@@ -24,7 +24,7 @@ export async function POST(req: Request, { params }: Props) {
 
     const formData = await req.formData();
     const file = formData.get("image") as File | null;
-    const isWithBaseName = formData.get("with_base_name") === "true";
+    const isWithBaseName = formData.get("with_base_name") === "yes";
 
     if (!file) {
         return NextResponse.json({ error: "Няма качен файл." }, { status: 400 });

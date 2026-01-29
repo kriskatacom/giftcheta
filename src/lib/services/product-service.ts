@@ -1,4 +1,4 @@
-import { Product } from "@/lib/types";
+import { Product, ProductStatus } from "@/lib/types";
 import { getDb } from "@/lib/db";
 import { slugify } from "@/lib/utils";
 import { ProductBaseInput } from "@/app/admin/products/[id]/name-and-slug-form/schema";
@@ -24,12 +24,28 @@ type Result = {
     product: Product | null;
 };
 
-type GetProductsOptions = {
-    column?: "id" | "slug" | "name" | "category_id";
-    value?: string | number;
+type ProductFilter = {
+    id: number;
+    slug: string;
+    name: string;
+    category_id: number;
+    status: ProductStatus;
 };
 
-const allowedColumns = ["id", "slug", "name", "category_id"] as const;
+export type GetProductsOptions<
+    K extends keyof ProductFilter = keyof ProductFilter,
+> = {
+    column?: K;
+    value?: ProductFilter[K];
+};
+
+const allowedColumns: (keyof ProductFilter)[] = [
+    "id",
+    "slug",
+    "name",
+    "category_id",
+    "status",
+];
 
 export class ProductService {
     constructor(private readonly pool: Pool) {}
@@ -91,10 +107,7 @@ export class ProductService {
         };
     }
 
-    async updateItem(
-        id: number,
-        product: Partial<Product>,
-    ): Promise<Product> {
+    async updateItem(id: number, product: Partial<Product>): Promise<Product> {
         const fields: string[] = [];
         const values: any[] = [];
 

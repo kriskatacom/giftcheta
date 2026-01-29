@@ -1,12 +1,15 @@
 import fs from "fs/promises";
 import { NextResponse } from "next/server";
-import { getProducts } from "@/lib/services/product-service";
-import { exportProductsWithImagesZip } from "../../lib/exports";
+import { exportProductsWithImagesZip } from "@/app/api/lib/exports";
+import { ProductService } from "@/lib/services/product-service";
+import { getDb } from "@/lib/db";
 
 export const runtime = "nodejs";
 
+const productService = new ProductService(getDb());
+
 export async function GET() {
-    const products = await getProducts();
+    const products = await productService.getItems();
     if (!products?.length)
         return NextResponse.json({ message: "Няма данни за експорт" }, { status: 404 });
 

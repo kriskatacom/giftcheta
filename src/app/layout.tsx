@@ -16,7 +16,7 @@ export default function RootLayout({
         <html lang="bg" suppressHydrationWarning>
             <body
                 suppressHydrationWarning
-                className={`${inter.variable} bg-slate-50 font-sans`}
+                className={`${inter.variable} font-sans`}
             >
                 {children}
             </body>

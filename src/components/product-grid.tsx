@@ -1,43 +1,22 @@
 "use client";
 
 import ProductCard from "@/components/product-card";
-
-const products = [
-    {
-        image: "/images/product1.jpg",
-        title: "Стилна чанта",
-        price: 120,
-        badge: "Sale",
-    },
-    {
-        image: "/images/product2.jpg",
-        title: "Елегантни обувки",
-        price: 150,
-    },
-    {
-        image: "/images/product3.jpg",
-        title: "Слънчеви очила",
-        price: 80,
-        badge: "New",
-    },
-];
+import { Product } from "@/lib/types";
 
 type ProductGridProps = {
     className?: string;
+    products: Product[];
 };
 
-export default function ProductGrid({ className }: ProductGridProps) {
+export default function ProductGrid({ className, products }: ProductGridProps) {
     return (
         <div className={className}>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map((product, index) => (
                     <ProductCard
                         key={index}
-                        image={product.image}
-                        title={product.title}
-                        price={product.price}
-                        badge={product.badge}
-                        onAddToCart={() => alert(`Added ${product.title}`)}
+                        product={product}
+                        onAddToCart={() => alert(`Added ${product.name}`)}
                     />
                 ))}
             </div>

@@ -24,7 +24,7 @@ export async function POST(req: Request, { params }: Props) {
 
     const formData = await req.formData();
     const files = formData.getAll("images") as File[];
-    const isWithBaseName = formData.get("with_base_name") === "true";
+    const isWithBaseName = formData.get("with_base_name") === "yes";
 
     if (!files.length) {
         return NextResponse.json(
