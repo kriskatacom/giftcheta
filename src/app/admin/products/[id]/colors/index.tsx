@@ -102,20 +102,31 @@ export default function ColorsForm({ product, colors }: Params) {
         toast.success(`Кодът ${code} е копиран!`);
     };
 
+    function getTextColor(bgColor: string) {
+        const hex = bgColor.replace("#", "");
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 125 ? "#000000" : "#FFFFFF";
+    }
+
     return (
         <Accordion
             type="single"
             collapsible
             value={openValue}
             onValueChange={setOpenValue}
+            className="w-full"
         >
             <AccordionItem value="product-colors" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
                         <span>Цветове</span>
-                        <Badge variant="outline">
-                            {formData.colors.length}
-                        </Badge>
+                        {formData.colors.length > 0 && (
+                            <span>({formData.colors.length})</span>
+                        )}
                     </div>
                 </AccordionTrigger>
 
@@ -135,31 +146,20 @@ export default function ColorsForm({ product, colors }: Params) {
                                             toggleColor(color.id)
                                         }
                                     />
-                                    <div className="flex items-center gap-2 relative group">
-                                        {/* Цветният бутон */}
+                                    <div className="relative flex items-center gap-2 group">
                                         <button
-                                            onClick={(event) =>
-                                                copyColor(event, color.code)
+                                            onClick={(e) =>
+                                                copyColor(e, color.code)
                                             }
                                             title="Копиране на кода"
-                                            className="w-6 h-6 rounded-full border-2 border-white shrink-0 transition-transform transform group-hover:scale-110 cursor-pointer"
+                                            className="relative py-2 px-4 rounded-full shrink-0 transition-transform transform group-hover:scale-110 cursor-pointer"
                                             style={{
                                                 backgroundColor: color.code,
+                                                color: getTextColor(color.code),
                                             }}
-                                        />
-
-                                        {/* Кодът */}
-                                        <span className="font-mono text-sm">
+                                        >
                                             {color.code}
-                                        </span>
-
-                                        {/* Preview при hover */}
-                                        <div
-                                            className="absolute left-20 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-gray-300 shadow-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none"
-                                            style={{
-                                                backgroundColor: color.code,
-                                            }}
-                                        ></div>
+                                        </button>
                                     </div>
                                 </label>
                             ))}

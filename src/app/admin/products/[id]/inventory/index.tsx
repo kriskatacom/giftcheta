@@ -129,6 +129,7 @@ export default function InventoryForm({ product }: Props) {
             collapsible
             value={openValue}
             onValueChange={setOpenValue}
+            className="w-full"
         >
             <AccordionItem value="inventory" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl hover:bg-accent border-b">

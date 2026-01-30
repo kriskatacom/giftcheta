@@ -95,7 +95,7 @@ export default function CreateAndupdateItemForm({ size }: Params) {
         setIsSubmitting(true);
 
         try {
-            const url = size?.id ? `/api/sizes/${size.id}` : `/api/sizes`;
+            const url = size?.id ? `/api/sizes?id=${size.id}` : `/api/sizes`;
             const method = size?.id ? "PUT" : "POST";
 
             const res = await axios({

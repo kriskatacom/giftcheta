@@ -52,7 +52,10 @@ export async function exportProductsToExcel(rows: any[]) {
 
         if (product.images) {
             try {
-                const images: string[] = JSON.parse(product.images);
+                const images: string[] = Array.isArray(product.images)
+                    ? product.images
+                    : [];
+                
                 for (const img of images) {
                     await copyImage(img, productDir);
                 }
@@ -111,7 +114,10 @@ export async function exportProductsWithImagesZip(rows: any[]) {
 
         if (product.images) {
             try {
-                const images: string[] = JSON.parse(product.images);
+                const images: string[] = Array.isArray(product.images)
+                    ? product.images
+                    : [];
+                
                 if (Array.isArray(images)) {
                     for (const img of images) {
                         const imgPath = path.join(process.cwd(), "public", img);

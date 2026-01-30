@@ -117,6 +117,7 @@ export class ProductService {
             tags: product.tags ? JSON.parse(product.tags) : [],
             images: product.images ? JSON.parse(product.images) : [],
             sizes: [],
+            colors: [],
         };
 
         const [sizeRows] = await getDb().execute<RowDataPacket[]>(
@@ -126,6 +127,13 @@ export class ProductService {
 
         parsedProduct.sizes = sizeRows.map((row) => row.size_id);
 
+        const [colorRows] = await getDb().execute<RowDataPacket[]>(
+            `SELECT color_id FROM product_colors WHERE product_id = ?`,
+            [product.id],
+        );
+
+        parsedProduct.colors = colorRows.map((row) => row.color_id);
+
         return parsedProduct;
     }
 
@@ -134,13 +142,8 @@ export class ProductService {
         const values: any[] = [];
 
         for (const [key, value] of Object.entries(product)) {
-            if (key === "tags" || key === "images") {
-                fields.push(`${key} = ?`);
-                values.push(value ? JSON.stringify(value) : null);
-            } else {
-                fields.push(`${key} = ?`);
-                values.push(value);
-            }
+            fields.push(`${key} = ?`);
+            values.push(value);
         }
 
         if (fields.length === 0) {

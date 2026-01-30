@@ -28,6 +28,20 @@ export async function POST(req: NextRequest) {
             { status: 201 },
         );
     } catch (err: any) {
+        if (err?.code === "ER_DUP_ENTRY") {
+            if (err.sqlMessage?.includes("slug")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        errors: {
+                            slug: "Този адрес вече съществува",
+                        },
+                    },
+                    { status: 400 },
+                );
+            }
+        }
+
         if (err.errors) {
             return NextResponse.json(
                 { success: false, errors: err.errors },
@@ -71,6 +85,20 @@ export async function PUT(req: NextRequest) {
             { status: 200 },
         );
     } catch (err: any) {
+        if (err?.code === "ER_DUP_ENTRY") {
+            if (err.sqlMessage?.includes("slug")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        errors: {
+                            slug: "Този адрес вече съществува",
+                        },
+                    },
+                    { status: 400 },
+                );
+            }
+        }
+        
         if (err.errors) {
             return NextResponse.json(
                 { success: false, errors: err.errors },

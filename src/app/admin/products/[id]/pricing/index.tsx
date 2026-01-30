@@ -110,6 +110,7 @@ export default function PricingForm({ product }: Params) {
             collapsible
             value={openValue}
             onValueChange={(value) => setOpenValue(value)}
+            className="w-full"
         >
             <AccordionItem value="pricing" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">

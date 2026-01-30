@@ -22,7 +22,7 @@ export async function PUT(req: NextRequest) {
         }
 
         const updatedProduct = await productService.updateItem(input.id, {
-            tags: input.tags ?? [],
+            tags: JSON.stringify(input.tags),
         });
 
         return NextResponse.json(

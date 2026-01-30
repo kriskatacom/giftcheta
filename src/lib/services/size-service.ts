@@ -125,7 +125,9 @@ export class SizeService {
     // DELETE ALL
     async deleteAllItems(useTruncate: boolean = false): Promise<void> {
         if (useTruncate) {
+            await this.pool.execute(`SET FOREIGN_KEY_CHECKS = 0`);
             await this.pool.execute(`TRUNCATE TABLE sizes`);
+            await this.pool.execute(`SET FOREIGN_KEY_CHECKS = 1`);
         } else {
             await this.pool.execute<ResultSetHeader>(`DELETE FROM sizes`);
         }

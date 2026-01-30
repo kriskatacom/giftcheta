@@ -49,7 +49,9 @@ export async function POST(req: Request, { params }: Props) {
             currentImages = product.images;
         } else if (typeof product.images === "string" && product.images) {
             try {
-                currentImages = JSON.parse(product.images);
+                currentImages = Array.isArray(product.images)
+                    ? product.images
+                    : [];
             } catch {
                 currentImages = [];
             }
@@ -61,10 +63,8 @@ export async function POST(req: Request, { params }: Props) {
             if (url) uploadedUrls.push(url);
         }
 
-        const updatedImages = [...currentImages, ...uploadedUrls];
-
         const updatedProduct = await productService.updateItem(productId, {
-            images: JSON.stringify(updatedImages),
+            images: JSON.stringify([...currentImages, ...uploadedUrls]),
         });
 
         return NextResponse.json({
@@ -115,7 +115,9 @@ export async function DELETE(req: Request, { params }: Props) {
             additionalImages = product.images;
         } else if (typeof product.images === "string" && product.images) {
             try {
-                additionalImages = JSON.parse(product.images);
+                additionalImages = Array.isArray(product.images)
+                    ? product.images
+                    : [];
             } catch {
                 additionalImages = [];
             }

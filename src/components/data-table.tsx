@@ -48,7 +48,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 // ==============================
 // Icons
 // ==============================
-import { ChevronDown, GripVertical, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 
 // ==============================
@@ -79,6 +79,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { RiDragMove2Fill } from "react-icons/ri";
 
 type Identifiable = {
     id: string | number;
@@ -98,7 +99,9 @@ type DataTableProps<TData extends Identifiable> = {
 };
 
 // Drag handle column definition
-export function createDragHandleColumn<TData extends Identifiable>(): ColumnDef<TData> {
+export function createDragHandleColumn<
+    TData extends Identifiable,
+>(): ColumnDef<TData> {
     return {
         id: "drag-handle",
         header: () => null,
@@ -121,7 +124,7 @@ function DragHandle({ rowId }: { rowId: string | number }) {
             {...attributes}
             {...listeners}
         >
-            <GripVertical className="h-4 w-4 text-muted-foreground" />
+            <RiDragMove2Fill className="h-4 w-4 text-muted-foreground" />
         </Button>
     );
 }

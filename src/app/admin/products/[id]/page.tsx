@@ -6,7 +6,6 @@ import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import NameAndSlugForm from "@/app/admin/products/[id]/name-and-slug-form";
 import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
-import { Alert } from "@/components/alert";
 import PricingForm from "@/app/admin/products/[id]/pricing";
 import DescriptionForm from "@/app/admin/products/[id]/description";
 import TagsForm from "@/app/admin/products/[id]/tags";
@@ -26,6 +25,7 @@ import { SizeService } from "@/lib/services/size-service";
 import SizesForm from "@/app/admin/products/[id]/sizes";
 import ColorsForm from "./colors";
 import { ColorService } from "@/lib/services/color-service";
+import ProductForms from "./product-forms";
 
 const productService = new ProductService(getDb());
 const sizeService = new SizeService(getDb());
@@ -69,14 +69,26 @@ export default async function updateItem({ params }: Params) {
     const breadcrumbs: BreadcrumbItem[] = [
         { name: "Табло", href: "/admin/dashboard" },
         { name: "Продукти", href: "/admin/products" },
-        {
-            name: `${id !== "new" ? "Редактиране" : "Добавяне"}`,
-        },
+        { name: `${id !== "new" ? "Редактиране" : "Добавяне"}` },
     ];
 
-    const additionalImages = product?.images
-        ? JSON.parse(product.images)
-        : null;
+    const images: string[] = Array.isArray(product?.images)
+        ? product?.images
+        : [];
+
+    const sections = {
+        image: product && <ImageForm product={product} />,
+        images: product && (
+            <ImagesForm images={images} productId={product.id} />
+        ),
+        nameSlug: <NameAndSlugForm product={product} />,
+        pricing: product && <PricingForm product={product} />,
+        inventory: product && <InventoryForm product={product} />,
+        description: product && <DescriptionForm product={product} />,
+        tags: product && <TagsForm product={product} />,
+        colors: product && <ColorsForm product={product} colors={colors} />,
+        sizes: product && <SizesForm product={product} sizes={sizes} />,
+    };
 
     return (
         <div className="flex">
@@ -100,38 +112,10 @@ export default async function updateItem({ params }: Params) {
 
                 <Breadcrumbs items={breadcrumbs} />
 
-                {(!product || !product.id) && (
-                    <Alert title="Важно!" variant="info" className="m-5">
-                        Всички полета със звездичка (*) са задължителни!
-                    </Alert>
-                )}
-
-                <div className="grid gap-5 p-5">
-                    <div className="grid xl:grid-cols-2 gap-5">
-                        <NameAndSlugForm product={product} />
-                        {product && <PricingForm product={product} />}
-                    </div>
-                    {product && <DescriptionForm product={product} />}
-                    {product?.id && (
-                        <div className="grid xl:grid-cols-2 gap-5">
-                            <InventoryForm product={product} />
-                            <TagsForm product={product} />
-                        </div>
-                    )}
-                    {product?.id && (
-                        <>
-                            <SizesForm product={product} sizes={sizes} />
-                            <ColorsForm product={product} colors={colors} />
-                        </>
-                    )}
-                    {product?.id && <ImageForm product={product} />}
-                    {product?.id && (
-                        <ImagesForm
-                            images={additionalImages ?? []}
-                            productId={product.id}
-                        />
-                    )}
-                </div>
+                <ProductForms
+                    storageKey="product-form-order"
+                    sections={sections}
+                />
             </main>
         </div>
     );

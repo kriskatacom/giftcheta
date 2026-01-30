@@ -34,8 +34,10 @@ export async function DELETE(_: Request, { params }: Props) {
         if (product.image) {
             await deleteUploadedFile(product.image);
         }
-
-        const images: string[] = JSON.parse(product.images as string);
+        
+        const images: string[] = Array.isArray(product.images)
+            ? product.images
+            : [];
 
         if (images.length > 0) {
             await Promise.all(

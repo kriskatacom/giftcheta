@@ -52,13 +52,21 @@ export default function TagsForm({ product }: Params) {
     }, [openValue]);
 
     const addTag = () => {
-        const value = tagInput.trim().toLowerCase();
-        if (!value) return;
-        if (formData.tags?.includes(value)) return;
+        if (!tagInput) return;
+
+        const newTags = tagInput
+            .split("#")
+            .map((tag) => tag.trim().toLowerCase())
+            .filter((tag) => tag.length > 0);
+
+        if (!newTags.length) return;
 
         setFormData((prev) => ({
             ...prev,
-            tags: [...(prev.tags ?? []), value],
+            tags: [
+                ...(prev.tags ?? []),
+                ...newTags.filter((tag) => !(prev.tags ?? []).includes(tag)),
+            ],
         }));
 
         setTagInput("");
@@ -122,6 +130,7 @@ export default function TagsForm({ product }: Params) {
             collapsible
             value={openValue}
             onValueChange={setOpenValue}
+            className="w-full"
         >
             <AccordionItem value="tags" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">

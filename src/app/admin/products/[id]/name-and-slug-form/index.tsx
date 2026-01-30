@@ -96,13 +96,7 @@ export default function NameAndSlugForm({ product }: Params) {
             }
         } catch (err: any) {
             if (err.response?.status === 400) {
-                const zodErrors = err.response.data?.errors ?? [];
-                const formattedErrors: Record<string, string> = {};
-                zodErrors.forEach((e: any) => {
-                    if (e.path?.[0]) formattedErrors[e.path[0]] = e.message;
-                });
-                toast.error("Грешка при изпращане");
-                setErrors(formattedErrors);
+                setErrors(err.response.data?.errors ?? {});
             } else {
                 console.error(err);
                 toast.error("Грешка при изпращане");
@@ -118,6 +112,7 @@ export default function NameAndSlugForm({ product }: Params) {
             collapsible
             value={openValue}
             onValueChange={(value) => setOpenValue(value)}
+            className="w-full"
         >
             <AccordionItem value="general" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">

@@ -97,12 +97,15 @@ export default function SizesForm({ product, sizes }: Params) {
             collapsible
             value={openValue}
             onValueChange={setOpenValue}
+            className="w-full"
         >
             <AccordionItem value="product-sizes" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
                         <span>Размери</span>
-                        <Badge variant="outline">{formData.sizes.length}</Badge>
+                        {formData.sizes.length > 0 && (
+                            <span>({formData.sizes.length})</span>
+                        )}
                     </div>
                 </AccordionTrigger>
 
