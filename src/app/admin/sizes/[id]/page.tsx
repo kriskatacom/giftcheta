@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SizeService } from "@/lib/services/size-service";
 import { getDb } from "@/lib/db";
 import CreateAndupdateItemForm from "@/app/admin/sizes/[id]/create-and-update-form";
+import DraggableForms from "@/components/draggable-forms";
 
 type Props = {
     params: Promise<{
@@ -61,6 +62,10 @@ export default async function Sizes({ params }: Params) {
         },
     ];
 
+    const sections = {
+        nameSlug: <CreateAndupdateItemForm size={size} />,
+    };
+
     return (
         <div className="flex">
             <MainSidebarServer />
@@ -81,9 +86,10 @@ export default async function Sizes({ params }: Params) {
 
                 <Breadcrumbs items={breadcrumbs} />
 
-                <div className="p-5">
-                    <CreateAndupdateItemForm size={size} />
-                </div>
+                <DraggableForms
+                    storageKey="size-form-order"
+                    sections={sections}
+                />
             </main>
         </div>
     );

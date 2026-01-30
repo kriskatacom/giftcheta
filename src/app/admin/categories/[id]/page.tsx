@@ -8,6 +8,7 @@ import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import NameForm from "@/app/admin/categories/[id]/name-and-slug-form";
 import { CategoryService } from "@/lib/services/category-service";
 import { getDb } from "@/lib/db";
+import DraggableForms from "@/components/draggable-forms";
 
 type Props = {
     params: Promise<{
@@ -56,10 +57,12 @@ export default async function UpdateCategory({ params }: Params) {
     const breadcrumbs: BreadcrumbItem[] = [
         { name: "Табло", href: "/admin/dashboard" },
         { name: "Категории", href: "/admin/categories" },
-        {
-            name: `${id !== "new" ? "Редактиране" : "Добавяне"}`,
-        },
+        { name: `${id !== "new" ? "Редактиране" : "Добавяне"}` },
     ];
+
+    const sections = {
+        nameSlug: <NameForm category={category} />,
+    };
 
     return (
         <div className="flex">
@@ -83,9 +86,10 @@ export default async function UpdateCategory({ params }: Params) {
 
                 <Breadcrumbs items={breadcrumbs} />
 
-                <div className="p-5">
-                    <NameForm category={category} />
-                </div>
+                <DraggableForms
+                    sections={sections}
+                    storageKey="category-form-order"
+                />
             </main>
         </div>
     );

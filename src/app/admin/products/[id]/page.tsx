@@ -25,7 +25,7 @@ import { SizeService } from "@/lib/services/size-service";
 import SizesForm from "@/app/admin/products/[id]/sizes";
 import ColorsForm from "./colors";
 import { ColorService } from "@/lib/services/color-service";
-import ProductForms from "./product-forms";
+import DraggableForms from "../../../../components/draggable-forms";
 
 const productService = new ProductService(getDb());
 const sizeService = new SizeService(getDb());
@@ -112,7 +112,7 @@ export default async function updateItem({ params }: Params) {
 
                 <Breadcrumbs items={breadcrumbs} />
 
-                <ProductForms
+                <DraggableForms
                     storageKey="product-form-order"
                     sections={sections}
                 />

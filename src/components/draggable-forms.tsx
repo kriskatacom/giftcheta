@@ -10,7 +10,7 @@ type Props = {
     sections: Record<string, React.ReactNode>;
 };
 
-export default function ProductForms({ storageKey, sections }: Props) {
+export default function DraggableForms({ storageKey, sections }: Props) {
     const [hasMounted, setHasMounted] = useState(false);
     
     const componentsMap: Record<string, React.ReactNode> = useMemo(() => ({

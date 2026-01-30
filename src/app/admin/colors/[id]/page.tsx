@@ -8,6 +8,7 @@ import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
 import CreateAndUpdateForm from "./name-form";
 import { ColorService } from "@/lib/services/color-service";
 import { getDb } from "@/lib/db";
+import DraggableForms from "@/components/draggable-forms";
 
 type Props = {
     params: Promise<{
@@ -61,6 +62,10 @@ export default async function updateItem({ params }: Params) {
         },
     ];
 
+    const sections = {
+        nameSlug: <CreateAndUpdateForm color={color} />,
+    };
+
     return (
         <div className="flex">
             <MainSidebarServer />
@@ -83,9 +88,10 @@ export default async function updateItem({ params }: Params) {
 
                 <Breadcrumbs items={breadcrumbs} />
 
-                <div className="p-5">
-                    <CreateAndUpdateForm color={color} />
-                </div>
+                <DraggableForms
+                    storageKey="color-form-order"
+                    sections={sections}
+                />
             </main>
         </div>
     );
