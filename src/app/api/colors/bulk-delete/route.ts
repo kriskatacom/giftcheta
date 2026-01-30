@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         }
 
         for (const id of ids) {
-            await colorService.deleteColor(Number(id));
+            await colorService.deleteItem(Number(id));
         }
 
         return NextResponse.json({

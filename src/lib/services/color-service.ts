@@ -22,7 +22,7 @@ export class ColorService {
     constructor(private readonly pool: Pool) {}
 
     // CREATE
-    async createColor(data: CreateColorDTO): Promise<Color> {
+    async createItem(data: CreateColorDTO): Promise<Color> {
         const [result] = await this.pool.execute<ResultSetHeader>(
             `INSERT INTO colors (name, code) VALUES (?, ?)`,
             [data.name, data.code],
@@ -36,7 +36,7 @@ export class ColorService {
     }
 
     // READ ALL
-    async getAllColors(): Promise<Color[]> {
+    async getAllItems(): Promise<Color[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             `SELECT id, name, code FROM colors ORDER BY sort_order`,
         );
@@ -45,7 +45,7 @@ export class ColorService {
     }
 
     // READ BY ID
-    async getColorById(id: number): Promise<Color | null> {
+    async getItemById(id: number): Promise<Color | null> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             `SELECT id, name, code FROM colors WHERE id = ?`,
             [id],
@@ -59,7 +59,7 @@ export class ColorService {
     }
 
     // UPDATE
-    async updateColor(id: number, data: UpdateColorDTO): Promise<boolean> {
+    async updateItem(id: number, data: UpdateColorDTO): Promise<boolean> {
         const fields: string[] = [];
         const values: any[] = [];
 
@@ -93,7 +93,7 @@ export class ColorService {
     }
 
     // DELETE
-    async deleteColor(id: number): Promise<boolean> {
+    async deleteItem(id: number): Promise<boolean> {
         const [result] = await this.pool.execute<ResultSetHeader>(
             `DELETE FROM colors WHERE id = ?`,
             [id],

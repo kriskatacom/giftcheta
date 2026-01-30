@@ -23,6 +23,18 @@ END$$
 
 DELIMITER ;
 
+CREATE TABLE product_colors (
+    product_id BIGINT UNSIGNED NOT NULL,
+    color_id INT NOT NULL,
+    PRIMARY KEY (product_id, color_id),
+    CONSTRAINT fk_product_colors_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_product_colors_color
+        FOREIGN KEY (color_id) REFERENCES colors(id)
+        ON DELETE CASCADE
+);
+
 -- Initial colors
 
 INSERT INTO colors (name, code) VALUES

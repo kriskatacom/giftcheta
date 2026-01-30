@@ -234,7 +234,10 @@ export class ProductService {
         return deletedCount;
     }
 
-    async syncProductSizes(productId: number, sizeIds: number[]): Promise<void> {
+    async syncProductSizes(
+        productId: number,
+        sizeIds: number[],
+    ): Promise<void> {
         const deleteSql = `DELETE FROM product_sizes WHERE product_id = ?`;
         await this.pool.execute<ResultSetHeader>(deleteSql, [productId]);
 
@@ -250,47 +253,22 @@ export class ProductService {
         await this.pool.query(insertSql, [values]);
     }
 
-    async getProductSizeIds(productId: number): Promise<number[]> {
-        const sql = `
-        SELECT size_id
-        FROM product_sizes
-        WHERE product_id = ?
-    `;
-
-        const [rows] = await this.pool.execute<RowDataPacket[]>(sql, [
-            productId,
-        ]);
-
-        return rows.map((row) => (row as { size_id: number }).size_id);
-    }
-
-    async removeSizeFromProduct(
+    async syncProductColors(
         productId: number,
-        sizeId: number,
-    ): Promise<boolean> {
-        const sql = `
-        DELETE FROM product_sizes
-        WHERE product_id = ? AND size_id = ?
-    `;
+        colorIds: number[],
+    ): Promise<void> {
+        const deleteSql = `DELETE FROM product_colors WHERE product_id = ?`;
+        await this.pool.execute<ResultSetHeader>(deleteSql, [productId]);
 
-        const [result] = await this.pool.execute<ResultSetHeader>(sql, [
-            productId,
-            sizeId,
-        ]);
+        if (!colorIds || colorIds.length === 0) return;
 
-        return result.affectedRows > 0;
-    }
+        const values = colorIds.map((colorId) => [productId, colorId]);
 
-    async removeAllSizesFromProduct(productId: number): Promise<number> {
-        const sql = `
-        DELETE FROM product_sizes
-        WHERE product_id = ?
-    `;
+        const insertSql = `
+            INSERT INTO product_colors (product_id, color_id)
+            VALUES ?
+        `;
 
-        const [result] = await this.pool.execute<ResultSetHeader>(sql, [
-            productId,
-        ]);
-
-        return result.affectedRows;
+        await this.pool.query(insertSql, [values]);
     }
 }

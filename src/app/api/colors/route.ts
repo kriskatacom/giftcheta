@@ -17,7 +17,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const color = await colorService.createColor({
+        const color = await colorService.createItem({
             name,
             code,
         });
@@ -42,7 +42,7 @@ export async function PUT(req: Request) {
             return NextResponse.json({ message: "Липсва ID" }, { status: 400 });
         }
 
-        const updated = await colorService.updateColor(id, {
+        const updated = await colorService.updateItem(id, {
             name,
             code,
             sort_order,
@@ -68,7 +68,7 @@ export async function PUT(req: Request) {
 // GET ALL – всички цветове
 export async function GET() {
     try {
-        const colors = await colorService.getAllColors();
+        const colors = await colorService.getAllItems();
         return NextResponse.json({ colors });
     } catch (error) {
         console.error(error);
@@ -89,7 +89,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ message: "Липсва ID" }, { status: 400 });
         }
 
-        const deleted = await colorService.deleteColor(id);
+        const deleted = await colorService.deleteItem(id);
 
         if (!deleted) {
             return NextResponse.json(

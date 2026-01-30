@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { ProductService } from "@/lib/services/product-service";
 import { getDb } from "@/lib/db";
-import { productSizesSchema, ProductSizesInput } from "@/app/admin/products/[id]/sizes/schema";
+import { productColorsSchema, ProductColorsInput } from "@/app/admin/products/[id]/colors/schema";
 
 const productService = new ProductService(getDb());
 
@@ -10,7 +10,7 @@ export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const parsed: ProductSizesInput = productSizesSchema.parse(body);
+        const parsed: ProductColorsInput = productColorsSchema.parse(body);
 
         if (!parsed.id) {
             return NextResponse.json(
@@ -19,13 +19,13 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        await productService.syncProductSizes(parsed.id, parsed.sizes ?? []);
+        await productService.syncProductColors(parsed.id, parsed.colors ?? []);
 
         const updatedProduct = await productService.getItemByColumn("id", parsed.id);
 
         return NextResponse.json({ success: true, product: updatedProduct });
     } catch (err: any) {
-        console.error("Error updating product sizes:", err);
+        console.error("Error updating product colors:", err);
 
         if (err instanceof z.ZodError) {
             return NextResponse.json(

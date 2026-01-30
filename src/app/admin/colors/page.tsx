@@ -21,7 +21,7 @@ export default async function Colors() {
     ];
 
     const colorService = new ColorService(getDb());
-    const colors = await colorService.getAllColors();
+    const colors = await colorService.getAllItems();
 
     return (
         <div className="flex">

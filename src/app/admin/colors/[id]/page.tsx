@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (id !== "new") {
         const color =
             id !== "new" && parseInt(id)
-                ? await colorService.getColorById(Number(id))
+                ? await colorService.getItemById(Number(id))
                 : null;
 
         if (color) {
@@ -44,13 +44,13 @@ type Params = {
     }>;
 };
 
-export default async function UpdateColor({ params }: Params) {
+export default async function updateItem({ params }: Params) {
     const { id } = await params;
 
     const colorService = new ColorService(getDb());
     const color =
         id !== "new" && parseInt(id)
-            ? await colorService.getColorById(Number(id))
+            ? await colorService.getItemById(Number(id))
             : null;
 
     const breadcrumbs: BreadcrumbItem[] = [

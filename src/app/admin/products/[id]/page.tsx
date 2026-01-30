@@ -24,9 +24,12 @@ import { getDb } from "@/lib/db";
 import { ProductService } from "@/lib/services/product-service";
 import { SizeService } from "@/lib/services/size-service";
 import SizesForm from "@/app/admin/products/[id]/sizes";
+import ColorsForm from "./colors";
+import { ColorService } from "@/lib/services/color-service";
 
 const productService = new ProductService(getDb());
 const sizeService = new SizeService(getDb());
+const colorService = new ColorService(getDb());
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
@@ -61,6 +64,7 @@ export default async function updateItem({ params }: Params) {
     }
 
     const sizes = await sizeService.getAllItems();
+    const colors = await colorService.getAllItems();
 
     const breadcrumbs: BreadcrumbItem[] = [
         { name: "Табло", href: "/admin/dashboard" },
@@ -108,12 +112,17 @@ export default async function updateItem({ params }: Params) {
                         {product && <PricingForm product={product} />}
                     </div>
                     {product && <DescriptionForm product={product} />}
-                    <div className="grid xl:grid-cols-2 gap-5">
-                        {product?.id && <InventoryForm product={product} />}
-                        {product && <TagsForm product={product} />}
-                    </div>
                     {product?.id && (
-                        <SizesForm product={product} sizes={sizes} />
+                        <div className="grid xl:grid-cols-2 gap-5">
+                            <InventoryForm product={product} />
+                            <TagsForm product={product} />
+                        </div>
+                    )}
+                    {product?.id && (
+                        <>
+                            <SizesForm product={product} sizes={sizes} />
+                            <ColorsForm product={product} colors={colors} />
+                        </>
                     )}
                     {product?.id && <ImageForm product={product} />}
                     {product?.id && (

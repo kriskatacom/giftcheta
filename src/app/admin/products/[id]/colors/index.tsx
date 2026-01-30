@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Product } from "@/lib/types";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
 import {
-    ProductSizesInput,
-    productSizesSchema,
-} from "@/app/admin/products/[id]/sizes/schema";
+    ProductColorsInput,
+    productColorsSchema,
+} from "@/app/admin/products/[id]/colors/schema";
 import {
     Accordion,
     AccordionItem,
@@ -19,19 +19,19 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Size } from "@/lib/services/size-service";
+import { Color } from "@/lib/services/color-service";
 
 type Params = {
     product: Product;
-    sizes: Size[];
+    colors: Color[];
 };
 
-type FormErrors = Partial<Record<"sizes", string>>;
+type FormErrors = Partial<Record<"colors", string>>;
 
-export default function SizesForm({ product, sizes }: Params) {
-    const [formData, setFormData] = useState<ProductSizesInput>({
+export default function ColorsForm({ product, colors }: Params) {
+    const [formData, setFormData] = useState<ProductColorsInput>({
         id: product?.id ?? null,
-        sizes: product?.sizes ?? [],
+        colors: product?.colors ?? [],
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
@@ -39,30 +39,30 @@ export default function SizesForm({ product, sizes }: Params) {
     const [openValue, setOpenValue] = useState<string | undefined>();
 
     useEffect(() => {
-        const saved = localStorage.getItem("accordion-product-sizes-open");
+        const saved = localStorage.getItem("accordion-product-colors-open");
         if (saved) setOpenValue(saved);
     }, []);
 
     useEffect(() => {
         if (openValue !== undefined) {
-            localStorage.setItem("accordion-product-sizes-open", openValue);
+            localStorage.setItem("accordion-product-colors-open", openValue);
         }
     }, [openValue]);
 
-    const toggleSize = (sizeId: number) => {
+    const toggleColor = (colorId: number) => {
         setFormData((prev) => ({
             ...prev,
-            sizes: prev.sizes.includes(sizeId)
-                ? prev.sizes.filter((id) => id !== sizeId)
-                : [...prev.sizes, sizeId],
+            colors: prev.colors.includes(colorId)
+                ? prev.colors.filter((id) => id !== colorId)
+                : [...prev.colors, colorId],
         }));
     };
 
     const validate = (): boolean => {
-        const parsed = productSizesSchema.safeParse(formData);
+        const parsed = productColorsSchema.safeParse(formData);
 
         if (!parsed.success) {
-            setErrors({ sizes: parsed.error.issues[0]?.message });
+            setErrors({ colors: parsed.error.issues[0]?.message });
             return false;
         }
 
@@ -77,7 +77,7 @@ export default function SizesForm({ product, sizes }: Params) {
         setIsSubmitting(true);
 
         try {
-            const res = await axios.put("/api/products/sizes", formData);
+            const res = await axios.put("/api/products/colors", formData);
 
             if (res.data.success) {
                 toast.success("Размерите са запазени!");
@@ -91,6 +91,17 @@ export default function SizesForm({ product, sizes }: Params) {
         }
     };
 
+    const copyColor = async (
+        e: React.MouseEvent<HTMLButtonElement>,
+        code: string,
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        await navigator.clipboard.writeText(code);
+        toast.success(`Кодът ${code} е копиран!`);
+    };
+
     return (
         <Accordion
             type="single"
@@ -98,38 +109,65 @@ export default function SizesForm({ product, sizes }: Params) {
             value={openValue}
             onValueChange={setOpenValue}
         >
-            <AccordionItem value="product-sizes" className="border rounded-md">
+            <AccordionItem value="product-colors" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
-                        <span>Размери</span>
-                        <Badge variant="outline">{formData.sizes.length}</Badge>
+                        <span>Цветове</span>
+                        <Badge variant="outline">
+                            {formData.colors.length}
+                        </Badge>
                     </div>
                 </AccordionTrigger>
 
                 <AccordionContent className="rounded-md border-b">
                     <form onSubmit={handleSubmit} className="p-5 space-y-6">
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                            {sizes.map((size) => (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+                            {colors.map((color) => (
                                 <label
-                                    key={size.id}
+                                    key={color.id}
                                     className="flex items-center gap-2 cursor-pointer"
                                 >
                                     <Checkbox
-                                        checked={formData.sizes.includes(
-                                            size.id,
+                                        checked={formData.colors.includes(
+                                            color.id,
                                         )}
                                         onCheckedChange={() =>
-                                            toggleSize(size.id)
+                                            toggleColor(color.id)
                                         }
                                     />
-                                    <span>{size.name}</span>
+                                    <div className="flex items-center gap-2 relative group">
+                                        {/* Цветният бутон */}
+                                        <button
+                                            onClick={(event) =>
+                                                copyColor(event, color.code)
+                                            }
+                                            title="Копиране на кода"
+                                            className="w-6 h-6 rounded-full border-2 border-white shrink-0 transition-transform transform group-hover:scale-110 cursor-pointer"
+                                            style={{
+                                                backgroundColor: color.code,
+                                            }}
+                                        />
+
+                                        {/* Кодът */}
+                                        <span className="font-mono text-sm">
+                                            {color.code}
+                                        </span>
+
+                                        {/* Preview при hover */}
+                                        <div
+                                            className="absolute left-20 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-gray-300 shadow-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none"
+                                            style={{
+                                                backgroundColor: color.code,
+                                            }}
+                                        ></div>
+                                    </div>
                                 </label>
                             ))}
                         </div>
 
-                        {errors.sizes && (
+                        {errors.colors && (
                             <p className="text-sm text-red-500">
-                                {errors.sizes}
+                                {errors.colors}
                             </p>
                         )}
 
