@@ -5,19 +5,16 @@ export const productInventorySchema = z.object({
 
     status: z
         .string()
-        .refine(
-            (val) => ["active", "inactive", "draft"].includes(val),
-            {
-                message: "Невалиден статус",
-            },
-        ),
+        .refine((val) => ["active", "inactive", "draft"].includes(val), {
+            message: "Невалиден статус",
+        }),
 
     stock_quantity: z.coerce
         .number()
         .int("Количеството трябва да е цяло число")
         .min(0, "Количеството не може да е отрицателно"),
+
+    is_featured: z.coerce.boolean("Невалидна стойност за „Препоръчан продукт“"),
 });
 
-export type ProductInventoryInput = z.infer<
-    typeof productInventorySchema
->;
+export type ProductInventoryInput = z.infer<typeof productInventorySchema>;

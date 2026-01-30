@@ -5,20 +5,21 @@ import { ProductStatus } from "@/lib/types";
 
 const productService = new ProductService(getDb());
 
-export default async function HomeFeaturedProducts() {
+export default async function HomeNewProducts() {
     const products = await productService.getItems({
         column: "status",
         value: "active" as ProductStatus,
-        is_featured: true
+        order_by: "created_at",
+        limit: 8,
     });
 
     return (
         <section>
             <h2 className="text-2xl md:text-3xl lg:text-4xl uppercase font-semibold text-center py-5 lg:py-10">
-                Избрани продукти
+                Нови продукти
             </h2>
             <ProductGrid
-                key={"heatured-products"}
+                key={"new-products"}
                 products={products}
                 className="container mx-auto max-sm:px-2 mb-5"
             />

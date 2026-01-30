@@ -19,6 +19,7 @@ export interface Product {
     price?: number;
     sale_price?: number | null;
     stock_quantity?: number;
+    is_featured?: boolean;
     status?: ProductStatus;
     category_id?: number;
     tags?: string[];

@@ -37,6 +37,9 @@ export type GetProductsOptions<
 > = {
     column?: K;
     value?: ProductFilter[K];
+    order_by?: "name" | "sort_order" | "created_at" | "updated_at";
+    limit?: number;
+    is_featured?: boolean;
 };
 
 const allowedColumns: (keyof ProductFilter)[] = [
@@ -77,7 +80,16 @@ export class ProductService {
             params.push(options.value);
         }
 
-        sql += ` ORDER BY sort_order ASC`;
+        if (options?.is_featured) {
+            sql += ` AND is_featured = 1`;
+        }
+
+        sql += ` ORDER BY ${options?.order_by ?? "sort_order"} ASC`;
+
+        if (options?.limit) {
+            sql += ` LIMIT ?`;
+            params.push(options.limit);
+        }
 
         const [rows] = await getDb().query<any[]>(sql, params);
 

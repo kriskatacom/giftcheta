@@ -25,6 +25,7 @@ export async function PUT(req: NextRequest) {
         const updatedProduct = await productService.updateItem(input.id, {
             status: input.status as ProductStatus,
             stock_quantity: input.stock_quantity,
+            is_featured: input.is_featured,
         });
 
         return NextResponse.json(

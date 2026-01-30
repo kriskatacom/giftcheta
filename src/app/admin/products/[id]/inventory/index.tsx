@@ -29,6 +29,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
     product: Product | null;
@@ -43,6 +44,7 @@ export default function InventoryForm({ product }: Props) {
         id: product?.id ?? null,
         status: product?.status ?? "draft",
         stock_quantity: product?.stock_quantity ?? 0,
+        is_featured: Boolean(product?.is_featured),
     });
 
     const [openValue, setOpenValue] = useState<string | undefined>();
@@ -182,6 +184,25 @@ export default function InventoryForm({ product }: Props) {
                                 }
                             />
 
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="is_featured"
+                                    checked={formData.is_featured}
+                                    onCheckedChange={(checked) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            is_featured: Boolean(checked),
+                                        }))
+                                    }
+                                />
+                                <label
+                                    htmlFor="is_featured"
+                                    className="text-sm font-medium"
+                                >
+                                    Препоръчан продукт
+                                </label>
+                            </div>
+
                             <Button
                                 type="submit"
                                 variant="outline"
@@ -197,7 +218,9 @@ export default function InventoryForm({ product }: Props) {
                                     <FiSave size={NAVBAR_ICON_SIZES.md} />
                                 )}
                                 <span className="ml-2">
-                                    {isSubmitting ? "Записване..." : "Запазване"}
+                                    {isSubmitting
+                                        ? "Записване..."
+                                        : "Запазване"}
                                 </span>
                             </Button>
                         </div>
