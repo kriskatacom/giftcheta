@@ -6,7 +6,6 @@ import { FiLoader, FiSave } from "react-icons/fi";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { TextField as CustomTextField } from "@/components/form/text-field";
 import { NAVBAR_ICON_SIZES } from "@/lib/constants";
 import {
     Accordion,
@@ -15,28 +14,24 @@ import {
     AccordionContent,
 } from "@/components/ui/accordion";
 import { Category } from "@/lib/services/category-service";
-import {
-    CategoryNameFormInput,
-    createCategoryNameSchema
-} from "@/app/admin/categories/[id]/name-and-slug-form/schema";
-import { Textarea } from "@/components/ui/textarea";
-import { slugify } from "@/lib/utils";
+import { CategoryDescriptionInput, categoryDescriptionSchema } from "@/app/admin/categories/[id]/description-form/schema";
+import RichTextEditor from "@/components/rich-text-editor";
 
 // Form errors
-type FormErrors = Partial<Record<keyof CategoryNameFormInput, string>>;
+type FormErrors = Partial<Record<keyof CategoryDescriptionInput, string>>;
 
 type Props = {
-    category: Category | null;
+    category: Category;
 };
 
-export default function NameForm({
+export default function DescriptionForm({
     category,
 }: Props) {
     const router = useRouter();
 
-    const [formData, setFormData] = useState<CategoryNameFormInput>({
-        name: category?.name || "",
-        slug: category?.slug || "",
+    const [formData, setFormData] = useState<CategoryDescriptionInput>({
+        excerpt: category?.excerpt || "",
+        content: category?.content || "",
     });
 
     const [openValue, setOpenValue] = useState<string | undefined>();
@@ -44,16 +39,16 @@ export default function NameForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem("accordion-category-name-open");
+        const saved = localStorage.getItem("accordion-category-description-open");
         if (saved) setOpenValue(saved);
     }, []);
 
     useEffect(() => {
         if (openValue !== undefined)
-            localStorage.setItem("accordion-category-name-open", openValue);
+            localStorage.setItem("accordion-category-description-open", openValue);
     }, [openValue]);
 
-    const handleChange = (field: keyof CategoryNameFormInput, value: string) => {
+    const handleChange = (field: keyof CategoryDescriptionInput, value: string) => {
         setFormData((prev) => {
             const updated = { ...prev, [field]: value };
             validate(updated);
@@ -61,13 +56,13 @@ export default function NameForm({
         });
     };
 
-    const validate = (data?: CategoryNameFormInput): boolean => {
-        const parsed = createCategoryNameSchema.safeParse(data || formData);
+    const validate = (data?: CategoryDescriptionInput): boolean => {
+        const parsed = categoryDescriptionSchema.safeParse(data || formData);
 
         if (!parsed.success) {
             const fieldErrors: FormErrors = {};
             parsed.error.issues.forEach((issue) => {
-                const key = issue.path[0] as keyof CategoryNameFormInput;
+                const key = issue.path[0] as keyof CategoryDescriptionInput;
                 fieldErrors[key] = issue.message;
             });
             setErrors(fieldErrors);
@@ -85,8 +80,8 @@ export default function NameForm({
         setIsSubmitting(true);
 
         try {
-            const url = "/api/categories/name-and-slug";
-            const method = category?.id ? "PUT" : "POST";
+            const url = "/api/categories/description";
+            const method = "PUT";
 
             const res = await axios({
                 url,
@@ -96,12 +91,8 @@ export default function NameForm({
                     : formData,
             });
 
-            if (res.status === 201 || res.status === 200) {
+            if (res.status === 200) {
                 toast.success("Промените са запазени!");
-
-                if (res.status === 201) {
-                    router.push(`/admin/categories/${res.data.category.id}`);
-                }
             } else {
                 toast.error(res.data.error || "Възникна грешка");
             }
@@ -126,54 +117,45 @@ export default function NameForm({
         >
             <AccordionItem value="general" className="border rounded-md">
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
-                    Основна информация
+                    Описание
                 </AccordionTrigger>
                 <AccordionContent className="p-0">
                     <form onSubmit={handleSubmit}>
                         <div className="p-5 space-y-10 border-b rounded-md">
-                            <CustomTextField
-                                id="name"
-                                label="Име на категорията"
-                                required
-                                value={formData.name}
-                                placeholder="Въведете името на категорията"
-                                disabled={isSubmitting}
-                                error={errors.name}
-                                onChange={(value) =>
-                                    handleChange("name", value)
-                                }
-                            />
 
-                            <div className="space-y-2">
-                                <CustomTextField
-                                    id="slug"
-                                    label="URL адрес"
-                                    value={formData.slug}
-                                    placeholder="Въведете URL адрес на категорията"
-                                    disabled={isSubmitting}
-                                    error={errors.slug}
-                                    onChange={(value) =>
-                                        handleChange("slug", value)
-                                    }
-                                />
+                            <div className="rounded-md space-y-2">
+                                <h2>Кратко описание</h2>
+                                <div className="text-editor max-w-5xl max-h-200 overflow-auto">
+                                    <RichTextEditor
+                                        content={formData.excerpt as string}
+                                        onChange={(value) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                excerpt: value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                                {errors.excerpt && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.excerpt}
+                                    </p>
+                                )}
+                            </div>
 
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        const newSlug = slugify(formData.name);
-                                        const updatedForm = {
-                                            ...formData,
-                                            slug: newSlug,
-                                        };
-                                        setFormData(updatedForm);
-                                        validate(updatedForm);
-                                    }}
-                                    disabled={isSubmitting || !formData.name}
-                                    title="Генериране на URL адрес"
-                                >
-                                    Генериране на URL адрес
-                                </Button>
+                            <div className="rounded-md space-y-2">
+                                <h2>Основно описание</h2>
+                                <div className="text-editor max-w-5xl max-h-200 overflow-auto">
+                                    <RichTextEditor
+                                        content={formData.content as string}
+                                        onChange={(value) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                content: value,
+                                            }))
+                                        }
+                                    />
+                                </div>
                             </div>
 
                             <Button

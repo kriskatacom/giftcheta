@@ -5,10 +5,12 @@ import { websiteName } from "@/lib/utils";
 import { BreadcrumbItem, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import MainSidebarServer from "@/components/main-sidebar/main-sidebar-server";
-import NameForm from "@/app/admin/categories/[id]/name-and-slug-form";
 import { CategoryService } from "@/lib/services/category-service";
 import { getDb } from "@/lib/db";
 import DraggableForms from "@/components/draggable-forms";
+import NameForm from "@/app/admin/categories/[id]/name-and-slug-form";
+import DescriptionForm from "@/app/admin/categories/[id]/description-form";
+import ImageForm from "./image";
 
 type Props = {
     params: Promise<{
@@ -62,6 +64,8 @@ export default async function UpdateCategory({ params }: Params) {
 
     const sections = {
         nameSlug: <NameForm category={category} />,
+        descriptionForm: category && <DescriptionForm category={category} />,
+        imageForm: category && <ImageForm category={category} />,
     };
 
     return (

@@ -20,8 +20,6 @@ export const createCategoryNameSchema = z.object({
             slugRegex,
             "Slug може да съдържа само малки букви, цифри, тирета и долна черта",
         ),
-
-    excerpt: z.string().trim().max(255, "Прегледът е твърде дълъг").optional(),
 });
 
 export type CategoryNameFormInput = z.infer<typeof createCategoryNameSchema>;

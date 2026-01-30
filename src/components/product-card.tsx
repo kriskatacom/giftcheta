@@ -34,37 +34,42 @@ export default function ProductCard({
 
             <div className="flex flex-col p-4 flex-1">
                 {product.name && (
-                    <Link href={`/product/${product.slug}`} className="hover:text-primary duration-300">
+                    <Link
+                        href={`/product/${product.slug}`}
+                        className="hover:text-primary duration-300"
+                    >
                         <h3 className="text-lg font-semibold line-clamp-2">
                             {product.name}
                         </h3>
                     </Link>
                 )}
 
-                {product.price && (
-                    <p className="my-2 text-lg font-semibold">
-                        {formatPrice(product.price, { locale: "bg-BG" })}
-                    </p>
-                )}
+                <div className="flex justify-between items-center mt-5">
+                    {product.price && (
+                        <p className="my-2 text-lg font-semibold">
+                            {formatPrice(product.price, { locale: "bg-BG" })}
+                        </p>
+                    )}
 
-                <div className="flex gap-3">
-                    <Button
-                        variant="outline"
-                        size="icon-lg"
-                        onClick={onAddToCart}
-                        title="Добавяне в количката"
-                    >
-                        <ShoppingCart className="size-5" />
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button
+                            variant="outline"
+                            size="icon-lg"
+                            onClick={onAddToCart}
+                            title="Добавяне в количката"
+                        >
+                            <ShoppingCart className="size-5" />
+                        </Button>
 
-                    <Button
-                        variant="outline"
-                        size="icon-lg"
-                        onClick={onAddToCart}
-                        title="Преглед на продукта"
-                    >
-                        <Eye className="size-5" />
-                    </Button>
+                        <Button
+                            variant="outline"
+                            size="icon-lg"
+                            onClick={onAddToCart}
+                            title="Преглед на продукта"
+                        >
+                            <Eye className="size-5" />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </article>

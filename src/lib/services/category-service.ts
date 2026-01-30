@@ -21,11 +21,28 @@ export interface UpdateCategoryDTO {
     name?: string;
     slug?: string;
     heading?: string;
-    excerpt?: string;
+    excerpt?: string | null;
     image?: string;
-    content?: string;
+    content?: string | null;
     parent_id?: number | null;
 }
+
+type CategoryFilter = {
+    id: number;
+    slug: string;
+    name: string;
+    parent_id: number | null;
+    status: number;
+};
+
+export type GetCategoriesOptions<
+    K extends keyof CategoryFilter = keyof CategoryFilter,
+> = {
+    column?: K;
+    value?: CategoryFilter[K];
+    order_by?: "name" | "sort_order" | "created_at" | "updated_at";
+    limit?: number;
+};
 
 export class CategoryService {
     constructor(private readonly pool: Pool) {}
@@ -35,20 +52,20 @@ export class CategoryService {
         const [result] = await this.pool.execute<ResultSetHeader>(
             `INSERT INTO categories (name, slug, excerpt)
          VALUES (?, ?, ?)`,
-            [data.name, data.slug, data.excerpt || null],
+            [data.name, data.slug || ""],
         );
 
         return {
             id: result.insertId,
             name: data.name,
             slug: data.slug,
-            excerpt: data.excerpt,
         };
     }
 
-    // GET ALL BY OPTIONAL PARENT_ID, WITH CHILD COUNT
-    async getAllItems(parent_id?: number | null): Promise<Category[]> {
-        // Взимаме категориите с информация за родител
+    async getAllItems(
+        parent_id?: number | null,
+        options?: GetCategoriesOptions,
+    ): Promise<Category[]> {
         let query = `
         SELECT 
             c.id,
@@ -63,24 +80,46 @@ export class CategoryService {
             p.name AS parent_name,
             c.created_at,
             c.updated_at,
-            -- Брой деца
             (SELECT COUNT(*) FROM categories WHERE parent_id = c.id) AS children_count
         FROM categories c
         LEFT JOIN categories p ON c.parent_id = p.id
     `;
 
-        const params: any[] = [];
+        const params: (string | number)[] = [];
+        const conditions: string[] = [];
 
+        // 🔹 parent_id логиката СИ ОСТАВА
         if (parent_id !== undefined) {
-            query += ` WHERE c.parent_id ${parent_id === null ? "IS NULL" : "= ?"}`;
-            if (parent_id !== null) params.push(parent_id);
+            if (parent_id === null) {
+                conditions.push(`c.parent_id IS NULL`);
+            } else {
+                conditions.push(`c.parent_id = ?`);
+                params.push(parent_id);
+            }
         }
 
-        query += ` ORDER BY c.sort_order`;
+        // 🔹 column + value (като при продуктите)
+        if (options?.column && options.value !== undefined) {
+            conditions.push(`c.${options.column} = ?`);
+            params.push(options.value as any);
+        }
+
+        if (conditions.length) {
+            query += ` WHERE ` + conditions.join(" AND ");
+        }
+
+        // 🔹 order
+        query += ` ORDER BY c.${options?.order_by ?? "sort_order"} ASC`;
+
+        // 🔹 limit
+        if (options?.limit) {
+            query += ` LIMIT ?`;
+            params.push(options.limit);
+        }
 
         const [rows] = await this.pool.execute<RowDataPacket[]>(query, params);
 
-        const categories = rows.map((row) => ({
+        return rows.map((row) => ({
             id: row.id,
             name: row.name,
             slug: row.slug,
@@ -95,8 +134,6 @@ export class CategoryService {
             created_at: row.created_at,
             updated_at: row.updated_at,
         })) as Category[];
-
-        return categories;
     }
 
     // READ BY ID
@@ -169,6 +206,23 @@ export class CategoryService {
         );
 
         return result.affectedRows > 0;
+    }
+
+    async deleteItemsBulk(ids: number[]): Promise<number> {
+        if (ids.length === 0) return 0;
+
+        const placeholders = ids.map(() => "?").join(", ");
+
+        try {
+            const [result] = await this.pool.execute<ResultSetHeader>(
+                `DELETE FROM categories WHERE id IN (${placeholders})`,
+                [ids],
+            );
+            return (result as any).affectedRows ?? 0;
+        } catch (err) {
+            console.error("Error bulk deleting categories:", err);
+            throw err;
+        }
     }
 
     // DELETE ALL
