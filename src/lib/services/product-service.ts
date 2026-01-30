@@ -7,7 +7,7 @@ import { ProductPriceInput } from "@/app/admin/products/[id]/pricing/schema";
 import { ProductDescriptionInput } from "@/app/admin/products/[id]/description/schema";
 import { ProductTagsInput } from "@/app/admin/products/[id]/tags/schema";
 import { ProductInventoryInput } from "@/app/admin/products/[id]/inventory/schema";
-import { Pool, ResultSetHeader } from "mysql2/promise";
+import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
 /* =========================
    CREATE
@@ -104,7 +104,7 @@ export class ProductService {
         column: "id" | "slug",
         value: string | number,
     ): Promise<Product | null> {
-        const [rows] = await getDb().execute<any[]>(
+        const [rows] = await getDb().execute<(RowDataPacket & Product)[]>(
             `SELECT * FROM products WHERE ${column} = ? LIMIT 1`,
             [value],
         );
@@ -112,11 +112,21 @@ export class ProductService {
         const product = rows[0];
         if (!product) return null;
 
-        return {
+        const parsedProduct: Product = {
             ...product,
-            tags: product.tags ? JSON.parse(product.tags) : null,
-            images: product.images ? JSON.parse(product.images) : null,
+            tags: product.tags ? JSON.parse(product.tags) : [],
+            images: product.images ? JSON.parse(product.images) : [],
+            sizes: [],
         };
+
+        const [sizeRows] = await getDb().execute<RowDataPacket[]>(
+            `SELECT size_id FROM product_sizes WHERE product_id = ?`,
+            [product.id],
+        );
+
+        parsedProduct.sizes = sizeRows.map((row) => row.size_id);
+
+        return parsedProduct;
     }
 
     async updateItem(id: number, product: Partial<Product>): Promise<Product> {
@@ -222,5 +232,65 @@ export class ProductService {
         const deletedCount = await this.deleteItemsBulk(ids);
 
         return deletedCount;
+    }
+
+    async syncProductSizes(productId: number, sizeIds: number[]): Promise<void> {
+        const deleteSql = `DELETE FROM product_sizes WHERE product_id = ?`;
+        await this.pool.execute<ResultSetHeader>(deleteSql, [productId]);
+
+        if (!sizeIds || sizeIds.length === 0) return;
+
+        const values = sizeIds.map((sizeId) => [productId, sizeId]);
+
+        const insertSql = `
+            INSERT INTO product_sizes (product_id, size_id)
+            VALUES ?
+        `;
+
+        await this.pool.query(insertSql, [values]);
+    }
+
+    async getProductSizeIds(productId: number): Promise<number[]> {
+        const sql = `
+        SELECT size_id
+        FROM product_sizes
+        WHERE product_id = ?
+    `;
+
+        const [rows] = await this.pool.execute<RowDataPacket[]>(sql, [
+            productId,
+        ]);
+
+        return rows.map((row) => (row as { size_id: number }).size_id);
+    }
+
+    async removeSizeFromProduct(
+        productId: number,
+        sizeId: number,
+    ): Promise<boolean> {
+        const sql = `
+        DELETE FROM product_sizes
+        WHERE product_id = ? AND size_id = ?
+    `;
+
+        const [result] = await this.pool.execute<ResultSetHeader>(sql, [
+            productId,
+            sizeId,
+        ]);
+
+        return result.affectedRows > 0;
+    }
+
+    async removeAllSizesFromProduct(productId: number): Promise<number> {
+        const sql = `
+        DELETE FROM product_sizes
+        WHERE product_id = ?
+    `;
+
+        const [result] = await this.pool.execute<ResultSetHeader>(sql, [
+            productId,
+        ]);
+
+        return result.affectedRows;
     }
 }

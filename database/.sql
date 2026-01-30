@@ -13,8 +13,24 @@ CREATE TABLE products (
     `tags` JSON,
     `image` NULL VARCHAR(512),
     `images` JSON,
+    `is_featured` TINYINT(1) NOT NULL DEFAULT '0',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `products` ADD `is_featured` TINYINT(1) NOT NULL DEFAULT '0' AFTER `image`;
+CREATE TABLE product_sizes (
+    product_id BIGINT UNSIGNED NOT NULL,
+    size_id INT NOT NULL,
+
+    PRIMARY KEY (product_id, size_id),
+
+    CONSTRAINT fk_product_sizes_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_product_sizes_size
+        FOREIGN KEY (size_id)
+        REFERENCES sizes(id)
+        ON DELETE CASCADE
+);

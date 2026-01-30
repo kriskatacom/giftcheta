@@ -22,7 +22,8 @@ export interface Product {
     is_featured?: boolean;
     status?: ProductStatus;
     category_id?: number;
-    tags?: string[];
+    tags?: string;
+    sizes?: number[];
     images?: string;
     image?: string;
     created_at?: string;

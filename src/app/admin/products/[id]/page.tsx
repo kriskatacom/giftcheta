@@ -22,8 +22,11 @@ type Props = {
 
 import { getDb } from "@/lib/db";
 import { ProductService } from "@/lib/services/product-service";
+import { SizeService } from "@/lib/services/size-service";
+import SizesForm from "@/app/admin/products/[id]/sizes";
 
 const productService = new ProductService(getDb());
+const sizeService = new SizeService(getDb());
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
@@ -56,6 +59,8 @@ export default async function updateItem({ params }: Params) {
     if (id !== "new") {
         product = await productService.getItemByColumn("id", id);
     }
+
+    const sizes = await sizeService.getAllItems();
 
     const breadcrumbs: BreadcrumbItem[] = [
         { name: "Табло", href: "/admin/dashboard" },
@@ -107,6 +112,9 @@ export default async function updateItem({ params }: Params) {
                         {product?.id && <InventoryForm product={product} />}
                         {product && <TagsForm product={product} />}
                     </div>
+                    {product?.id && (
+                        <SizesForm product={product} sizes={sizes} />
+                    )}
                     {product?.id && <ImageForm product={product} />}
                     {product?.id && (
                         <ImagesForm

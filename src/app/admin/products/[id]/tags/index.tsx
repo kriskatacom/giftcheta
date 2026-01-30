@@ -31,7 +31,7 @@ type FormErrors = Partial<Record<"tags", string>>;
 export default function TagsForm({ product }: Params) {
     const [formData, setFormData] = useState<ProductTagsInput>({
         id: product?.id ?? null,
-        tags: product?.tags ?? [],
+        tags: Array.isArray(product?.tags) ? product.tags : [],
     });
 
     const [tagInput, setTagInput] = useState("");
