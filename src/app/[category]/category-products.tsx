@@ -1,17 +1,23 @@
+"use client";
+
+import { useEffect } from "react";
+import { Product } from "@/lib/types";
+import { useProductStore } from "@/stores/use-product-store";
 import ProductGrid from "@/components/product-grid";
-import { getDb } from "@/lib/db";
-import { ProductService } from "@/lib/services/product-service";
 
-const productService = new ProductService(getDb());
+type Props = {
+    products: Product[];
+};
 
-export default async function CategoryProducts() {
-    const products = await productService.getItems({
-        limit: 8,
-    });
-
-    return (
-        <section className="container mx-auto max-md:px-5 my-5 md:my-10">
-            <ProductGrid products={products} />
-        </section>
+export default function ProductsClient({ products }: Props) {
+    const setProducts = useProductStore((s) => s.setProducts);
+    const filteredProducts = useProductStore(
+        (state) => state.filteredProducts
     );
+
+    useEffect(() => {
+        setProducts(products);
+    }, [products, setProducts]);
+
+    return <ProductGrid filteredProducts={filteredProducts} className="mt-5" />;
 }

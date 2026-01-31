@@ -20,7 +20,7 @@ export default async function HomeNewProducts() {
             </h2>
             <ProductGrid
                 key={"new-products"}
-                products={products}
+                filteredProducts={products}
                 className="container mx-auto max-sm:px-2 mb-5"
             />
         </section>

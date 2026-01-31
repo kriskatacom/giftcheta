@@ -19,7 +19,7 @@ export default async function HomeFeaturedProducts() {
             </h2>
             <ProductGrid
                 key={"heatured-products"}
-                products={products}
+                filteredProducts={products}
                 className="container mx-auto max-sm:px-2 mb-5"
             />
         </section>
