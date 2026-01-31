@@ -274,4 +274,47 @@ export class ProductService {
 
         await this.pool.query(insertSql, [values]);
     }
+
+    async searchProducts(
+        query: string,
+        options?: {
+            limit?: number;
+            status?: ProductStatus;
+        },
+    ): Promise<Product[]> {
+        if (!query.trim()) return [];
+
+        let sql = `
+            SELECT *
+            FROM products
+            WHERE (
+                name LIKE ?
+                OR description LIKE ?
+            )
+        `;
+
+        const params: (string | number)[] = [`%${query}%`, `%${query}%`];
+
+        if (options?.status) {
+            sql += ` AND status = ?`;
+            params.push(options.status);
+        }
+
+        sql += ` ORDER BY name ASC`;
+
+        if (options?.limit) {
+            sql += ` LIMIT ?`;
+            params.push(options.limit);
+        }
+
+        const [rows] = await getDb().query<any[]>(sql, params);
+
+        return rows.map((row) => ({
+            ...row,
+            tags: row.tags ? JSON.parse(row.tags) : [],
+            images: row.images ? JSON.parse(row.images) : [],
+            sizes: [],
+            colors: [],
+        }));
+    }
 }

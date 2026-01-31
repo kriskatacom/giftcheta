@@ -24,6 +24,7 @@ import {
 import { createDragHandleColumn } from "@/components/data-table";
 import { Category } from "@/lib/services/category-service";
 import { useState } from "react";
+import AppImage from "@/components/AppImage";
 
 export const columns: ColumnDef<Category>[] = [
     createDragHandleColumn<Category>(),
@@ -45,6 +46,35 @@ export const columns: ColumnDef<Category>[] = [
         ),
         enableSorting: false,
         enableHiding: false,
+    },
+
+    {
+        accessorKey: "imageUrl",
+        meta: { label: "Изображение" },
+        header: "Изображение",
+        cell: ({ row }) => {
+            const category = row.original;
+
+            if (!category.image) {
+                return (
+                    <div className="w-24 h-16 flex items-center justify-center text-sm rounded">
+                        N/A
+                    </div>
+                );
+            }
+
+            return (
+                <div className="relative w-30 h-20 rounded-lg overflow-hidden border">
+                    <Link href={`/admin/categories/${category.id}`}>
+                        <AppImage
+                            src={category.image}
+                            alt={category.name as string}
+                            fill
+                        />
+                    </Link>
+                </div>
+            );
+        },
     },
 
     {

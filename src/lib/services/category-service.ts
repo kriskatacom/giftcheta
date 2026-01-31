@@ -150,6 +150,20 @@ export class CategoryService {
         return rows[0] as Category;
     }
 
+    async getItemByColumn(
+        column: "id" | "slug",
+        value: string | number,
+    ): Promise<Category | null> {
+        const [rows] = await this.pool.execute<RowDataPacket[]>(
+            `SELECT * FROM categories WHERE ${column} = ? LIMIT 1`,
+            [value],
+        );
+
+        if (!rows[0]) return null;
+
+        return rows[0] as Category;
+    }
+
     // UPDATE
     async updateItem(id: number, data: UpdateCategoryDTO): Promise<boolean> {
         const fields: string[] = [];

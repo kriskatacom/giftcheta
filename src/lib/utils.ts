@@ -96,3 +96,15 @@ export function slugify(text: string): string {
         .replace(/\s+/g, "-")
         .replace(/-+/g, "-");
 }
+
+export function getFullUrl(path: string = ""): string {
+    const baseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.NODE_ENV === "development"
+            ? "http://localhost:3000"
+            : "https://giftcheta.com");
+
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+    return `${baseUrl}${cleanPath}`;
+}
