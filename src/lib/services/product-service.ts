@@ -68,7 +68,7 @@ export class ProductService {
     }
 
     async getItems(options?: GetProductsOptions): Promise<Product[]> {
-        let sql = `SELECT * FROM products`;
+        let sql = `SELECT p.* FROM products p`;
         const params: (string | number)[] = [];
 
         if (
@@ -76,12 +76,14 @@ export class ProductService {
             options.value !== undefined &&
             allowedColumns.includes(options.column)
         ) {
-            sql += ` WHERE ${options.column} = ?`;
+            sql += ` WHERE p.${options.column} = ?`;
             params.push(options.value);
         }
 
         if (options?.is_featured) {
-            sql += ` AND is_featured = 1`;
+            sql += params.length
+                ? ` AND p.is_featured = 1`
+                : ` WHERE p.is_featured = 1`;
         }
 
         sql += ` ORDER BY ${options?.order_by ?? "sort_order"} ASC`;
@@ -93,11 +95,25 @@ export class ProductService {
 
         const [rows] = await getDb().query<any[]>(sql, params);
 
-        return rows.map((row) => ({
-            ...row,
-            tags: row.tags ? JSON.parse(row.tags) : null,
-            images: row.images ? JSON.parse(row.images) : null,
-        }));
+        const productsWithColors: Product[] = [];
+        for (const row of rows) {
+            const [colorRows] = await getDb().query<ResultSetHeader>(
+                `SELECT c.* 
+             FROM colors c
+             JOIN product_colors pc ON pc.color_id = c.id
+             WHERE pc.product_id = ?`,
+                [row.id],
+            );
+
+            productsWithColors.push({
+                ...row,
+                tags: row.tags ? JSON.parse(row.tags) : null,
+                images: row.images ? JSON.parse(row.images) : null,
+                colors: colorRows || [],
+            });
+        }
+
+        return productsWithColors;
     }
 
     async getItemByColumn(

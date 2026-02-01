@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { FaTimes } from "react-icons/fa";
 import {
     Sheet,
     SheetContent,
@@ -14,7 +15,7 @@ import { useProductStore } from "@/stores/use-product-store";
 
 import PriceFilter from "@/components/left-sidebar/filters/price-filter";
 import LeftSidebarSearch from "@/components/left-sidebar/filters/search";
-import { FaTimes } from "react-icons/fa";
+import Colors from "@/components/left-sidebar/filters/colors";
 
 export default function LeftSidebar() {
     const router = useRouter();
@@ -50,6 +51,7 @@ export default function LeftSidebar() {
                     <ul>
                         <LeftSidebarSearch />
                         <PriceFilter />
+                        <Colors />
                     </ul>
                     {activeFiltersCount > 0 && (
                         <div className="p-5">

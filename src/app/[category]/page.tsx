@@ -13,6 +13,7 @@ import LeftSidebar from "@/components/left-sidebar";
 import Hero from "@/app/[category]/hero";
 import CategoryMainTop from "@/app/[category]/category-main-top";
 import CategoryProducts from "@/app/[category]/category-products";
+import { ColorService } from "@/lib/services/color-service";
 
 type Props = {
     params: Promise<{
@@ -21,11 +22,10 @@ type Props = {
 };
 
 const categoryService = new CategoryService(getDb());
+const colorService = new ColorService(getDb());
 const productService = new ProductService(getDb());
 
-export async function generateMetadata({
-    params,
-}: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const categorySlug = (await params).category;
 
     const category = await categoryService.getItemByColumn(
@@ -56,9 +56,7 @@ export async function generateMetadata({
         openGraph: {
             title: websiteName(category.name),
             description: category.excerpt,
-            images: category.image
-                ? [{ url: getFullUrl(category.image) }]
-                : [],
+            images: category.image ? [{ url: getFullUrl(category.image) }] : [],
         },
     };
 }
@@ -78,6 +76,7 @@ export default async function CategoryPage({ params }: Props) {
     const products = await productService.getItems({
         limit: 8,
     });
+    const colors = await colorService.getAllItems();
 
     return (
         <main>
@@ -92,7 +91,7 @@ export default async function CategoryPage({ params }: Props) {
 
                 <div className="flex-1 bg-white max-md:px-5">
                     <CategoryMainTop products={products} />
-                    <CategoryProducts products={products} />
+                    <CategoryProducts products={products} colors={colors} />
                 </div>
             </div>
         </main>
