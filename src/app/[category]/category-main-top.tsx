@@ -1,6 +1,7 @@
 "use client";
 
-import { ListFilterPlusIcon } from "lucide-react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import { Product } from "@/lib/types";
 import { useFiltersSidebarStore } from "@/stores/use-filters-sidebar";
@@ -15,20 +16,40 @@ type Props = {
 
 export default function CategoryMainTop({ products }: Props) {
     const toggleSidebar = useFiltersSidebarStore((s) => s.toggleSidebar);
-    const activeFiltersCount = useProductStore((s) => s.getActiveFiltersCount());
+    const activeFiltersCount = useProductStore((s) =>
+        s.getActiveFiltersCount(),
+    );
+    const [loading, setLoading] = useState(false);
+
+    const handleClick = async () => {
+        setLoading(true);
+
+        toggleSidebar();
+
+        setLoading(false);
+    };
 
     return (
         <div className="mt-5 flex items-center justify-between">
             <Button
                 variant="outline"
                 size="lg"
-                onClick={toggleSidebar}
+                onClick={handleClick}
                 className="relative flex items-center gap-2"
+                disabled={loading}
             >
-                <ListFilterPlusIcon className="h-5 w-5" />
-                <span className="text-base">Филтриране</span>
+                <span className="text-base flex items-center gap-2">
+                    {loading ? (
+                        <>
+                            <Loader2 className="repeat-infinite animate-spin" />{" "}
+                            <span>Зареждане...</span>
+                        </>
+                    ) : (
+                        "Филтриране"
+                    )}
+                </span>
 
-                {activeFiltersCount > 0 && (
+                {activeFiltersCount > 0 && !loading && (
                     <Badge className="absolute -right-2 -top-2 h-6 min-w-6 rounded-full px-1 text-xs">
                         {activeFiltersCount}
                     </Badge>
@@ -36,7 +57,12 @@ export default function CategoryMainTop({ products }: Props) {
             </Button>
 
             <div className="text-muted-foreground">
-                Показване на {products.length} продукта
+                <span className="md:block hidden">
+                    Показване на {products.length} продукта
+                </span>
+                <span className="md:hidden block">
+                    {products.length} продукта
+                </span>
             </div>
         </div>
     );

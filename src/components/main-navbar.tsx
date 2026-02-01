@@ -28,7 +28,7 @@ export default function MainNavbar() {
     const cartItemsCount = 3;
 
     return (
-        <nav className="border-b bg-background">
+        <nav className="sticky top-0 z-40 border-b bg-background">
             <div className="container mx-auto flex items-center gap-5 px-5">
                 {/* Logo */}
                 <Link href="/" className="relative block w-60 h-20">

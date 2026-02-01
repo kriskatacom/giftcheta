@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Banner from "@/components/banner";
 
+const CTA_DESKTOP = "Намерете най-добрия подарък!";
+const CTA_MOBILE = "Намерете подаръци";
+
 export default function Hero() {
     return (
         <Banner
@@ -12,10 +15,19 @@ export default function Hero() {
             textAlign="center"
         >
             <Link
-                href={"/8-mi-mart"}
-                className="py-3 px-5 text-lg font-semibold rounded-md text-white bg-primary hover:bg-primary/50 duration-300"
+                href="/8-mi-mart"
+                className="
+                    inline-flex items-center justify-center
+                    px-5 py-3 text-lg font-semibold
+                    rounded-md
+                    bg-primary text-white
+                    transition-colors duration-300
+                    hover:bg-primary/80
+                    focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                "
             >
-                Намерете най-добрия подарък!
+                <span className="hidden md:block">{CTA_DESKTOP}</span>
+                <span className="block md:hidden">{CTA_MOBILE}</span>
             </Link>
         </Banner>
     );

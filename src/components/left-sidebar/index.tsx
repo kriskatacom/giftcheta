@@ -42,7 +42,11 @@ export default function LeftSidebar() {
 
     return (
         <Sheet open={open} onOpenChange={(v) => !v && closeSidebar()}>
-            <SheetContent side="left" className="w-[320px] sm:w-90 p-0">
+            <SheetContent
+                side="left"
+                className="w-[320px] sm:w-90 p-0"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <SheetHeader className="p-5 border-b flex flex-row items-center justify-between">
                     <SheetTitle>Филтри</SheetTitle>
                 </SheetHeader>

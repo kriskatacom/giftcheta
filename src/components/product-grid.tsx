@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Product } from "@/lib/types";
 import ProductCard from "@/components/product-card";
+import LoadingSpinner from "@/components/loading/loading-spinner";
 
 type ProductGridProps = {
     filteredProducts: Product[];
@@ -12,6 +14,18 @@ export default function ProductGrid({
     filteredProducts,
     className,
 }: ProductGridProps) {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        const timeout = setTimeout(() => setLoading(false), 500);
+        return () => clearTimeout(timeout);
+    }, [filteredProducts]);
+
+    if (loading) {
+        return <LoadingSpinner />;
+    }
+
     if (!filteredProducts.length) {
         return (
             <div className="text-center text-gray-500 py-10">
