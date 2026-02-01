@@ -6,23 +6,26 @@ import { Product } from "@/lib/types";
 import { useProductStore } from "@/stores/use-product-store";
 import ProductGrid from "@/components/product-grid";
 import { Color } from "@/lib/services/color-service";
+import { Size } from "@/lib/services/size-service";
 
 type Props = {
     products: Product[];
     colors: Color[];
+    sizes: Size[];
 };
 
-export default function ProductsClient({ products, colors }: Props) {
+export default function ProductsClient({ products, colors, sizes }: Props) {
     const searchParams = useSearchParams();
     const initialized = useRef(false);
 
     const {
         setProducts,
+        setColors,
+        setSizes,
         setPriceRange,
         setSearchQuery,
         filteredProducts,
     } = useProductStore();
-    const setColors = useProductStore((s) => s.setColors);
 
     useEffect(() => {
         if (initialized.current) return;
@@ -30,6 +33,7 @@ export default function ProductsClient({ products, colors }: Props) {
 
         setProducts(products);
         setColors(colors);
+        setSizes(sizes);
 
         const min = searchParams.get("min");
         const max = searchParams.get("max");

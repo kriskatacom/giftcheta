@@ -3,12 +3,15 @@
 import { create } from "zustand";
 import { Product } from "@/lib/types";
 import { Color } from "@/lib/services/color-service";
+import { Size } from "@/lib/services/size-service";
 
 type ProductState = {
     products: Product[];
     filteredProducts: Product[];
     colors: Color[];
     selectedColors: Color[];
+    sizes: Size[];
+    selectedSizes: Size[];
     priceBounds: { min: number; max: number };
     priceRange: { min: number; max: number };
     searchQuery: string;
@@ -16,6 +19,8 @@ type ProductState = {
     setProducts: (products: Product[]) => void;
     setColors: (colors: Color[]) => void;
     setSelectedColors: (colors: Color[]) => void;
+    setSizes: (sizes: Size[]) => void;
+    setSelectedSizes: (sizes: Size[]) => void;
     setPriceRange: (min: number, max: number) => void;
     setSearchQuery: (query: string) => void;
     resetFilters: () => void;
@@ -29,6 +34,8 @@ export const useProductStore = create<ProductState>((set, get) => ({
     filteredProducts: [],
     colors: [],
     selectedColors: [],
+    sizes: [],
+    selectedSizes: [],
     priceBounds: { min: 0, max: 0 },
     priceRange: { min: 0, max: 0 },
     searchQuery: "",
@@ -46,12 +53,10 @@ export const useProductStore = create<ProductState>((set, get) => ({
         });
     },
 
-    setColors: (colors) => {
-        set({ colors });
-    },
+    setColors: (colors) => set({ colors }),
 
     setSelectedColors: (selectedColors) => {
-        const { products, searchQuery, priceRange } = get();
+        const { products, searchQuery, priceRange, selectedSizes } = get();
 
         const filtered = products.filter((p) => {
             const matchesPrice =
@@ -65,17 +70,55 @@ export const useProductStore = create<ProductState>((set, get) => ({
             const matchesColor =
                 selectedColors.length === 0 ||
                 p.colors?.some((c) =>
-                    selectedColors.some((sc) => sc.id === c.id),
+                    selectedColors.some((sc) => sc.id === c.id)
                 );
 
-            return matchesPrice && matchesSearch && matchesColor;
+            const matchesSize =
+                selectedSizes.length === 0 ||
+                p.sizes?.some((s) =>
+                    selectedSizes.some((ss) => ss.id === s.id)
+                );
+
+            return matchesPrice && matchesSearch && matchesColor && matchesSize;
         });
 
         set({ selectedColors, filteredProducts: filtered });
     },
 
+    setSizes: (sizes) => set({ sizes }),
+
+    setSelectedSizes: (selectedSizes) => {
+        const { products, searchQuery, priceRange, selectedColors } = get();
+
+        const filtered = products.filter((p) => {
+            const matchesPrice =
+                Number(p.price) >= priceRange.min &&
+                Number(p.price) <= priceRange.max;
+
+            const matchesSearch = p.name
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+
+            const matchesColor =
+                selectedColors.length === 0 ||
+                p.colors?.some((c) =>
+                    selectedColors.some((sc) => sc.id === c.id)
+                );
+
+            const matchesSize =
+                selectedSizes.length === 0 ||
+                p.sizes?.some((s) =>
+                    selectedSizes.some((ss) => ss.id === s.id)
+                );
+
+            return matchesPrice && matchesSearch && matchesColor && matchesSize;
+        });
+
+        set({ selectedSizes, filteredProducts: filtered });
+    },
+
     setPriceRange: (min, max) => {
-        const { products, searchQuery, selectedColors, priceBounds } = get();
+        const { products, searchQuery, selectedColors, selectedSizes, priceBounds } = get();
 
         const safeMin = Math.max(Math.min(min, max), priceBounds.min);
         const safeMax = Math.min(Math.max(min, max), priceBounds.max);
@@ -89,10 +132,15 @@ export const useProductStore = create<ProductState>((set, get) => ({
             const matchesColor =
                 selectedColors.length === 0 ||
                 p.colors?.some((c) =>
-                    selectedColors.some((sc) => sc.id === c.id),
+                    selectedColors.some((sc) => sc.id === c.id)
+                );
+            const matchesSize =
+                selectedSizes.length === 0 ||
+                p.sizes?.some((s) =>
+                    selectedSizes.some((ss) => ss.id === s.id)
                 );
 
-            return matchesPrice && matchesSearch && matchesColor;
+            return matchesPrice && matchesSearch && matchesColor && matchesSize;
         });
 
         set({
@@ -102,7 +150,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     },
 
     setSearchQuery: (query) => {
-        const { products, priceRange, selectedColors } = get();
+        const { products, priceRange, selectedColors, selectedSizes } = get();
 
         const filtered = products.filter((p) => {
             const matchesPrice =
@@ -116,10 +164,16 @@ export const useProductStore = create<ProductState>((set, get) => ({
             const matchesColor =
                 selectedColors.length === 0 ||
                 p.colors?.some((c) =>
-                    selectedColors.some((sc) => sc.id === c.id),
+                    selectedColors.some((sc) => sc.id === c.id)
                 );
 
-            return matchesPrice && matchesSearch && matchesColor;
+            const matchesSize =
+                selectedSizes.length === 0 ||
+                p.sizes?.some((s) =>
+                    selectedSizes.some((ss) => ss.id === s.id)
+                );
+
+            return matchesPrice && matchesSearch && matchesColor && matchesSize;
         });
 
         set({
@@ -135,6 +189,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
             searchQuery: "",
             filteredProducts: products,
             selectedColors: [],
+            selectedSizes: [],
         });
     },
 
@@ -147,11 +202,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
     },
 
     getActiveFiltersCount: () => {
-        const { searchQuery, selectedColors } = get();
+        const { searchQuery, selectedColors, selectedSizes } = get();
         let count = 0;
         if (get().isPriceFiltered()) count++;
         if (searchQuery.trim().length > 0) count++;
         if (selectedColors.length > 0) count++;
+        if (selectedSizes.length > 0) count++;
         return count;
     },
 }));

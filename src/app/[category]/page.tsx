@@ -14,6 +14,7 @@ import Hero from "@/app/[category]/hero";
 import CategoryMainTop from "@/app/[category]/category-main-top";
 import CategoryProducts from "@/app/[category]/category-products";
 import { ColorService } from "@/lib/services/color-service";
+import { SizeService } from "@/lib/services/size-service";
 
 type Props = {
     params: Promise<{
@@ -24,6 +25,7 @@ type Props = {
 const categoryService = new CategoryService(getDb());
 const colorService = new ColorService(getDb());
 const productService = new ProductService(getDb());
+const sizeService = new SizeService(getDb());
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const categorySlug = (await params).category;
@@ -77,6 +79,7 @@ export default async function CategoryPage({ params }: Props) {
         limit: 8,
     });
     const colors = await colorService.getAllItems();
+    const sizes = await sizeService.getAllItems();
 
     return (
         <main>
@@ -91,7 +94,11 @@ export default async function CategoryPage({ params }: Props) {
 
                 <div className="flex-1 bg-white max-md:px-5">
                     <CategoryMainTop products={products} />
-                    <CategoryProducts products={products} colors={colors} />
+                    <CategoryProducts
+                        products={products}
+                        colors={colors}
+                        sizes={sizes}
+                    />
                 </div>
             </div>
         </main>

@@ -95,9 +95,11 @@ export class ProductService {
 
         const [rows] = await getDb().query<any[]>(sql, params);
 
-        const productsWithColors: Product[] = [];
+        const productsWithDetails: Product[] = [];
+
         for (const row of rows) {
-            const [colorRows] = await getDb().query<ResultSetHeader>(
+            // → Colors
+            const [colorRows] = await getDb().query<any[]>(
                 `SELECT c.* 
              FROM colors c
              JOIN product_colors pc ON pc.color_id = c.id
@@ -105,15 +107,26 @@ export class ProductService {
                 [row.id],
             );
 
-            productsWithColors.push({
+            // → Sizes
+            const [sizeRows] = await getDb().query<any[]>(
+                `SELECT s.* 
+             FROM sizes s
+             JOIN product_sizes ps ON ps.size_id = s.id
+             WHERE ps.product_id = ?
+             ORDER BY s.sort_order ASC`,
+                [row.id],
+            );
+
+            productsWithDetails.push({
                 ...row,
                 tags: row.tags ? JSON.parse(row.tags) : null,
                 images: row.images ? JSON.parse(row.images) : null,
                 colors: colorRows || [],
+                sizes: sizeRows || [],
             });
         }
 
-        return productsWithColors;
+        return productsWithDetails;
     }
 
     async getItemByColumn(

@@ -16,6 +16,7 @@ import { useProductStore } from "@/stores/use-product-store";
 import PriceFilter from "@/components/left-sidebar/filters/price-filter";
 import LeftSidebarSearch from "@/components/left-sidebar/filters/search";
 import Colors from "@/components/left-sidebar/filters/colors";
+import Sizes from "@/components/left-sidebar/filters/sizes";
 
 export default function LeftSidebar() {
     const router = useRouter();
@@ -56,6 +57,7 @@ export default function LeftSidebar() {
                         <LeftSidebarSearch />
                         <PriceFilter />
                         <Colors />
+                        <Sizes />
                     </ul>
                     {activeFiltersCount > 0 && (
                         <div className="p-5">
