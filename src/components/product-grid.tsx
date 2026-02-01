@@ -8,7 +8,10 @@ type ProductGridProps = {
     className?: string;
 };
 
-export default function ProductGrid({ filteredProducts, className }: ProductGridProps) {
+export default function ProductGrid({
+    filteredProducts,
+    className,
+}: ProductGridProps) {
     if (!filteredProducts.length) {
         return (
             <div className="text-center text-gray-500 py-10">
@@ -19,14 +22,12 @@ export default function ProductGrid({ filteredProducts, className }: ProductGrid
 
     return (
         <div className={className}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
                 {filteredProducts.map((product) => (
                     <ProductCard
                         key={product.id}
                         product={product}
-                        onAddToCart={() =>
-                            alert(`Added ${product.name}`)
-                        }
+                        onAddToCart={() => alert(`Added ${product.name}`)}
                     />
                 ))}
             </div>
