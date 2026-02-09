@@ -19,8 +19,8 @@ export function Breadcrumbs({ items, classes }: BreadcrumbsProps) {
     return (
         <nav
             className={cn(
-                classes,
                 "mt-5 px-5 flex items-center flex-wrap space-x-1",
+                classes,
             )}
             aria-label="breadcrumbs"
         >
@@ -37,7 +37,12 @@ export function Breadcrumbs({ items, classes }: BreadcrumbsProps) {
                                 {item.name}
                             </Link>
                         ) : (
-                            <span className={isLast ? "font-medium" : ""}>
+                            <span
+                                className={
+                                    isLast ? "font-medium" : "font-normal"
+                                }
+                                style={{ whiteSpace: "wrap" }}
+                            >
                                 {item.name}
                             </span>
                         )}

@@ -30,7 +30,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
 
     return (
         <>
-            <div className="my-5">
+            <div className="mt-5">
                 {/* Main Image */}
                 <div
                     className="relative w-full rounded-lg overflow-hidden mb-2"
