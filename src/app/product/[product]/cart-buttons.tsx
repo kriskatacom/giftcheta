@@ -1,31 +1,53 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { FiShoppingCart, FiBold, FiLoader, FiClock } from "react-icons/fi";
-import { NAVBAR_ICON_SIZES } from "@/lib/constants";
+import { FiShoppingCart, FiLoader, FiClock } from "react-icons/fi";
 import { toast } from "sonner";
+import { Product } from "@/lib/types";
+import { useCartStore } from "@/stores/cart-store";
+import { showAddToCartToast } from "@/components/addt-to-cart-toast";
 
 type CartButtonsProps = {
-    productId: number;
-    onAddToCart?: (productId: number) => Promise<void>;
-    onQuickOrder?: (productId: number) => Promise<void>;
+    product: Product;
 };
 
-export default function AnimatedCartButtons({
-    productId,
-    onAddToCart,
-    onQuickOrder,
-}: CartButtonsProps) {
+export default function AnimatedCartButtons({ product }: CartButtonsProps) {
     const [isAdding, setIsAdding] = useState(false);
-    const [isQuickOrdering, setIsQuickOrdering] = useState(false);
+    const [isQuickOrdering] = useState(false);
+    const {
+        addItem,
+        tempDescription,
+        updateTempDescription,
+        tempQuantity,
+        updateTempQuantity,
+    } = useCartStore((state) => state);
+
+    if (!product.price) return null;
+
+    const hasSale = product.sale_price && product.sale_price < product.price;
 
     const handleAddToCart = async () => {
-        if (!onAddToCart) return;
         try {
             setIsAdding(true);
-            await onAddToCart(productId);
-            toast.success("Продуктът е добавен в количката!");
+
+            addItem(
+                {
+                    productId: product.id,
+                    name: product.name,
+                    slug: product.slug as string,
+                    price: hasSale
+                        ? product.sale_price!
+                        : Number(product.price),
+                    image: product.image,
+                    description: tempDescription,
+                },
+                tempQuantity,
+            );
+
+            showAddToCartToast({
+                name: product.name,
+                image: product.image,
+            });
         } catch {
             toast.error("Грешка при добавяне в количката.");
         } finally {
@@ -34,16 +56,7 @@ export default function AnimatedCartButtons({
     };
 
     const handleQuickOrder = async () => {
-        if (!onQuickOrder) return;
-        try {
-            setIsQuickOrdering(true);
-            await onQuickOrder(productId);
-            toast.success("Бързата поръчка е направена!");
-        } catch {
-            toast.error("Грешка при бърза поръчка.");
-        } finally {
-            setIsQuickOrdering(false);
-        }
+        console.log(0);
     };
 
     const buttonBase =

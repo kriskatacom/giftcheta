@@ -5,6 +5,7 @@ import HomeFeaturedProducts from "@/app/home/featured-products";
 import HomeCategories from "@/app/home/categories";
 import HomeNewProducts from "@/app/home/new-products";
 import { getFullUrl, websiteName } from "@/lib/utils";
+import CartSidebar from "@/components/main-navbar/cart-sidebar";
 
 export function generateMetadata(): Metadata {
     return {
@@ -41,6 +42,7 @@ export default function Home() {
             <HomeFeaturedProducts />
             <HomeCategories />
             <HomeNewProducts />
+            <CartSidebar />
         </main>
     );
 }

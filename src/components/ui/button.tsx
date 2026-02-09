@@ -9,8 +9,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default:
-                    "text-white bg-primary hover:bg-primary/90",
+                default: "text-white bg-primary hover:bg-primary/90",
                 destructive:
                     "bg-destructive text-white hover:bg-destructive/80",
                 outline:
@@ -28,6 +27,7 @@ const buttonVariants = cva(
                 icon: "size-10 [&_svg:not([class*='size-'])]:size-5",
                 "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
                 "icon-lg": "size-12 [&_svg:not([class*='size-'])]:size-6",
+                "icon-xl": "size-14 [&_svg:not([class*='size-'])]:size-8",
             },
         },
         defaultVariants: {

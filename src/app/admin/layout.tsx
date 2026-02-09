@@ -1,6 +1,4 @@
-import { Toaster } from "sonner";
 import { ThemeProvider } from "@/app/providers/theme-provider";
-import { ClientOnly } from "@/components/client-only";
 
 export default function AdminLayout({
     children,
@@ -17,9 +15,6 @@ export default function AdminLayout({
             <div className="min-h-screen bg-background">
                 {children}
             </div>
-            <ClientOnly>
-                <Toaster position="bottom-left" theme="system" />
-            </ClientOnly>
         </ThemeProvider>
     );
 }

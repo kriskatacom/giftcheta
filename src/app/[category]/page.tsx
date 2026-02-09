@@ -15,6 +15,7 @@ import CategoryMainTop from "@/app/[category]/category-main-top";
 import CategoryProducts from "@/app/[category]/category-products";
 import { ColorService } from "@/lib/services/color-service";
 import { SizeService } from "@/lib/services/size-service";
+import CartSidebar from "@/components/main-navbar/cart-sidebar";
 
 type Props = {
     params: Promise<{
@@ -101,6 +102,7 @@ export default async function CategoryPage({ params }: Props) {
                     />
                 </div>
             </div>
+            <CartSidebar />
         </main>
     );
 }

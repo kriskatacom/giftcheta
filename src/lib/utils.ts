@@ -14,7 +14,7 @@ type FormatPriceOptions = {
 };
 
 export const websiteName = (prefix: string = "") => {
-    const websiteName = "Аз Мигрантът";
+    const websiteName = "GIFTCHETA";
     return prefix ? `${prefix} - ${websiteName}` : websiteName;
 };
 
