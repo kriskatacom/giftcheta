@@ -154,14 +154,14 @@ export class ProductService {
             [product.id],
         );
 
-        parsedProduct.sizes = sizeRows.map((row) => row.size_id);
+        parsedProduct.size_ids = sizeRows.map((row) => row.size_id);
 
         const [colorRows] = await getDb().execute<RowDataPacket[]>(
             `SELECT color_id FROM product_colors WHERE product_id = ?`,
             [product.id],
         );
 
-        parsedProduct.colors = colorRows.map((row) => row.color_id);
+        parsedProduct.color_ids = colorRows.map((row) => row.color_id);
 
         return parsedProduct;
     }

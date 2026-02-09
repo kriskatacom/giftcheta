@@ -26,7 +26,9 @@ export interface Product {
     category_id?: number;
     tags?: string;
     sizes?: Size[];
+    size_ids?: number[];
     colors?: Color[];
+    color_ids?: number[];
     images?: string;
     image?: string;
     created_at?: string;

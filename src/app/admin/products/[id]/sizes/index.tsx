@@ -31,7 +31,7 @@ type FormErrors = Partial<Record<"sizes", string>>;
 export default function SizesForm({ product, sizes }: Params) {
     const [formData, setFormData] = useState<ProductSizesInput>({
         id: product?.id ?? null,
-        sizes: product?.sizes ?? [],
+        size_ids: product?.size_ids ?? [],
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
@@ -52,9 +52,9 @@ export default function SizesForm({ product, sizes }: Params) {
     const toggleSize = (sizeId: number) => {
         setFormData((prev) => ({
             ...prev,
-            sizes: prev.sizes.includes(sizeId)
-                ? prev.sizes.filter((id) => id !== sizeId)
-                : [...prev.sizes, sizeId],
+            size_ids: prev.size_ids.includes(sizeId)
+                ? prev.size_ids.filter((id) => id !== sizeId)
+                : [...prev.size_ids, sizeId],
         }));
     };
 
@@ -103,8 +103,8 @@ export default function SizesForm({ product, sizes }: Params) {
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
                         <span>Размери</span>
-                        {formData.sizes.length > 0 && (
-                            <span>({formData.sizes.length})</span>
+                        {formData.size_ids.length > 0 && (
+                            <span>({formData.size_ids.length})</span>
                         )}
                     </div>
                 </AccordionTrigger>
@@ -118,7 +118,7 @@ export default function SizesForm({ product, sizes }: Params) {
                                     className="flex items-center gap-2 cursor-pointer"
                                 >
                                     <Checkbox
-                                        checked={formData.sizes.includes(
+                                        checked={formData.size_ids.includes(
                                             size.id,
                                         )}
                                         onCheckedChange={() =>

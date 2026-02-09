@@ -17,7 +17,6 @@ import {
     AccordionTrigger,
     AccordionContent,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Color } from "@/lib/services/color-service";
 
@@ -31,7 +30,7 @@ type FormErrors = Partial<Record<"colors", string>>;
 export default function ColorsForm({ product, colors }: Params) {
     const [formData, setFormData] = useState<ProductColorsInput>({
         id: product?.id ?? null,
-        colors: product?.colors ?? [],
+        color_ids: product?.color_ids ?? [],
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
@@ -52,9 +51,9 @@ export default function ColorsForm({ product, colors }: Params) {
     const toggleColor = (colorId: number) => {
         setFormData((prev) => ({
             ...prev,
-            colors: prev.colors.includes(colorId)
-                ? prev.colors.filter((id) => id !== colorId)
-                : [...prev.colors, colorId],
+            color_ids: prev.color_ids.includes(colorId)
+                ? prev.color_ids.filter((id) => id !== colorId)
+                : [...prev.color_ids, colorId],
         }));
     };
 
@@ -124,8 +123,8 @@ export default function ColorsForm({ product, colors }: Params) {
                 <AccordionTrigger className="px-5 text-xl cursor-pointer hover:bg-accent border-b">
                     <div className="flex items-center gap-2">
                         <span>Цветове</span>
-                        {formData.colors.length > 0 && (
-                            <span>({formData.colors.length})</span>
+                        {formData.color_ids.length > 0 && (
+                            <span>({formData.color_ids.length})</span>
                         )}
                     </div>
                 </AccordionTrigger>
@@ -139,7 +138,7 @@ export default function ColorsForm({ product, colors }: Params) {
                                     className="flex items-center gap-2 cursor-pointer"
                                 >
                                     <Checkbox
-                                        checked={formData.colors.includes(
+                                        checked={formData.color_ids.includes(
                                             color.id,
                                         )}
                                         onCheckedChange={() =>

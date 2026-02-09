@@ -3,7 +3,7 @@ import { z } from "zod";
 export const productColorsSchema = z.object({
     id: z.number().nullable().optional(),
 
-    colors: z
+    color_ids: z
         .array(
             z
                 .number()

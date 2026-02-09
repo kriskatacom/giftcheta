@@ -3,7 +3,7 @@ import { z } from "zod";
 export const productSizesSchema = z.object({
     id: z.number().nullable().optional(),
 
-    sizes: z
+    size_ids: z
         .array(
             z
                 .number()

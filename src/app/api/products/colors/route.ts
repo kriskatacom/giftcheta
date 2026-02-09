@@ -19,7 +19,7 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        await productService.syncProductColors(parsed.id, parsed.colors ?? []);
+        await productService.syncProductColors(parsed.id, parsed.color_ids ?? []);
 
         const updatedProduct = await productService.getItemByColumn("id", parsed.id);
 
