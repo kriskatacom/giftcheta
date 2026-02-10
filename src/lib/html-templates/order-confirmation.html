@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8" />
+    <title>Потвърждение на поръчка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; background-color:#f9fafb; font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb; padding:24px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden;">
+                
+                <!-- Header -->
+                <tr>
+                    <td style="padding:24px; text-align:center; background-color:#fdf2f8;">
+                        <h1 style="margin:0; font-size:22px; color:#9d174d;">
+                            Благодарим за поръчката 💖
+                        </h1>
+                        <p style="margin:8px 0 0; color:#6b7280; font-size:14px;">
+                            Вашата поръчка беше успешно потвърдена
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Customer Info -->
+                <tr>
+                    <td style="padding:24px;">
+                        <h2 style="margin:0 0 12px; font-size:16px; color:#111827;">
+                            Данни за доставка
+                        </h2>
+
+                        <p style="margin:4px 0; color:#374151;">
+                            <strong>Име:</strong> {{ fullname }}
+                        </p>
+                        <p style="margin:4px 0; color:#374151;">
+                            <strong>Телефон:</strong> {{ phone }}
+                        </p>
+                        <p style="margin:4px 0; color:#374151;">
+                            <strong>Имейл:</strong> {{ email }}
+                        </p>
+                        <p style="margin:4px 0; color:#374151;">
+                            <strong>Адрес:</strong> {{ address }}
+                        </p>
+
+                        {{#if notes}}
+                        <p style="margin-top:8px; color:#374151;">
+                            <strong>Бележка:</strong> {{ notes }}
+                        </p>
+                        {{/if}}
+                    </td>
+                </tr>
+
+                <!-- Products -->
+                <tr>
+                    <td style="padding:0 24px 24px;">
+                        <h2 style="margin:0 0 16px; font-size:16px; color:#111827;">
+                            Поръчани продукти
+                        </h2>
+
+                        <!-- Product item -->
+                        {{#each items}}
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+                            <tr>
+                                <td width="80" valign="top">
+                                    <img
+                                        src="{{ image }}"
+                                        alt="{{ name }}"
+                                        width="72"
+                                        height="72"
+                                        style="border-radius:8px; object-fit:cover;"
+                                    />
+                                </td>
+                                <td valign="top" style="padding-left:12px;">
+                                    <p style="margin:0; font-size:14px; font-weight:bold; color:#111827;">
+                                        {{ name }}
+                                    </p>
+                                    <p style="margin:4px 0; font-size:13px; color:#6b7280;">
+                                        Количество: {{ quantity }}
+                                    </p>
+                                    <p style="margin:4px 0; font-size:13px; color:#6b7280;">
+                                        Цена: {{ price }} лв.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        {{/each}}
+
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td style="padding:24px; text-align:center; background-color:#f9fafb;">
+                        <p style="margin:0; font-size:13px; color:#6b7280;">
+                            Ако имате въпроси, свържете се с нас на
+                            <a href="mailto:support@yourstore.bg" style="color:#9d174d; text-decoration:none;">
+                                support@yourstore.bg
+                            </a>
+                        </p>
+                        <p style="margin-top:8px; font-size:12px; color:#9ca3af;">
+                            © {{ year }} Your Store. Всички права запазени.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

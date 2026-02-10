@@ -104,7 +104,7 @@ export default function CartItemsList() {
             </div>
 
             <div className="flex items-center gap-2">
-                <Link className="flex-1" href={"/order/delivery"}>
+                <Link className="flex-1" href={"/checkout"}>
                     <Button className="w-full" size={"lg"} onClick={closeCart}>
                         Поръчката
                     </Button>
