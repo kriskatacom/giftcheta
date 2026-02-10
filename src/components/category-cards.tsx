@@ -11,7 +11,7 @@ export default function CategoryCards({ categories }: CategoryCardsProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-5">
             {categories.map((category) => (
                 <Link
-                    href={`/${category.slug}`}
+                    href={`/categories/${category.slug}`}
                     key={category.id}
                     className="cursor-pointer rounded-md lg:rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md hover:-translate-y-1 overflow-hidden"
                 >

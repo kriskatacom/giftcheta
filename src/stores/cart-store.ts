@@ -74,6 +74,9 @@ export const useCartStore = create<CartState>()(
                 set({
                     items: get().items.filter((i) => i.productId !== productId),
                 });
+                if (get().items.length === 0) {
+                    get().closeCart();
+                }
             },
 
             updateQuantity: (productId, quantity) => {
@@ -85,6 +88,7 @@ export const useCartStore = create<CartState>()(
                     items: get().items.map((i) =>
                         i.productId === productId ? { ...i, quantity } : i,
                     ),
+                    tempQuantity: quantity,
                 });
             },
 
@@ -119,7 +123,10 @@ export const useCartStore = create<CartState>()(
             updateTempQuantity: (quantity) => set({ tempQuantity: quantity }),
 
             // Clear cart
-            clearCart: () => set({ items: [] }),
+            clearCart: () => {
+                set({ items: [] });
+                get().closeCart();
+            },
 
             // Totals
             getTotal: () =>

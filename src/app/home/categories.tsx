@@ -1,8 +1,7 @@
+import Link from "next/link";
 import { CategoryService } from "@/lib/services/category-service";
 import { getDb } from "@/lib/db";
 import CategoryCards from "@/components/category-cards";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 const categoryService = new CategoryService(getDb());
 

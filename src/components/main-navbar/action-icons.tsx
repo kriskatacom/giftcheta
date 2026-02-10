@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-    HiOutlineHeart,
-    HiOutlineShoppingCart,
-    HiOutlineUser,
-} from "react-icons/hi";
+import { Heart, ShoppingCart, User } from 'react-feather'
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
 
@@ -19,7 +15,7 @@ export default function ActionIcons() {
     return (
         <div className="ml-auto hidden lg:flex items-center gap-2">
             <Button variant="ghost" size="icon-xl">
-                <HiOutlineHeart />
+                <Heart style={{ strokeWidth: 1 }} />
             </Button>
 
             <Button
@@ -28,7 +24,7 @@ export default function ActionIcons() {
                 className="relative"
                 onClick={openCart}
             >
-                <HiOutlineShoppingCart />
+                <ShoppingCart style={{ strokeWidth: 1 }} />
                 {mounted && cartItemsCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-sm text-primary-foreground flex items-center justify-center px-1">
                         {cartItemsCount}
@@ -37,7 +33,7 @@ export default function ActionIcons() {
             </Button>
 
             <Button variant="ghost" size="icon-xl">
-                <HiOutlineUser />
+                <User style={{ strokeWidth: 1 }} />
             </Button>
         </div>
     );

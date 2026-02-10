@@ -10,9 +10,9 @@ import { ProductService } from "@/lib/services/product-service";
 import MainNavbar from "@/components/main-navbar";
 import LeftSidebar from "@/components/left-sidebar";
 
-import Hero from "@/app/[category]/hero";
-import CategoryMainTop from "@/app/[category]/category-main-top";
-import CategoryProducts from "@/app/[category]/category-products";
+import Hero from "@/app/categories/[category]/hero";
+import CategoryMainTop from "@/app/categories/[category]/category-main-top";
+import CategoryProducts from "@/app/categories/[category]/category-products";
 import { ColorService } from "@/lib/services/color-service";
 import { SizeService } from "@/lib/services/size-service";
 import CartSidebar from "@/components/main-navbar/cart-sidebar";

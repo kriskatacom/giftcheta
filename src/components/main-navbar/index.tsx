@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HiOutlineShoppingCart, HiSearch } from "react-icons/hi";
-import { BsFilter } from "react-icons/bs";
+import { Filter, Search, ShoppingCart } from "react-feather";
+import { usePathname } from "next/navigation";
 import {
     LOGO,
     MAIN_NAVBAR_ITEMS,
@@ -20,6 +20,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { useFiltersSidebarStore } from "@/stores/use-filters-sidebar";
 
 export default function MainNavbar() {
+    const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
     const cartItemsCount = useCartStore((state) => state.getItemCount());
     const openCart = useCartStore((state) => state.openCart);
@@ -45,7 +46,13 @@ export default function MainNavbar() {
                 {/* Search */}
                 <div className="hidden lg:flex flex-1 max-w-md ml-6">
                     <div className="relative w-full">
-                        <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Button
+                            variant="ghost"
+                            size="icon-lg"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                        >
+                            <Search style={{ strokeWidth: 1 }} />
+                        </Button>
                         <Input
                             placeholder="Търсене на продукти..."
                             className="pl-9"
@@ -77,13 +84,15 @@ export default function MainNavbar() {
                 <ActionIcons />
 
                 <div className="w-full flex items-center justify-end lg:hidden">
-                    <Button
-                        variant="ghost"
-                        size="icon-xl"
-                        onClick={openSidebar}
-                    >
-                        <BsFilter />
-                    </Button>
+                    {pathname.includes("/categories") && (
+                        <Button
+                            variant="ghost"
+                            size="icon-xl"
+                            onClick={openSidebar}
+                        >
+                            <Filter size={25} style={{ strokeWidth: 1 }} />
+                        </Button>
+                    )}
 
                     <Button
                         variant="ghost"
@@ -91,7 +100,7 @@ export default function MainNavbar() {
                         className="relative"
                         onClick={openCart}
                     >
-                        <HiOutlineShoppingCart />
+                        <ShoppingCart size={25} style={{ strokeWidth: 1 }} />
                         {mounted && cartItemsCount > 0 && (
                             <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-sm text-primary-foreground flex items-center justify-center px-1">
                                 {cartItemsCount}

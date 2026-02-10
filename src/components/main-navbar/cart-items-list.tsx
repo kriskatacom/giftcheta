@@ -27,7 +27,7 @@ export default function CartItemsList() {
             {items.map((item) => (
                 <div key={item.productId} className="flex gap-2">
                     {item.image && (
-                        <Link href={item.slug} onClick={closeCart}>
+                        <Link href={`/product/${item.slug}`} onClick={closeCart}>
                             <div className="relative w-25 h-25 rounded-md overflow-hidden border">
                                 <Image
                                     src={item.image}

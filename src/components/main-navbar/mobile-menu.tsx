@@ -1,4 +1,4 @@
-import { HiMenu, HiSearch } from "react-icons/hi";
+import { Menu, Search } from "react-feather";
 import { NavbarItem } from "@/lib/types";
 import {
     Sheet,
@@ -18,7 +18,7 @@ export default function MobileMenu() {
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon-xl">
-                        <HiMenu className={NAVBAR_ICON_SIZES.lg} />
+                        <Menu size={25} style={{ strokeWidth: 1 }} />
                     </Button>
                 </SheetTrigger>
 
@@ -29,7 +29,10 @@ export default function MobileMenu() {
                     <div className="flex flex-col gap-5">
                         {/* Search mobile */}
                         <div className="px-5 relative">
-                            <HiSearch className="absolute left-8 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Search
+                                style={{ strokeWidth: 1 }}
+                                className="absolute left-8 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                            />
                             <Input
                                 placeholder="Търсене на продукти..."
                                 className="pl-9"
