@@ -6,9 +6,16 @@ export const checkoutSchema = z.object({
     email: z.string().email("Невалиден имейл адрес"),
     address: z.string().min(5, "Моля, въведи адрес за доставка"),
     notes: z.string().optional(),
+
     terms: z.boolean().refine((value) => value === true, {
-        message: "Трябва да приемете условията за ползване",
+        message: "Трябва да приемете Общите условия на сайта",
     }),
+
+    allow_marketing: z.boolean(),
+
+    is_priority: z.boolean(),
+
+    is_saving: z.boolean(),
 });
 
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;

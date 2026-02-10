@@ -88,3 +88,23 @@ export const ALLOWED_IMAGE_TYPES = [
 ];
 
 export const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
+
+// Статуси на поръчката
+export const ORDER_STATUSES: Record<string, string> = {
+    pending: "Чакаща потвърждение",
+    confirmed: "Потвърдена",
+    processing: "Обработва се",
+    shipped: "Изпратена",
+    delivered: "Доставена",
+    cancelled: "Отменена",
+    refunded: "Възстановена",
+};
+
+// Статуси на плащането
+export const PAYMENT_STATUSES: Record<string, string> = {
+    unpaid: "Не е платена",
+    paid: "Платена",
+    refunded: "Възстановена",
+    failed: "Неуспешна",
+    pending: "В процес",
+};

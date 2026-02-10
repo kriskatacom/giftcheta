@@ -9,7 +9,8 @@ export type OrderConfirmationData = {
     phone: string;
     email: string;
     address: string;
-    notes?: string;
+    notes?: string | null;
+    total_amount?: number;
     items: CartItem[];
 };
 

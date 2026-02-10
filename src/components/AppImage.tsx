@@ -15,6 +15,8 @@ export default function AppImage({
     alt,
     fill = false,
     className = "",
+    width,
+    height,
     ...props
 }: AppImageProps) {
     const [imageLoading, setImageLoading] = useState(true);
@@ -33,7 +35,9 @@ export default function AppImage({
                 src={hasError ? fallbackSrc : src}
                 alt={alt}
                 fill={fill}
-                className={`object-contain transition-opacity duration-500 ${
+                width={fill ? undefined : width}
+                height={fill ? undefined : height}
+                className={`object-cover transition-opacity duration-500 ${
                     imageLoading ? "opacity-0" : "opacity-100"
                 } ${className}`}
                 onLoad={() => setImageLoading(false)}

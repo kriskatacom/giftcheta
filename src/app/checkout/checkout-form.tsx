@@ -1,8 +1,9 @@
 "use client";
 
-import { DOMAttributes, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -24,20 +25,30 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCartStore } from "@/stores/cart-store";
 import PrimaryButton from "@/components/ui/primary-button";
 import { sendOrderConfirmation } from "@/app/checkout/actions/send-order-confirmation";
+import { UserOrderData } from "@/lib/session";
+import { useRouter } from "next/navigation";
 
-export default function CheckoutForm() {
+type CheckoutFormProps = {
+    initialValues: UserOrderData | undefined;
+};
+
+export default function CheckoutForm({ initialValues }: CheckoutFormProps) {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const { items } = useCartStore((state) => state);
+    const { clearCart, items } = useCartStore((state) => state);
 
     const form = useForm<CheckoutFormData>({
         resolver: zodResolver(checkoutSchema),
         defaultValues: {
-            fullname: "",
-            phone: "",
-            email: "",
-            address: "",
+            fullname: initialValues?.fullname ?? "",
+            phone: initialValues?.phone ?? "",
+            email: initialValues?.email ?? "",
+            address: initialValues?.address ?? "",
             notes: "",
-            terms: false,
+            terms: true,
+            allow_marketing: initialValues?.allow_marketing ?? false,
+            is_priority: false,
+            is_saving: true,
         },
         mode: "onChange",
         reValidateMode: "onChange",
@@ -47,16 +58,15 @@ export default function CheckoutForm() {
     const onSubmit = async (data: CheckoutFormData) => {
         setLoading(true);
         try {
-            const result = await sendOrderConfirmation({
-                ...data, // това са стойностите от формата
-                items, // добавяме масива с продукти
-            });
+            const result = await sendOrderConfirmation(data, items);
+            await axios.post("/api/session", data);
 
-            console.log("Потвърждение:", result);
-            // тук можеш да покажеш toast или redirect
+            if (result.order) {
+                clearCart();
+                router.push(`/order-thank-you/${result.order.order_number}`);
+            }
         } catch (error) {
             console.error(error);
-            // тук можеш да покажеш грешка на потребителя
         } finally {
             setLoading(false);
         }
@@ -158,7 +168,7 @@ export default function CheckoutForm() {
                     name="terms"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-sm font-normal">
+                            <FormLabel className="text-sm font-normal flex-wrap">
                                 Декларирам, че съм запознат/а и приемам{" "}
                                 <Link
                                     href="/terms"
@@ -175,6 +185,83 @@ export default function CheckoutForm() {
                                     }
                                 />
                             </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="allow_marketing"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                                Желая да получавам промоции и новини по имейл
+                            </FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                    checked={!!field.value}
+                                    onCheckedChange={(checked) =>
+                                        field.onChange(checked === true)
+                                    }
+                                />
+                            </FormControl>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Ако отметнете това поле, ще получавате
+                                информация за промоции, специални оферти и нови
+                                продукти на имейл.
+                            </p>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="is_priority"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                                Желая приоритетна обработка на поръчката
+                            </FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                    checked={!!field.value}
+                                    onCheckedChange={(checked) =>
+                                        field.onChange(checked === true)
+                                    }
+                                />
+                            </FormControl>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Ако отметнете това поле, поръчката ви ще бъде
+                                обработена с приоритет пред останалите.
+                            </p>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="is_saving"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                                Запазване на данните
+                            </FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                    checked={!!field.value}
+                                    onCheckedChange={(checked) =>
+                                        field.onChange(checked === true)
+                                    }
+                                />
+                            </FormControl>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Ако желаете данните Ви да се съхраняват в онлайн
+                                магазина, за да можете да правите следващи
+                                поръчки по-бързо в бъдеще.
+                            </p>
                             <FormMessage />
                         </FormItem>
                     )}
