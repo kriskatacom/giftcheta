@@ -1,8 +1,8 @@
 import { Heart } from "react-feather";
 import { TbHeartFilled } from "react-icons/tb";
+import { toast } from "sonner";
 import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
 import { useFavoritesStore } from "@/stores/use-favorites-store";
-import { toast } from "sonner";
 
 interface FavoriteButtonProps {
     productId: number;
@@ -30,7 +30,10 @@ export default function FavoriteButton({ productId }: FavoriteButtonProps) {
             size="icon-xl"
             icon={
                 isFavorite ? (
-                    <TbHeartFilled size={30} style={{ strokeWidth: 1 }} />
+                    <TbHeartFilled
+                        className="fill-primary stroke-primary stroke-1"
+                        size={30}
+                    />
                 ) : (
                     <Heart size={30} style={{ strokeWidth: 1 }} />
                 )

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
 import FavoriteButton from "./favorite-button";
+import PrimaryButton from "@/components/ui/primary-button";
 
 type CartButtonsProps = {
     product: Product;
@@ -69,45 +70,30 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
         console.log(0);
     };
 
-    const handleFavorite = async () => {
-        console.log(0);
-    };
-
-    const buttonBase =
-        "flex-1 flex items-center justify-center gap-2 text-white font-semibold py-4 px-5 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary";
-
     return (
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
             {/* Favorite Product */}
             <FavoriteButton productId={product.id} />
 
             {/* Add to Cart */}
-            <button
+            <PrimaryButton
                 onClick={handleAddToCart}
                 disabled={isLoading}
-                className={`${buttonBase} bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed`}
+                title={`Добавяне на "${product.name}" в количката`}
+                className="bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {isLoading ? (
-                    <FiLoader className="animate-spin" size={25} />
-                ) : (
-                    <FiShoppingCart size={25} />
-                )}
-                <span>Добави в количката</span>
-            </button>
+                Добавяне в количката
+            </PrimaryButton>
 
             {/* Quick Order */}
-            <button
+            <PrimaryButton
                 onClick={handleQuickOrder}
                 disabled={isQuickOrdering}
-                className={`${buttonBase} bg-black/90`}
+                title="Направете бърна поръчка на продукта"
+                className="bg-black/90 hover:bg-black/80 focus:ring-black/90"
             >
-                {isQuickOrdering ? (
-                    <FiLoader className="animate-spin" size={25} />
-                ) : (
-                    <FiClock size={25} />
-                )}
-                <span>Бърза поръчка</span>
-            </button>
+                Бърза поръчка
+            </PrimaryButton>
         </div>
     );
 }

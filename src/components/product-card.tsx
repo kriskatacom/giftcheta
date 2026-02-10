@@ -139,8 +139,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                             icon={
                                 isFavorite ? (
                                     <TbHeartFilled
+                                        className="fill-primary stroke-primary stroke-1"
                                         size={30}
-                                        style={{ strokeWidth: 1 }}
                                     />
                                 ) : (
                                     <Heart

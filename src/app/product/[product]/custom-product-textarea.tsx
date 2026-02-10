@@ -13,7 +13,7 @@ type CustomProductTextareaProps = {
 
 export default function CustomProductTextarea({
     placeholder = "Персонализиран продукт",
-    maxLength = 200,
+    maxLength = 2000,
     productId,
 }: CustomProductTextareaProps) {
     const { addDescription, updateTempDescription, getItemDescription, tempDescription } = useCartStore(

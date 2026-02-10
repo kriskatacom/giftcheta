@@ -11,6 +11,7 @@ import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import AppImage from "@/components/AppImage";
 import { Button } from "@/components/ui/button";
+import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
 
 type ProductGalleryProps = {
     images: string[];
@@ -54,19 +55,21 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
                             src={slides[index].src as string}
                             alt={`${slides[index].alt} - Main Image`}
                             className="object-cover w-full h-full"
+                            onClick={() => setOpen(!open)}
                             width={400}
                             height={400}
                         />
                     </div>
 
-                    <Button
-                        className="absolute top-5 right-5 z-10"
-                        size="icon-lg"
-                        variant="outline"
-                        onClick={() => setOpen(!open)}
-                    >
-                        <ExpandIcon />
-                    </Button>
+                    <div className="absolute top-5 right-5 z-10">
+                        <IconButtonWithTooltip
+                            size="icon-lg"
+                            tooltip="Показване на галерията"
+                            variant="outline"
+                            onClick={() => setOpen(!open)}
+                            icon={<ExpandIcon />}
+                        />
+                    </div>
                 </div>
 
                 {/* Thumbnails */}
