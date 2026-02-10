@@ -17,6 +17,7 @@ import {
 import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
 import FavoriteButton from "./favorite-button";
 import PrimaryButton from "@/components/ui/primary-button";
+import { getFullUrl } from "@/lib/utils";
 
 type CartButtonsProps = {
     product: Product;
@@ -30,6 +31,7 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
         tempDescription,
         updateTempDescription,
         tempQuantity,
+        items,
         updateTempQuantity,
     } = useCartStore((state) => state);
 
@@ -49,7 +51,8 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
                     price: hasSale
                         ? product.sale_price!
                         : Number(product.price),
-                    image: product.image,
+                    image: `${product.image}`,
+                    link: getFullUrl(`/product/${product.slug}`),
                     description: tempDescription,
                 },
                 tempQuantity,

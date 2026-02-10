@@ -6,6 +6,9 @@ import HomeCategories from "@/app/home/categories";
 import HomeNewProducts from "@/app/home/new-products";
 import { getFullUrl, websiteName } from "@/lib/utils";
 import CartSidebar from "@/components/main-navbar/cart-sidebar";
+import { generateInvoice } from "@/app/api/lib/invoices/invoice";
+import { generateInvoicePDF } from "@/app/api/lib/invoices/generate-pdf";
+import DownloadInvoiceButton from "./invoice";
 
 export function generateMetadata(): Metadata {
     const title = `${websiteName()} - Ръчно изработени подаръци и вечни рози за жени`;
@@ -58,6 +61,7 @@ export default function Home() {
         <main>
             <MainNavbar />
             <Hero />
+            <DownloadInvoiceButton />
             <HomeFeaturedProducts />
             <HomeCategories />
             <HomeNewProducts />

@@ -10,8 +10,7 @@ export async function POST(req: Request) {
 
     await saveUserDataToSession(body);
 
-    const data = await getUserDataFromSession();
-    console.log(data);
+    await getUserDataFromSession();
 
     return NextResponse.json({ ok: true });
 }

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import AppImage from "@/components/AppImage";
 import { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getFullUrl } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
 import { showAddToCartToast } from "@/components/addt-to-cart-toast";
 import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
@@ -40,7 +40,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 name: product.name,
                 slug: product.slug as string,
                 price: hasSale ? product.sale_price! : Number(product.price),
-                image: product.image,
+                image: `${product.image}`,
+                link: getFullUrl(`/product/${product.slug}`),
             });
 
             showAddToCartToast({

@@ -2,7 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { CartItem } from "@/stores/cart-store";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getFullUrl } from "@/lib/utils";
 
 export type OrderConfirmationData = {
     fullname: string;
@@ -49,13 +49,15 @@ export function generateOrderConfirmationHtml(
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
                 <tr>
                     <td width="80" valign="top">
-                        <img
-                            src="${item.image ?? "https://via.placeholder.com/72"}"
-                            alt="${item.name}"
-                            width="72"
-                            height="72"
-                            style="border-radius:8px; object-fit:cover;"
-                        />
+                        <a href="${item.link}">
+                            <img
+                                src="${getFullUrl(`${item.image}`) ?? "https://via.placeholder.com/72"}"
+                                alt="${item.name}"
+                                width="72"
+                                height="72"
+                                style="border-radius:8px; object-fit:cover;"
+                            />
+                        </a>
                     </td>
                     <td valign="top" style="padding-left:12px;">
                         <p style="margin:0; font-size:14px; font-weight:bold; color:#111827;">

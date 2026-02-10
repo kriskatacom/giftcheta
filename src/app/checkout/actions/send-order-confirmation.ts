@@ -1,5 +1,7 @@
 "use server";
 
+import fs from "fs";
+
 import { CheckoutFormData } from "@/app/checkout/checkout-schema";
 import { CartItem } from "@/stores/cart-store";
 import { getDb } from "@/lib/db";
@@ -14,6 +16,13 @@ import {
     OrderConfirmationData,
 } from "@/app/api/lib/emails/generate-order-confirmation-html";
 import { saveUserDataToSession, UserOrderData } from "@/lib/session";
+import {
+    generateInvoicePdfBuffer,
+    InvoiceTemplateData,
+    renderInvoiceTemplate,
+} from "@/lib/services/invoice-service";
+import { EmailOptions, sendEmail } from "@/lib/services/email-service";
+import { websiteName } from "@/lib/utils";
 
 export interface SendOrderResult {
     success: boolean;
@@ -69,14 +78,73 @@ export async function sendOrderConfirmation(
             items: order.items,
             total_amount: order.total_amount,
         };
+
         const html = generateOrderConfirmationHtml(orderData);
 
         saveUserDataToSession(formData);
 
+        const demoInvoiceData: InvoiceTemplateData = {
+            invoiceNumber: "INV-2026-0001",
+            issueDate: "2026-01-30",
+            validUntil: "2026-02-13",
+
+            customerName: "Иван Петров Иванов",
+            customerAddress: "гр. София 1000, ул. Граф Игнатиев №12",
+            customerEIK: "123456789",
+            customerVAT: "BG123456789",
+
+            items: [
+                {
+                    name: "Аранжировка с жълти и бели рози",
+                    quantity: 1,
+                    price: 120.0,
+                },
+                {
+                    name: "Доставка до адрес",
+                    quantity: 1,
+                    price: 10.0,
+                },
+            ],
+
+            subtotal: 130.0,
+            vatAmount: 26.0, // 20% ДДС
+            total: 156.0,
+
+            totalInWords: "сто петдесет и шест лева и нула стотинки",
+
+            company: {
+                name: "Флора Арт ООД",
+                address: "гр. Пловдив 4000, бул. България №45",
+                vatId: "BG987654321",
+                phone: "+359 88 123 4567",
+                bank: "УниКредит Булбанк",
+                iban: "BG18UNCR70001512345678",
+                swift: "UNCRBGSF",
+                logoUrl: "https://yourdomain.com/logo.png",
+            },
+        };
+
+        const pdfBuffer = await generateInvoicePdfBuffer(demoInvoiceData);
+
+        const emailOptions: EmailOptions = {
+            subject: `Имате нова поръчка в ${websiteName()}`,
+            text: html,
+            to: order.email,
+            attachments: [
+                {
+                    filename: `invoice-${demoInvoiceData.invoiceNumber}.pdf`,
+                    content: pdfBuffer,
+                    contentType: "application/pdf",
+                },
+            ],
+        };
+
+        await sendEmail(emailOptions);
+
         return { success: true, html, order };
     } catch (error: any) {
         console.error("Грешка при създаване на поръчка:", error);
-        return { success: false, error: error?.message || "Unknown error" };
+        return { success: false, error: error?.message || "Нещо се случи!" };
     }
 }
 

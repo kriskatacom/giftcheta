@@ -27,6 +27,7 @@ import PrimaryButton from "@/components/ui/primary-button";
 import { sendOrderConfirmation } from "@/app/checkout/actions/send-order-confirmation";
 import { UserOrderData } from "@/lib/session";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type CheckoutFormProps = {
     initialValues: UserOrderData | undefined;
@@ -65,8 +66,21 @@ export default function CheckoutForm({ initialValues }: CheckoutFormProps) {
                 clearCart();
                 router.push(`/order-thank-you/${result.order.order_number}`);
             }
-        } catch (error) {
-            console.error(error);
+        } catch (err: unknown) {
+            let message = "Възникна грешка";
+
+            if (err instanceof Error) {
+                message = err.message;
+            } else if (axios.isAxiosError(err)) {
+                message = err.response?.data?.message ?? err.message;
+            } else if (typeof err === "string") {
+                message = err;
+            } else if (err && typeof err === "object" && "message" in err) {
+                message = (err as any).message;
+            }
+
+            toast.error(message);
+            console.error("Caught error:", err);
         } finally {
             setLoading(false);
         }

@@ -108,3 +108,5 @@ export const PAYMENT_STATUSES: Record<string, string> = {
     failed: "Неуспешна",
     pending: "В процес",
 };
+
+export const DOMAIN_NAME = "giftcheta.com";

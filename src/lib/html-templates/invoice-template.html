@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="bg">
+    <head>
+        <meta charset="UTF-8" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                padding: 20px;
+            }
+            .logo img {
+                height: 50px;
+            }
+            .header,
+            .footer {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .header .company,
+            .header .customer {
+                width: 48%;
+                display: inline-block;
+                vertical-align: top;
+            }
+            .header .customer {
+                text-align: right;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th,
+            td {
+                border: 1px solid #333;
+                padding: 6px;
+            }
+            th {
+                background: #f0f0f0;
+            }
+            .right {
+                text-align: right;
+            }
+            .total {
+                font-weight: bold;
+            }
+            .footer {
+                margin-top: 50px;
+                font-size: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="logo"><img src="{{company.logoUrl}}" alt="Logo" /></div>
+
+        <div class="header">
+            <div class="company">
+                <strong>Доставчик:</strong><br />
+                {{company.name}}<br />
+                Адрес: {{company.address}}<br />
+                ЕИК: {{company.vatId}}<br />
+                Телефон: {{company.phone}}<br />
+            </div>
+            <div class="customer">
+                <strong>Получател:</strong><br />
+                {{customerName}}<br />
+                {{customerAddress}}<br />
+                {{customerEIK}}<br />
+                {{customerVAT}}<br />
+                Дата на издаване: {{issueDate}}<br />
+                Валидно до: {{validUntil}}
+            </div>
+        </div>
+
+        <h2>Фактура # {{invoiceNumber}} (Оригинал)</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Наименование</th>
+                    <th>Количество</th>
+                    <th>Цена</th>
+                    <th>Общо</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{itemsRows}}
+            </tbody>
+        </table>
+
+        <p>{{totalInWords}}</p>
+
+        <table
+            class="right"
+            style="width: 300px; float: right; margin-top: 10px"
+        >
+            <tr>
+                <td>Общо:</td>
+                <td class="right">{{subtotal}}</td>
+            </tr>
+            <tr>
+                <td>ДДС(20%):</td>
+                <td class="right">{{vatAmount}}</td>
+            </tr>
+            <tr class="total">
+                <td>Сума за плащане:</td>
+                <td class="right">{{total}}</td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            {{company.name}} | {{company.address}} | ЕИК: {{company.vatId}}<br />
+            Банка: {{company.bank}} | IBAN: {{company.iban}} | SWIFT:
+            {{company.swift}}
+        </div>
+    </body>
+</html>

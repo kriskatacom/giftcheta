@@ -61,6 +61,14 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
                         />
                     </div>
 
+                    <Button
+                        className="absolute top-5 right-5 z-10"
+                        size="icon-lg"
+                        variant="outline"
+                        onClick={() => setOpen(!open)}
+                    >
+                        <ExpandIcon />
+                    </Button>
                     <div className="absolute top-5 right-5 z-10">
                         <IconButtonWithTooltip
                             size="icon-lg"
