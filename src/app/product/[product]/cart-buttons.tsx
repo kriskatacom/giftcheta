@@ -1,18 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { Heart } from "react-feather";
 import { FiShoppingCart, FiLoader, FiClock } from "react-icons/fi";
 import { toast } from "sonner";
 import { Product } from "@/lib/types";
 import { useCartStore } from "@/stores/cart-store";
 import { showAddToCartToast } from "@/components/addt-to-cart-toast";
+import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
+import FavoriteButton from "./favorite-button";
 
 type CartButtonsProps = {
     product: Product;
 };
 
 export default function AnimatedCartButtons({ product }: CartButtonsProps) {
-    const [isAdding, setIsAdding] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isQuickOrdering] = useState(false);
     const {
         addItem,
@@ -28,7 +38,7 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
 
     const handleAddToCart = async () => {
         try {
-            setIsAdding(true);
+            setIsLoading(true);
 
             addItem(
                 {
@@ -51,11 +61,15 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
         } catch {
             toast.error("Грешка при добавяне в количката.");
         } finally {
-            setIsAdding(false);
+            setIsLoading(false);
         }
     };
 
     const handleQuickOrder = async () => {
+        console.log(0);
+    };
+
+    const handleFavorite = async () => {
         console.log(0);
     };
 
@@ -64,13 +78,16 @@ export default function AnimatedCartButtons({ product }: CartButtonsProps) {
 
     return (
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            {/* Favorite Product */}
+            <FavoriteButton productId={product.id} />
+
             {/* Add to Cart */}
             <button
                 onClick={handleAddToCart}
-                disabled={isAdding}
+                disabled={isLoading}
                 className={`${buttonBase} bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-                {isAdding ? (
+                {isLoading ? (
                     <FiLoader className="animate-spin" size={25} />
                 ) : (
                     <FiShoppingCart size={25} />

@@ -7,11 +7,13 @@ import LoadingSpinner from "@/components/loading/loading-spinner";
 
 type ProductGridProps = {
     filteredProducts: Product[];
+    notFoundMessage?: string;
     className?: string;
 };
 
 export default function ProductGrid({
     filteredProducts,
+    notFoundMessage = "Няма продукти в този диапазон",
     className,
 }: ProductGridProps) {
     const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function ProductGrid({
     if (!filteredProducts.length) {
         return (
             <div className="text-center text-gray-500 py-10">
-                Няма продукти в този диапазон
+                {notFoundMessage}
             </div>
         );
     }

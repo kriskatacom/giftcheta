@@ -239,6 +239,61 @@ export class ProductService {
         return products;
     }
 
+    async getProductsByIdsDetailed(ids: number[]): Promise<Product[]> {
+        if (!ids || ids.length === 0) return [];
+
+        const placeholders = ids.map(() => "?").join(",");
+        const query = `
+        SELECT *
+        FROM products
+        WHERE id IN (${placeholders})
+    `;
+
+        const [rows] = await getDb().execute<(RowDataPacket & Product)[]>(
+            query,
+            ids,
+        );
+
+        const productsWithDetails: Product[] = [];
+
+        for (const row of rows) {
+            // → Tags
+            const tags = row.tags ? JSON.parse(row.tags) : [];
+
+            // → Images
+            const images = row.images ? JSON.parse(row.images) : [];
+
+            // → Sizes
+            const [sizeRows] = await getDb().query<any[]>(
+                `SELECT s.* 
+             FROM sizes s
+             JOIN product_sizes ps ON ps.size_id = s.id
+             WHERE ps.product_id = ?
+             ORDER BY s.sort_order ASC`,
+                [row.id],
+            );
+
+            // → Colors
+            const [colorRows] = await getDb().query<any[]>(
+                `SELECT c.* 
+             FROM colors c
+             JOIN product_colors pc ON pc.color_id = c.id
+             WHERE pc.product_id = ?`,
+                [row.id],
+            );
+
+            productsWithDetails.push({
+                ...row,
+                tags,
+                images,
+                sizes: sizeRows || [],
+                colors: colorRows || [],
+            });
+        }
+
+        return productsWithDetails;
+    }
+
     async deleteProductsWithImages(ids: number[]): Promise<number> {
         if (!ids || ids.length === 0) return 0;
 

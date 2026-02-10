@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { Eye, ShoppingCart } from "lucide-react";
+import { TbHeartFilled } from "react-icons/tb";
+import { Heart } from "react-feather";
+import { useState } from "react";
+import { toast } from "sonner";
 import AppImage from "@/components/AppImage";
-import { Button } from "@/components/ui/button";
 import { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
-import { useState } from "react";
-import { showAddToCartToast } from "./addt-to-cart-toast";
-import { toast } from "sonner";
+import { showAddToCartToast } from "@/components/addt-to-cart-toast";
+import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
+import { useFavoritesStore } from "@/stores/use-favorites-store";
+import { eventBus } from "@/lib/events/event-bus";
 
 type ProductCardProps = {
     product: Product;
@@ -17,7 +21,11 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
-    const [isAdding, setIsAdding] = useState(false);
+    const isFavorite = useFavoritesStore((state) =>
+        state.favorites.includes(product.id),
+    );
+    const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+    const [isLoading, setIsLoading] = useState(false);
 
     if (!product.price) return null;
 
@@ -25,7 +33,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const handleAddToCart = async () => {
         try {
-            setIsAdding(true);
+            setIsLoading(true);
 
             addItem({
                 productId: product.id,
@@ -42,8 +50,27 @@ export default function ProductCard({ product }: ProductCardProps) {
         } catch {
             toast.error("Грешка при добавяне в количката.");
         } finally {
-            setIsAdding(false);
+            setIsLoading(false);
         }
+    };
+
+    const handleToogleFavorite = () => {
+        toggleFavorite(product.id);
+
+        const newIsFavorite = useFavoritesStore
+            .getState()
+            .favorites.includes(product.id);
+
+        const message = newIsFavorite
+            ? "Продуктът е добавен в секция Любими!"
+            : "Продуктът е премахнат в секция Любими!";
+
+        toast.success(message, { position: "top-center" });
+
+        eventBus.emit("toggleFavorite", {
+            productId: product.id,
+            isFavorite: newIsFavorite,
+        });
     };
 
     return (
@@ -62,7 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
             )}
 
-            <div className="flex flex-col p-4 flex-1">
+            <div className="flex flex-col justify-between p-5 flex-1 ">
                 {product.name && (
                     <Link
                         href={`/product/${product.slug}`}
@@ -81,23 +108,48 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </p>
                     )}
 
-                    <div className="flex gap-3">
-                        <Button
-                            variant="outline"
+                    <div className="flex gap-2">
+                        <IconButtonWithTooltip
+                            tooltip="Добавяне в количката"
                             size="icon-lg"
+                            variant="ghost"
                             onClick={handleAddToCart}
-                            title="Добавяне в количката"
-                        >
-                            <ShoppingCart className="size-5" />
-                        </Button>
-
-                        <Button
-                            variant="outline"
+                            icon={
+                                <ShoppingCart
+                                    size={30}
+                                    style={{ strokeWidth: 1 }}
+                                />
+                            }
+                        />
+                        <IconButtonWithTooltip
+                            tooltip="Преглед на продукта"
                             size="icon-lg"
-                            title="Преглед на продукта"
-                        >
-                            <Eye className="size-5" />
-                        </Button>
+                            variant="ghost"
+                            icon={<Eye size={30} style={{ strokeWidth: 1 }} />}
+                        />
+                        <IconButtonWithTooltip
+                            tooltip={
+                                isFavorite
+                                    ? "Премахване от любими"
+                                    : "Добави в любими"
+                            }
+                            onClick={handleToogleFavorite}
+                            variant="ghost"
+                            size="icon-lg"
+                            icon={
+                                isFavorite ? (
+                                    <TbHeartFilled
+                                        size={30}
+                                        style={{ strokeWidth: 1 }}
+                                    />
+                                ) : (
+                                    <Heart
+                                        size={30}
+                                        style={{ strokeWidth: 1 }}
+                                    />
+                                )
+                            }
+                        />
                     </div>
                 </div>
             </div>
