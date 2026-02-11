@@ -143,10 +143,10 @@ export class ProductService {
 
         const parsedProduct: Product = {
             ...product,
-            tags: product.tags ? JSON.parse(product.tags) : [],
             images: product.images ? JSON.parse(product.images) : [],
             sizes: [],
             colors: [],
+            tags: [],
         };
 
         const [sizeRows] = await getDb().execute<RowDataPacket[]>(
@@ -162,6 +162,13 @@ export class ProductService {
         );
 
         parsedProduct.color_ids = colorRows.map((row) => row.color_id);
+
+        const [tagRows] = await getDb().execute<RowDataPacket[]>(
+            `SELECT tag_id FROM product_tags WHERE product_id = ?`,
+            [product.id],
+        );
+
+        parsedProduct.tag_ids = tagRows.map((row) => row.tag_id);
 
         return parsedProduct;
     }
@@ -257,9 +264,6 @@ export class ProductService {
         const productsWithDetails: Product[] = [];
 
         for (const row of rows) {
-            // → Tags
-            const tags = row.tags ? JSON.parse(row.tags) : [];
-
             // → Images
             const images = row.images ? JSON.parse(row.images) : [];
 
@@ -282,12 +286,24 @@ export class ProductService {
                 [row.id],
             );
 
+            // → Tags
+            const [tagRows] = await getDb().query<any[]>(
+                `SELECT t.* 
+             FROM tags t
+             JOIN product_tags pt ON pt.tag_id = t.id
+             WHERE pt.product_id = ?`,
+                [row.id],
+            );
+
+            console.log(tagRows);
+            
+
             productsWithDetails.push({
                 ...row,
-                tags,
                 images,
                 sizes: sizeRows || [],
                 colors: colorRows || [],
+                tags: tagRows || [],
             });
         }
 
@@ -359,6 +375,25 @@ export class ProductService {
         await this.pool.query(insertSql, [values]);
     }
 
+    async syncProductTags(
+        productId: number,
+        tagIds: number[],
+    ): Promise<void> {
+        const deleteSql = `DELETE FROM product_tags WHERE product_id = ?`;
+        await this.pool.execute<ResultSetHeader>(deleteSql, [productId]);
+
+        if (!tagIds || tagIds.length === 0) return;
+
+        const values = tagIds.map((colorId) => [productId, colorId]);
+
+        const insertSql = `
+            INSERT INTO product_tags (product_id, tag_id)
+            VALUES ?
+        `;
+
+        await this.pool.query(insertSql, [values]);
+    }
+
     async searchProducts(
         query: string,
         options?: {
@@ -395,10 +430,10 @@ export class ProductService {
 
         return rows.map((row) => ({
             ...row,
-            tags: row.tags ? JSON.parse(row.tags) : [],
             images: row.images ? JSON.parse(row.images) : [],
             sizes: [],
             colors: [],
+            tags: [],
         }));
     }
 }

@@ -3,12 +3,12 @@ import { z } from "zod";
 export const productTagsSchema = z.object({
     id: z.number().nullable().optional(),
 
-    tags: z
+    tag_ids: z
         .array(
             z
-                .string()
-                .min(1, "Тагът не може да е празен")
-                .max(50, "Тагът е твърде дълъг"),
+                .number()
+                .int("Невалиден таг")
+                .positive("Невалиден таг"),
         )
         .max(20, "Може да добавите до 20 тага")
         .optional()

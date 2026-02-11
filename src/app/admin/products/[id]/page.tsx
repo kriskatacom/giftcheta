@@ -22,14 +22,16 @@ type Props = {
 import { getDb } from "@/lib/db";
 import { ProductService } from "@/lib/services/product-service";
 import { SizeService } from "@/lib/services/size-service";
-import SizesForm from "@/app/admin/products/[id]/sizes";
-import ColorsForm from "./colors";
 import { ColorService } from "@/lib/services/color-service";
-import DraggableForms from "../../../../components/draggable-forms";
+import { TagService } from "@/lib/services/tag-service";
+import SizesForm from "@/app/admin/products/[id]/sizes";
+import ColorsForm from "@/app/admin/products/[id]/colors";
+import DraggableForms from "@/components/draggable-forms";
 
 const productService = new ProductService(getDb());
 const sizeService = new SizeService(getDb());
 const colorService = new ColorService(getDb());
+const tagService = new TagService(getDb());
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
@@ -65,6 +67,7 @@ export default async function updateItem({ params }: Params) {
 
     const sizes = await sizeService.getAllItems();
     const colors = await colorService.getAllItems();
+    const tags = await tagService.getAllItems();
 
     const breadcrumbs: BreadcrumbItem[] = [
         { name: "Табло", href: "/admin/dashboard" },
@@ -85,7 +88,7 @@ export default async function updateItem({ params }: Params) {
         pricing: product && <PricingForm product={product} />,
         inventory: product && <InventoryForm product={product} />,
         description: product && <DescriptionForm product={product} />,
-        tags: product && <TagsForm product={product} />,
+        tags: product && <TagsForm product={product} tags={tags} />,
         colors: product && <ColorsForm product={product} colors={colors} />,
         sizes: product && <SizesForm product={product} sizes={sizes} />,
     };

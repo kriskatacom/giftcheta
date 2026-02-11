@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-    productTagsSchema,
-    ProductTagsInput,
-} from "@/app/admin/products/[id]/tags/schema";
+import { z } from "zod";
 import { ProductService } from "@/lib/services/product-service";
 import { getDb } from "@/lib/db";
+import { productTagsSchema, ProductTagsInput } from "@/app/admin/products/[id]/tags/schema";
 
 const productService = new ProductService(getDb());
 
@@ -12,40 +10,33 @@ export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const input: ProductTagsInput = productTagsSchema.parse(body);
+        const parsed: ProductTagsInput = productTagsSchema.parse(body);
 
-        if (!input.id) {
+        if (!parsed.id) {
             return NextResponse.json(
-                { success: false, message: "Не е предоставен ID на продукта" },
-                { status: 400 },
+                { success: false, message: "Не е предоставен product ID" },
+                { status: 400 }
             );
         }
 
-        const updatedProduct = await productService.updateItem(input.id, {
-            tags: JSON.stringify(input.tags),
-        });
+        await productService.syncProductTags(parsed.id, parsed.tag_ids ?? []);
 
-        return NextResponse.json(
-            {
-                success: true,
-                updated: true,
-                product: updatedProduct,
-            },
-            { status: 200 },
-        );
+        const updatedProduct = await productService.getItemByColumn("id", parsed.id);
+
+        return NextResponse.json({ success: true, product: updatedProduct });
     } catch (err: any) {
-        if (err.errors) {
-            return NextResponse.json(
-                { success: false, errors: err.errors },
-                { status: 400 },
-            );
-        }
-
         console.error("Error updating product tags:", err);
 
+        if (err instanceof z.ZodError) {
+            return NextResponse.json(
+                { success: false, errors: err.issues },
+                { status: 400 }
+            );
+        }
+
         return NextResponse.json(
-            { success: false, message: err.message },
-            { status: 500 },
+            { success: false, message: "Възникна грешка при запис" },
+            { status: 500 }
         );
     }
 }

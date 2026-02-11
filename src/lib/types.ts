@@ -1,6 +1,7 @@
 import { IconType } from "react-icons";
-import { Color } from "./services/color-service";
-import { Size } from "./services/size-service";
+import { Color } from "@/lib/services/color-service";
+import { Size } from "@/lib/services/size-service";
+import { Tag } from "@/lib/services/tag-service";
 
 export type IconSize = "sm" | "md" | "lg";
 
@@ -24,11 +25,12 @@ export interface Product {
     is_featured?: boolean;
     status?: ProductStatus;
     category_id?: number;
-    tags?: string;
     sizes?: Size[];
     size_ids?: number[];
     colors?: Color[];
     color_ids?: number[];
+    tag_ids?: number[];
+    tags?: Tag[];
     images?: string;
     image?: string;
     created_at?: string;

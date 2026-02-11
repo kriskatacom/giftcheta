@@ -12,10 +12,13 @@ type Props = {
 
 export default function DraggableForms({ storageKey, sections }: Props) {
     const [hasMounted, setHasMounted] = useState(false);
-    
-    const componentsMap: Record<string, React.ReactNode> = useMemo(() => ({
-        ...sections
-    }), []);
+
+    const componentsMap: Record<string, React.ReactNode> = useMemo(
+        () => ({
+            ...sections,
+        }),
+        [],
+    );
 
     const [order, setOrder] = useState<string[]>(Object.keys(componentsMap));
 
@@ -24,9 +27,14 @@ export default function DraggableForms({ storageKey, sections }: Props) {
         if (savedOrder) {
             try {
                 const parsedOrder = JSON.parse(savedOrder);
-                const allKeysExist = parsedOrder.every((key: string) => key in componentsMap);
-                
-                if (allKeysExist && parsedOrder.length === Object.keys(componentsMap).length) {
+                const allKeysExist = parsedOrder.every(
+                    (key: string) => key in componentsMap,
+                );
+
+                if (
+                    allKeysExist &&
+                    parsedOrder.length === Object.keys(componentsMap).length
+                ) {
                     setOrder(parsedOrder);
                 }
             } catch (e) {
@@ -62,19 +70,33 @@ export default function DraggableForms({ storageKey, sections }: Props) {
                             if (!componentsMap[id]) return null;
 
                             return (
-                                <Draggable key={id} draggableId={id} index={index}>
+                                <Draggable
+                                    key={id}
+                                    draggableId={id}
+                                    index={index}
+                                >
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             className={`rounded shadow border ${
-                                                snapshot.isDragging ? "ring-2 ring-blue-500 z-50" : "border-background"
+                                                snapshot.isDragging
+                                                    ? "ring-2 ring-blue-500 z-50"
+                                                    : "border-background"
                                             }`}
-                                            style={provided.draggableProps.style}
+                                            style={
+                                                provided.draggableProps.style
+                                            }
                                         >
-                                            <div className="flex items-center gap-5">
-                                                <div {...provided.dragHandleProps} className="max-w-10 cursor-grab active:cursor-grabbing">
-                                                    <RiDragMove2Fill size={NAVBAR_ICON_SIZES.md} className="text-gray-400" />
+                                            <div className="relative">
+                                                <div
+                                                    {...provided.dragHandleProps}
+                                                    className="absolute top-3.5 right-15 flex justify-center items-center gap-2 text-muted-foreground mb-2 cursor-grab active:cursor-grabbing"
+                                                >
+                                                    <RiDragMove2Fill
+                                                        className="text-gray-400 text-4xl"
+                                                    />
+                                                    <span>Преместване</span>
                                                 </div>
                                                 <div className="flex-1">
                                                     {componentsMap[id]}
