@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { CategoryService } from "@/lib/services/category-service";
-import { getDb } from "@/lib/db";
 import CategoryCards from "@/components/category-cards";
-
-const categoryService = new CategoryService(getDb());
+import { Category } from "@/models";
 
 export default async function HomeCategories() {
-    const categories = await categoryService.getAllItems(null, { limit: 4 });
+    const categories = await Category.findAll({
+        order: [["sortOrder", "ASC"]],
+        limit: 4,
+        raw: true,
+    });
 
     return (
         <section>

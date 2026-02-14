@@ -7,13 +7,13 @@ import { Heart } from "react-feather";
 import { useState } from "react";
 import { toast } from "sonner";
 import AppImage from "@/components/AppImage";
-import { Product } from "@/lib/types";
 import { formatPrice, getFullUrl } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
 import { showAddToCartToast } from "@/components/addt-to-cart-toast";
 import IconButtonWithTooltip from "@/components/ui/icon-button-with-tooltip";
 import { useFavoritesStore } from "@/stores/use-favorites-store";
 import { eventBus } from "@/lib/events/event-bus";
+import { type Product } from "@/models";
 
 type ProductCardProps = {
     product: Product;
@@ -29,7 +29,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     if (!product.price) return null;
 
-    const hasSale = product.sale_price && product.sale_price < product.price;
+    const hasSale = product.salePrice && product.salePrice < product.price;
 
     const handleAddToCart = async () => {
         try {
@@ -39,14 +39,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                 productId: product.id,
                 name: product.name,
                 slug: product.slug as string,
-                price: hasSale ? product.sale_price! : Number(product.price),
+                price: hasSale ? product.salePrice! : Number(product.price),
                 image: `${product.image}`,
                 link: getFullUrl(`/product/${product.slug}`),
             });
 
             showAddToCartToast({
                 name: product.name,
-                image: product.image,
+                image: product.image!,
             });
         } catch {
             toast.error("Грешка при добавяне в количката.");

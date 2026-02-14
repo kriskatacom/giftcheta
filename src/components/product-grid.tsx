@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Product } from "@/lib/types";
 import ProductCard from "@/components/product-card";
 import LoadingSpinner from "@/components/loading/loading-spinner";
+import { type Product } from "@/models";
 
 type ProductGridProps = {
     filteredProducts: Product[];

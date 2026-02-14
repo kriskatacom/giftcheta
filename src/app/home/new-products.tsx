@@ -1,16 +1,12 @@
-import { ProductService } from "@/lib/services/product-service";
 import ProductGrid from "@/components/product-grid";
-import { getDb } from "@/lib/db";
-import { ProductStatus } from "@/lib/types";
-
-const productService = new ProductService(getDb());
+import { Product } from "@/models";
 
 export default async function HomeNewProducts() {
-    const products = await productService.getItems({
-        column: "status",
-        value: "active" as ProductStatus,
-        order_by: "created_at",
+    const products = await Product.findAll({
+        where: { status: "published" },
+        order: [["createdAt", "DESC"]],
         limit: 8,
+        raw: true,
     });
 
     return (

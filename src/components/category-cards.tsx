@@ -1,18 +1,27 @@
 import Link from "next/link";
-import { Category } from "@/lib/services/category-service";
 import AppImage from "@/components/AppImage";
 
+interface CategoryData {
+    id?: number;
+    name: string;
+    slug: string;
+    heading?: string | null;
+    excerpt?: string | null;
+    image?: string | null;
+    children?: CategoryData[];
+}
+
 interface CategoryCardsProps {
-    categories: Category[];
+    categories: CategoryData[];
 }
 
 export default function CategoryCards({ categories }: CategoryCardsProps) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-5">
-            {categories.map((category) => (
+            {categories.map((category, index) => (
                 <Link
                     href={`/categories/${category.slug}`}
-                    key={category.id}
+                    key={index}
                     className="cursor-pointer rounded-md lg:rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md hover:-translate-y-1 overflow-hidden"
                 >
                     {(category.image && (
