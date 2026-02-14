@@ -1,25 +1,35 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "@/lib/sequelize";
 
 interface ProductAttributes {
-    id?: number;
+    id: number;
     name: string;
     slug: string;
     description?: string | null;
     shortDescription?: string | null;
     price: number;
     salePrice?: number | null;
-    status: "draft" | "published" | "out_of_stock";
+    status: "draft" | "published" | "out_of_stock" | "active"; // Добавено "active" от данните
     stockQuantity: number;
-    categoryId: number;
+    categoryId?: number | null; // Променено на optional/null заради твоите данни
     image?: string | null;
+    images?: string[] | string | null; // За галерията от снимки
     isFeatured: boolean;
     sortOrder: number;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-class Product extends Model<ProductAttributes> implements ProductAttributes {
+// Дефинираме кои полета са незадължителни при създаване
+interface ProductCreationAttributes extends Optional<
+    ProductAttributes,
+    "id" | "createdAt" | "updatedAt"
+> {}
+
+class Product
+    extends Model<ProductAttributes, ProductCreationAttributes>
+    implements ProductAttributes
+{
     public id!: number;
     public name!: string;
     public slug!: string;
@@ -27,37 +37,37 @@ class Product extends Model<ProductAttributes> implements ProductAttributes {
     public shortDescription!: string | null;
     public price!: number;
     public salePrice!: number | null;
-    public status!: "draft" | "published" | "out_of_stock";
+    public status!: "draft" | "published" | "out_of_stock" | "active";
     public stockQuantity!: number;
-    public categoryId!: number;
+    public categoryId!: number | null;
     public image!: string | null;
+    public images!: string[] | string | null;
     public isFeatured!: boolean;
     public sortOrder!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
-    // Статичен метод за асоциациите, за да избегнем HMR грешките в Next.js
     static associate(models: any) {
-        // Релация към Категория
         this.belongsTo(models.Category, {
             foreignKey: "categoryId",
             as: "category",
         });
 
-        // Много-към-Много релации
         this.belongsToMany(models.Tag, {
-            through: "ProductTags",
+            through: "product_tags",
             as: "productTags",
             foreignKey: "productId",
         });
+
         this.belongsToMany(models.Color, {
-            through: "ProductColors",
+            through: "product_colors",
             as: "productColors",
             foreignKey: "productId",
         });
+
         this.belongsToMany(models.Size, {
-            through: "ProductSizes",
+            through: "product_sizes",
             as: "productSizes",
             foreignKey: "productId",
         });
@@ -71,29 +81,62 @@ Product.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        name: { type: DataTypes.STRING, allowNull: false },
-        slug: { type: DataTypes.STRING, allowNull: false, unique: true },
+        name: { type: DataTypes.STRING(255), allowNull: false },
+        slug: { type: DataTypes.STRING(255), allowNull: false, unique: true },
         description: { type: DataTypes.TEXT, allowNull: true },
         shortDescription: { type: DataTypes.TEXT, allowNull: true },
         price: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             defaultValue: 0,
+            get() {
+                const value = this.getDataValue("price");
+                return value ? parseFloat(value.toString()) : 0;
+            },
         },
-        salePrice: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
+        salePrice: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: true,
+            get() {
+                const value = this.getDataValue("salePrice");
+                return value ? parseFloat(value.toString()) : null;
+            },
+        },
         status: {
-            type: DataTypes.ENUM("draft", "published", "out_of_stock"),
-            defaultValue: "published",
+            type: DataTypes.ENUM(
+                "draft",
+                "published",
+                "out_of_stock",
+                "active",
+            ),
+            defaultValue: "active",
         },
-        stockQuantity: { type: DataTypes.INTEGER, defaultValue: 0 },
+        stockQuantity: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            field: "stock_quantity",
+        },
         categoryId: {
             type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
+            allowNull: true,
             references: { model: "categories", key: "id" },
+            field: "category_id",
         },
-        image: { type: DataTypes.STRING, allowNull: true },
-        isFeatured: { type: DataTypes.BOOLEAN, defaultValue: false },
-        sortOrder: { type: DataTypes.INTEGER, defaultValue: 0 },
+        image: { type: DataTypes.STRING(255), allowNull: true },
+        images: {
+            type: DataTypes.JSON,
+            allowNull: true,
+        },
+        isFeatured: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            field: "is_featured",
+        },
+        sortOrder: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            field: "sort_order",
+        },
     },
     {
         sequelize,

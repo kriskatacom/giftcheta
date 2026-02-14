@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import mysql2 from "mysql2"; // 1. Импортирай директно пакета
+import mysql2 from "mysql2";
 
 const globalForSequelize = global as unknown as { sequelize: Sequelize };
 
@@ -9,6 +9,7 @@ export const db =
         dialect: "mysql",
         dialectModule: mysql2,
         benchmark: true,
+        logging: false,
     });
 
 if (process.env.NODE_ENV !== "production")
